@@ -7,7 +7,7 @@ const tools = [
   {
     title: "Student Management",
     description: "Manage students, attendance, and fee records.",
-    href: "/students",
+    href: "/students/dashboard",
     icon: FaUserGraduate,
   },
   {
@@ -33,7 +33,7 @@ const tools = [
 export default function Home() {
   return (
     <>
-      <Navbar />
+      
       <main className=" flex flex-col justify-center items-center max-w-7xl mx-auto px-6 py-10">
        
 
