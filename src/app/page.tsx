@@ -7,7 +7,7 @@ const tools = [
   {
     title: "Student Management",
     description: "Manage students, attendance, and fee records.",
-    href: "/students/dashboard",
+    href: "/student/dashboard",
     icon: FaUserGraduate,
   },
   {
@@ -25,7 +25,7 @@ const tools = [
   {
     title: "Admin Panel",
     description: "Manage settings, roles, and permissions.",
-    href: "/admin",
+    href: "/admin/dashboard",
     icon: FaTools,
   },
 ];
