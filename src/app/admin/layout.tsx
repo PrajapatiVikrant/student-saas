@@ -1,4 +1,4 @@
-import StudentDashboard from "../components/ui/StudentDashboard";
+import StudentDashboard from "../components/dashboard/AdminDashboard";
 
 export default function StudentLayout({ children }: Readonly<{
     children: React.ReactNode;

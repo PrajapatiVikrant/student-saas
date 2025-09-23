@@ -11,6 +11,7 @@ import {
 import { CgCalendarToday } from "react-icons/cg";
 import { IoSettingsOutline } from "react-icons/io5";
 import { FaUserGraduate } from "react-icons/fa";
+import { SiGoogleclassroom } from "react-icons/si";
 
 export default function StudentDashboard() {
   const pathname = usePathname();
@@ -20,7 +21,7 @@ export default function StudentDashboard() {
     { name: "Students", icon: <MdOutlineGroup />, path: "./students" },
     { name: "Staff & Teachers", icon: <MdOutlineGroup />, path: "./staff" },
     { name:"Fee & Finance", icon:<MdOutlinePayments/>, path:"./finance" },
-    { name: "Attendance", icon: <CgCalendarToday />, path: "/attendance" },
+    { name: "Class & Batches", icon: <SiGoogleclassroom />, path: "./class_batch" },
     { name: "Reports", icon: <MdBarChart />, path: "/reports" },
     { name: "Settings", icon: <IoSettingsOutline />, path: "/settings" },
   ];
