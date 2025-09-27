@@ -11,7 +11,7 @@ export default function StudentLayout({ children }: Readonly<{
             <aside >
                 <StudentDashboard />
             </aside>
-            <section className="bg-blue-50 h-[90vh] overflow-auto w-full">
+            <section className="bg-white h-[90vh] overflow-auto w-full">
 
             {children}
             </section>
