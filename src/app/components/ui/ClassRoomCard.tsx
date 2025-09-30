@@ -1,19 +1,44 @@
+import Link from "next/link";
 
-export default function ClassRoomCard() {
+type ClassRoomCardProps = {
+  imageUrl: string;
+  name: string;
+  subject: string;
+  batch: string;
+};
 
-    return (
-        <article className="shadow-md hover:shadow-xl transition-shadow bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 flex flex-col gap-3">
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">10th Class</h1>
+export default function ClassRoomCard({
+  imageUrl,
+  name,
+  subject,
+  batch,
+}: ClassRoomCardProps) {
+  return (
+    <article className="bg-white dark:bg-background-dark/50 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+      <div
+        className="w-full h-48 bg-cover bg-center"
+        style={{ backgroundImage: `url(${imageUrl})` }}
+      ></div>
 
-            <div className="space-y-1 text-sm text-slate-600 dark:text-slate-300  ">
-               <p>Subject:5</p>
-               <p>Batches:2</p>
-            </div>
+      <div className="p-6 flex flex-col gap-4">
+        <div>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+            {name}
+          </h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            Subject: {subject}
+          </p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Batch: {batch}
+          </p>
+        </div>
 
-            <button className="mt-4 cursor-pointer px-4 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors w-fit">
-                View Class
-            </button>
-        </article>
-
-    )
+        <Link href="/admin/class_batch/class">
+          <button className="self-start cursor-pointer px-4 py-2 bg-blue-600/10 text-blue-600 dark:bg-blue-600/20 dark:text-blue-400 font-semibold rounded-lg hover:bg-blue-600/20 dark:hover:bg-blue-600/30 transition-colors">
+            View Class
+          </button>
+        </Link>
+      </div>
+    </article>
+  );
 }

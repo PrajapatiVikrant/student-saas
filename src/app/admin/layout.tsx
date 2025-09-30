@@ -1,4 +1,5 @@
 import StudentDashboard from "../components/dashboard/AdminDashboard";
+import Navbar from "../components/layout/Navbar";
 
 export default function StudentLayout({ children }: Readonly<{
     children: React.ReactNode;
@@ -6,8 +7,10 @@ export default function StudentLayout({ children }: Readonly<{
 
     return (
         <>
+            <header>
+                <Navbar />
+            </header>
             <section className="flex">
-
             <aside >
                 <StudentDashboard />
             </aside>
