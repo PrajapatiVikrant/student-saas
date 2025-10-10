@@ -5,14 +5,12 @@ import { useParams } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { MdEmail } from "react-icons/md";
 import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
 
 export default function VerifyEmailPage() {
   const [processing, setProcessing] = useState(false);
   const params = useParams();
   const rawEmail = params.email as string;
   const email = decodeURIComponent(rawEmail || "");
-  const router = useRouter();
 
   // Refs for OTP inputs
   const inputRefs = useRef<HTMLInputElement[]>([]);
@@ -57,7 +55,7 @@ export default function VerifyEmailPage() {
     e.preventDefault();
     const enteredOtp = otp.join("");
     if (enteredOtp.length !== 6) {
-      alert("Please enter all 6 digits of the OTP.");
+      toast.info("Pease enter all 6 digit of the OTP.")
       return;
     }
 
@@ -71,22 +69,17 @@ export default function VerifyEmailPage() {
       console.log(response);
       toast.success(response.data.message || "OTP verified successfully 🎉"); 
        localStorage.setItem("adminToken", response.data.token); 
-      router.push('/admin/dashboard')
-      toast.success("Welcome to EduConnect Admin Portal 🚀");
+
+      window.location.href = '/admin/dashboard'
+     
 
     }
   }
     catch (error) {
       toast.error("OTP verification failed ❌");
        setProcessing(false);
-      console.log(error);
+      
     }
-  
-    // Simulate API call
-    setTimeout(() => {
-      setProcessing(false);
-      alert(`OTP submitted: ${enteredOtp}`);
-    }, 1500);
   };
 
   return (
@@ -150,7 +143,7 @@ export default function VerifyEmailPage() {
                 type="submit"
                 onClick={handleVerify}
                 disabled={processing}
-                className="w-full flex justify-center items-center bg-blue-700 text-white font-semibold py-3 rounded-lg hover:bg-blue-800 transition-all duration-300"
+                className={`w-full flex justify-center items-center ${processing?"bg-blue-300":"bg-blue-700"}  cursor-pointer text-white font-semibold py-3 rounded-lg hover:bg-blue-300 transition-all duration-300`}
               >
                 {processing ? <CircularIndeterminate /> : "Verify Account"}
               </button>

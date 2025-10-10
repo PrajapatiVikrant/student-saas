@@ -1,8 +1,11 @@
 "use client";
+import StudentAdmission from "@/app/components/forms/StudentAdmission";
 import React from "react";
+import { useState } from "react";
 import { FaEye, FaEdit, FaTrash, FaWhatsapp, FaSearch } from "react-icons/fa";
 
 export default function Students() {
+    const [registerForm, setRegisterForm] = useState(false);
     const students = [
         {
             rollNo: 1,
@@ -63,6 +66,7 @@ export default function Students() {
 
     return (
         <>
+
             {/* Header */}
             <header className="p-4  mb-4">
                 <h1 className="text-2xl font-bold mb-3">Students</h1>
@@ -101,7 +105,7 @@ export default function Students() {
 
             {/* Main Section */}
             <main className="p-4">
-                <button className="bg-blue-600 text-white px-4 py-2 rounded mb-4">
+                <button onClick={()=>setRegisterForm(true)} className="bg-blue-600 hover:bg-blue-300 cursor-pointer text-white px-4 py-2 rounded mb-4">
                     New Admission
                 </button>
 
@@ -173,9 +177,10 @@ export default function Students() {
                         </tbody>
                     </table>
                 </div>
-
+           
 
             </main>
+           {registerForm ? <StudentAdmission setRegisterForm={setRegisterForm} /> : null} 
         </>
     );
 }

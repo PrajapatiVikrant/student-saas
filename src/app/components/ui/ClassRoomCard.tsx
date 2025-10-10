@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 type ClassRoomCardProps = {
+  id:string;
   imageUrl: string;
   name: string;
   subject: string;
@@ -8,11 +9,17 @@ type ClassRoomCardProps = {
 };
 
 export default function ClassRoomCard({
+  id,
   imageUrl,
   name,
   subject,
   batch,
 }: ClassRoomCardProps) {
+
+
+
+
+
   return (
     <article className="bg-white dark:bg-background-dark/50 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
       <div
@@ -33,7 +40,7 @@ export default function ClassRoomCard({
           </p>
         </div>
 
-        <Link href="/admin/class_batch/class">
+        <Link href={`/admin/class_batch/class/${id}`}>
           <button className="self-start cursor-pointer px-4 py-2 bg-blue-600/10 text-blue-600 dark:bg-blue-600/20 dark:text-blue-400 font-semibold rounded-lg hover:bg-blue-600/20 dark:hover:bg-blue-600/30 transition-colors">
             View Class
           </button>

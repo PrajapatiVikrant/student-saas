@@ -1,0 +1,216 @@
+"use client";
+
+import axios from "axios";
+import { useState, FormEvent } from "react";
+import { RxCross2 } from "react-icons/rx";
+import { toast } from "react-toastify";
+
+interface BatchFormProps {
+  setBatchForm: (value: boolean) => void;
+  class_id: string;
+}
+
+export default function BatchForm({ setBatchForm, class_id }: BatchFormProps) {
+  // ✅ Batch fields
+  const [batchName, setBatchName] = useState("");
+  const [batchFee, setBatchFee] = useState("");
+  const [batchTiming, setBatchTiming] = useState("");
+  const [batchDays, setBatchDays] = useState("");
+  const [feeMethod, setFeeMethod] = useState("Per Month"); // Default value
+
+  // ✅ Error states
+  const [batchNameError, setBatchNameError] = useState("");
+  const [batchFeeError, setBatchFeeError] = useState("");
+  const [batchTimingError, setBatchTimingError] = useState("");
+  const [batchDaysError, setBatchDaysError] = useState("");
+  const [feeMethodError, setFeeMethodError] = useState("");
+
+  // ✅ Validation
+  const validate = () => {
+    let isValid = true;
+
+    if (!batchName.trim()) {
+      setBatchNameError("Batch name is required");
+      isValid = false;
+    } else setBatchNameError("");
+
+    if (!batchFee.trim() || isNaN(Number(batchFee))) {
+      setBatchFeeError("Valid batch fee is required");
+      isValid = false;
+    } else setBatchFeeError("");
+
+    if (!batchTiming.trim()) {
+      setBatchTimingError("Batch timing is required");
+      isValid = false;
+    } else setBatchTimingError("");
+
+    if (!batchDays.trim()) {
+      setBatchDaysError("Batch days are required");
+      isValid = false;
+    } else setBatchDaysError("");
+
+    if (!feeMethod.trim()) {
+      setFeeMethodError("Fee method is required");
+      isValid = false;
+    } else setFeeMethodError("");
+
+    return isValid;
+  };
+
+  // ✅ Submit Form
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    const token = localStorage.getItem("adminToken");
+
+    const data = {
+      batch_name: batchName,
+      batch_fee: Number(batchFee),
+      batch_timing: batchTiming,
+      batch_days: batchDays,
+      fee_method: feeMethod, // ✅ new field added
+    };
+
+    try {
+      await axios.post(
+        `http://localhost:4000/api/v1/kaksha/addBatch/${class_id}`,
+        data,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      toast.success("Batch created successfully 🎉");
+
+      // Reset
+      setBatchName("");
+      setBatchFee("");
+      setBatchTiming("");
+      setBatchDays("");
+      setFeeMethod("Per Month");
+      setBatchForm(false);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to create batch ❌");
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/25 overflow-auto flex items-center justify-center z-50">
+      <div className="p-6 bg-white w-[35%] rounded-lg shadow-md">
+        {/* Close Button */}
+        <div className="flex justify-end text-2xl text-gray-700">
+          <button
+            className="hover:bg-gray-200 rounded-md cursor-pointer p-1"
+            onClick={() => setBatchForm(false)}
+          >
+            <RxCross2 />
+          </button>
+        </div>
+
+        <h2 className="text-2xl font-bold mb-4 text-gray-800">Create New Batch</h2>
+
+        {/* ✅ Form */}
+        <form className="space-y-4" onSubmit={handleSubmit}>
+          {/* Batch Name */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Batch Name</label>
+            <input
+              type="text"
+              value={batchName}
+              onChange={(e) => setBatchName(e.target.value)}
+              placeholder="Enter batch name"
+              className={`mt-1 block w-full border rounded-md shadow-sm p-2 focus:ring-blue-500 ${
+                batchNameError ? "border-red-500" : "border-gray-300"
+              }`}
+            />
+            {batchNameError && (
+              <p className="text-red-500 text-sm mt-1">{batchNameError}</p>
+            )}
+          </div>
+
+          {/* Batch Fee */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Batch Fee (₹)</label>
+            <input
+              type="number"
+              value={batchFee}
+              onChange={(e) => setBatchFee(e.target.value)}
+              placeholder="Enter batch fee"
+              className={`mt-1 block w-full border rounded-md shadow-sm p-2 focus:ring-blue-500 ${
+                batchFeeError ? "border-red-500" : "border-gray-300"
+              }`}
+            />
+            {batchFeeError && (
+              <p className="text-red-500 text-sm mt-1">{batchFeeError}</p>
+            )}
+          </div>
+
+          {/* ✅ Fee Method */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Fee Method</label>
+            <select
+              value={feeMethod}
+              onChange={(e) => setFeeMethod(e.target.value)}
+              className={`mt-1 block w-full border rounded-md shadow-sm p-2 focus:ring-blue-500 ${
+                feeMethodError ? "border-red-500" : "border-gray-300"
+              }`}
+            >
+              <option value="Per Month">Per Month</option>
+              <option value="One Time">One Time</option>
+              <option value="Per Quarter">Per Quarter</option>
+              <option value="Per Year">Per Year</option>
+            </select>
+            {feeMethodError && (
+              <p className="text-red-500 text-sm mt-1">{feeMethodError}</p>
+            )}
+          </div>
+
+          {/* Batch Timing */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Batch Timing</label>
+            <input
+              type="text"
+              value={batchTiming}
+              onChange={(e) => setBatchTiming(e.target.value)}
+              placeholder="e.g. 10:00 AM - 12:00 PM"
+              className={`mt-1 block w-full border rounded-md shadow-sm p-2 focus:ring-blue-500 ${
+                batchTimingError ? "border-red-500" : "border-gray-300"
+              }`}
+            />
+            {batchTimingError && (
+              <p className="text-red-500 text-sm mt-1">{batchTimingError}</p>
+            )}
+          </div>
+
+          {/* Batch Days */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Batch Days</label>
+            <input
+              type="text"
+              value={batchDays}
+              onChange={(e) => setBatchDays(e.target.value)}
+              placeholder="e.g. Mon, Wed, Fri"
+              className={`mt-1 block w-full border rounded-md shadow-sm p-2 focus:ring-blue-500 ${
+                batchDaysError ? "border-red-500" : "border-gray-300"
+              }`}
+            />
+            {batchDaysError && (
+              <p className="text-red-500 text-sm mt-1">{batchDaysError}</p>
+            )}
+          </div>
+
+          {/* Submit */}
+          <div className="text-right">
+            <button
+              type="submit"
+              className="bg-blue-600 cursor-pointer text-white px-4 py-2 rounded-md hover:bg-blue-300 transition"
+            >
+              Submit
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
