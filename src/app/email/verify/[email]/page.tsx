@@ -143,9 +143,9 @@ export default function VerifyEmailPage() {
                 type="submit"
                 onClick={handleVerify}
                 disabled={processing}
-                className={`w-full flex justify-center items-center ${processing?"bg-blue-300":"bg-blue-700"}  cursor-pointer text-white font-semibold py-3 rounded-lg hover:bg-blue-300 transition-all duration-300`}
+                className={`w-full flex  justify-center gap-1.5 items-center ${processing?"bg-blue-300":"bg-blue-700"}  cursor-pointer text-white font-semibold py-3 rounded-lg hover:bg-blue-300 transition-all duration-300`}
               >
-                {processing ? <CircularIndeterminate /> : "Verify Account"}
+                {processing ? <CircularIndeterminate size={20} /> : ""} <span>Verify Account</span>
               </button>
             </div>
 

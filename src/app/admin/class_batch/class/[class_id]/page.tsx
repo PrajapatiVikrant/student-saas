@@ -224,11 +224,11 @@ export default function Kaksha() {
                             <p className="text-gray-400 text-sm">No batches available</p>
                         )}
                         {batch.map((b) => (
-                            <BatchCard key={b._id} batch={b} />
+                            <BatchCard key={b._id} class_id={class_id} batch={b} />
                         ))}
                     </section>
                 </section>
-                {batchForm && <BatchForm setBatchForm={setBatchForm}/>}
+                {batchForm && <BatchForm class_id={class_id} setBatchForm={setBatchForm}/>}
             </main>
         </>
     );

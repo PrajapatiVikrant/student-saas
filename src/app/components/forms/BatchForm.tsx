@@ -4,6 +4,8 @@ import axios from "axios";
 import { useState, FormEvent } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { toast } from "react-toastify";
+import CircularIndeterminate from "../ui/CircularIndeterminate";
+import { useRouter } from "next/navigation";
 
 interface BatchFormProps {
   setBatchForm: (value: boolean) => void;
@@ -18,12 +20,19 @@ export default function BatchForm({ setBatchForm, class_id }: BatchFormProps) {
   const [batchDays, setBatchDays] = useState("");
   const [feeMethod, setFeeMethod] = useState("Per Month"); // Default value
 
+  //process state
+  const [processing,setProcessing] = useState(false);
+
+
   // ✅ Error states
   const [batchNameError, setBatchNameError] = useState("");
   const [batchFeeError, setBatchFeeError] = useState("");
   const [batchTimingError, setBatchTimingError] = useState("");
   const [batchDaysError, setBatchDaysError] = useState("");
   const [feeMethodError, setFeeMethodError] = useState("");
+
+  //for navigation
+  const router = useRouter();
 
   // ✅ Validation
   const validate = () => {
@@ -71,10 +80,10 @@ export default function BatchForm({ setBatchForm, class_id }: BatchFormProps) {
       batch_days: batchDays,
       fee_method: feeMethod, // ✅ new field added
     };
-
+    setProcessing(true);
     try {
       await axios.post(
-        `http://localhost:4000/api/v1/kaksha/addBatch/${class_id}`,
+        `http://localhost:4000/api/v1/batch/${class_id}`,
         data,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -89,9 +98,17 @@ export default function BatchForm({ setBatchForm, class_id }: BatchFormProps) {
       setBatchDays("");
       setFeeMethod("Per Month");
       setBatchForm(false);
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to create batch ❌");
+    } catch (error:any) {
+       if (error.response?.status === 401 || error.response?.status === 403) {
+        toast.error("Session expired. Please log in again.");
+        localStorage.removeItem("adminToken");
+        router.push("/login");
+      } else {
+        toast.error("Failed to create batch ❌");
+      }
+    } finally{
+      window.location.reload()
+      setProcessing(false)
     }
   };
 
@@ -204,9 +221,17 @@ export default function BatchForm({ setBatchForm, class_id }: BatchFormProps) {
           <div className="text-right">
             <button
               type="submit"
-              className="bg-blue-600 cursor-pointer text-white px-4 py-2 rounded-md hover:bg-blue-300 transition"
+              disabled={processing}
+              className={`${processing?"bg-blue-300":"bg-blue-500"} cursor-pointer text-white px-4 py-2 rounded-md hover:bg-blue-300 transition`}
             >
-              Submit
+              {processing?(
+                <div  className="flex items-center justify-center gap-1.5">
+                <CircularIndeterminate size={25}/>
+                <span>Creating</span>
+                </div>
+              ):(
+                <span>Create</span>
+              )} 
             </button>
           </div>
         </form>

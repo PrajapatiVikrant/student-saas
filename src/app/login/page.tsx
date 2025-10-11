@@ -128,9 +128,9 @@ export default function Login() {
             <button
               type="submit"
               disabled = {processing}
-              className="group relative flex w-full justify-center rounded-lg bg-blue-600 hover:bg-blue-300 cursor-pointer px-4 py-3 text-sm font-medium text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+              className={`group relative flex items-center gap-1.5 w-full justify-center rounded-lg ${processing?"bg-blue-300":"bg-blue-600"}  hover:bg-blue-300 cursor-pointer px-4 py-3 text-sm font-medium text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2`}
             > 
-            {processing ? <CircularIndeterminate/> : "Login"}
+            {processing ? <CircularIndeterminate size={20}/> : ""} <span>Login</span>
              
             </button>
           </div>

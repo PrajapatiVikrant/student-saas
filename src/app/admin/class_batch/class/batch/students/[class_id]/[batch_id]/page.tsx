@@ -9,7 +9,7 @@ export default function Students() {
         {/* Header */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <h1 className="text-3xl font-bold">Class 10 - Batch A</h1>
-          <button className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-blue-700 transition">
+          <button className="flex cursor-pointer items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-blue-700 transition">
             <FiUserPlus className="h-4 w-4" />
             <span>Add Student</span>
           </button>
