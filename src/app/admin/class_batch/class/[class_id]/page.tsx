@@ -65,6 +65,7 @@ export default function Kaksha() {
                     headers: { Authorization: `Bearer ${token}` },
                 }
             );
+            
 
             console.log(response.data);
             setClass_name(response.data.class.name)

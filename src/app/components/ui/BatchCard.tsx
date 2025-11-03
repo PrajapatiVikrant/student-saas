@@ -4,7 +4,10 @@ import { MdOutlineModeEdit } from "react-icons/md";
 import { FaUsers } from "react-icons/fa";
 import { IoTimeOutline } from "react-icons/io5";
 import { PiCalendarCheckLight } from "react-icons/pi";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 
 type BatchCardProps = {
   class_id:string;
@@ -19,9 +22,44 @@ type BatchCardProps = {
 };
 
 export default function BatchCard({ batch,class_id }: BatchCardProps) {
+  const [students,setStudents] = useState([]);
+  const router = useRouter();
   useEffect(() => {
-    console.log("batch card", batch);
+    getBatchStudents();
   }, []);
+
+   async function getBatchStudents() {
+    const token = localStorage.getItem("adminToken");
+    if (!token) {
+      toast.error("Session expired. Please log in again.");
+      router.push("/login");
+      return;
+    }
+
+   
+    try {
+      const response = await axios.get(
+        `http://localhost:4000/api/v1/student/${class_id}/${batch._id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+    
+      setStudents(response.data.students);
+    } catch (error: any) {
+      console.error("Error fetching students:", error);
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        toast.error("Session expired. Please log in again.");
+        localStorage.removeItem("adminToken");
+        router.push("/login");
+      } else {
+        toast.error("Failed to fetch students.");
+      }
+    } 
+  }
+
+ 
 
   return (
     <article className="group relative bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 flex flex-col justify-between transition-all duration-300 hover:shadow-lg hover:scale-[1.02]">
@@ -47,7 +85,7 @@ export default function BatchCard({ batch,class_id }: BatchCardProps) {
       <section className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
         <div className="flex items-center gap-2">
           <FaUsers className="text-blue-600 dark:text-blue-400" size={14} />
-          <span>30 Students</span>
+          <span>{students.length} Students</span>
         </div>
         <div className="flex items-center gap-2">
           <IoTimeOutline className="text-blue-600 dark:text-blue-400" size={14} />

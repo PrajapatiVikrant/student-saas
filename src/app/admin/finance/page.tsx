@@ -1,402 +1,336 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { jsPDF } from "jspdf";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
+import CircularIndeterminate from "@/app/components/ui/CircularIndeterminate";
 
-type RecordItem = {
-  id: string;
-  student: string;
-  course: string;
-  amount: number;
-  date: string; // yyyy-mm-dd
-  method: string;
-  status: "Paid" | "Pending";
-  receiptId?: string;
-  reminderSent?: boolean;
-};
+interface Student {
+  _id: string;
+  name: string;
+  gender: string;
+  class: { class_id: string; name: string };
+  batch: { batch_id: string; name: string };
+  payment_status: { total_amount: number; pay_amount: number };
+  payment_date: string;
+}
 
-const LOCAL_KEY = "cf_finance_records_v1";
+export default function FinanceManagement() {
+  const [students, setStudents] = useState<Student[]>([]);
+  const [filterStatus, setFilterStatus] = useState<"all" | "paid" | "pending">("all");
+  const [search, setSearch] = useState("");
+  const [selectedClass, setSelectedClass] = useState("");
+  const [selectedBatch, setSelectedBatch] = useState("");
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [amount, setAmount] = useState("");
+  const [processing, setProcessing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
-export default function Finance() {
-  const [records, setRecords] = useState<RecordItem[]>([]);
-  const [filter, setFilter] = useState<"all" | "paid" | "pending">("all");
-  const [form, setForm] = useState({
-    student: "",
-    course: "",
-    amount: "",
-    date: "",
-    method: "",
-    status: "Pending",
-  });
-
-  // load from localStorage
+  // Fetch students
   useEffect(() => {
-    const raw = localStorage.getItem(LOCAL_KEY);
-    if (raw) {
-      try {
-        setRecords(JSON.parse(raw));
-      } catch {}
-    }
+    getAllstudent()
   }, []);
 
-  // save to localStorage
-  useEffect(() => {
-    localStorage.setItem(LOCAL_KEY, JSON.stringify(records));
-  }, [records]);
 
-  // helper to generate unique receipt id
-  const generateReceiptId = () => {
-    const ts = Date.now().toString().slice(-6);
-    const rnd = Math.floor(Math.random() * 900 + 100).toString();
-    return `REC-${new Date().getFullYear()}-${ts}${rnd}`;
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setForm((s) => ({ ...s, [e.target.name]: e.target.value }));
-  };
-
-  const resetForm = () =>
-    setForm({
-      student: "",
-      course: "",
-      amount: "",
-      date: "",
-      method: "",
-      status: "Pending",
-    });
-
-  // record fee
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!form.student || !form.amount || !form.date || !form.method) {
-      alert("Please complete required fields.");
-      return;
+  function getAllstudent() {
+    try {
+      const token = localStorage.getItem("adminToken");
+      axios
+        .get("http://localhost:4000/api/v1/fee/status", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => setStudents(res.data))
+        .catch(() => toast.error("Failed to load students"));
+    } catch (error: any) {
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        toast.error("Session expired. Please log in again.");
+        localStorage.removeItem("adminToken");
+        router.push("/login");
+      } else {
+        toast.error("Failed to fetch student data ❌");
+      }
+      console.error("Error fetching student data:", error);
+    } finally {
+      setLoading(false)
     }
-    const newRecord: RecordItem = {
-      id: Date.now().toString(),
-      student: form.student,
-      course: form.course || "General",
-      amount: Number(form.amount),
-      date: form.date,
-      method: form.method,
-      status: form.status === "Paid" ? "Paid" : "Pending",
-      receiptId: form.status === "Paid" ? generateReceiptId() : undefined,
-      reminderSent: false,
-    };
-    setRecords((r) => [newRecord, ...r]);
-    resetForm();
-  };
+  }
 
-  // generate PDF receipt (uses jsPDF)
-  const generateReceipt = (r: RecordItem) => {
-    const receiptId = r.receiptId ?? generateReceiptId();
-    // if record didn't have receipt id and is paid, update record
-    if (r.status === "Paid" && !r.receiptId) {
-      setRecords((rs) =>
-        rs.map((it) => (it.id === r.id ? { ...it, receiptId } : it))
-      );
-    }
-
-    const doc = new jsPDF({ unit: "pt", format: "a4" });
-    const left = 40;
-    let y = 60;
-
-    doc.setFontSize(18);
-    doc.text("Fee Receipt", 300, y, { align: "center" });
-    y += 30;
-
-    doc.setFontSize(11);
-    doc.text(`Receipt ID: ${receiptId}`, left, y);
-    y += 20;
-    doc.text(`Student: ${r.student}`, left, y);
-    y += 18;
-    doc.text(`Course: ${r.course}`, left, y);
-    y += 18;
-    doc.text(`Amount: ₹${r.amount}`, left, y);
-    y += 18;
-    doc.text(`Payment Date: ${r.date}`, left, y);
-    y += 18;
-    doc.text(`Payment Method: ${r.method}`, left, y);
-    y += 24;
-
-    doc.setFontSize(10);
-    doc.text("This is a system-generated receipt by Codeflame Technology.", left, y);
-    y += 14;
-    doc.text("Verify receipt at: https://your-domain.com/verify (enter Receipt ID)", left, y);
-    y += 30;
-
-    doc.setFontSize(12);
-    doc.text("Thank you!", 300, y, { align: "center" });
-
-    doc.save(`Receipt_${r.student}_${receiptId}.pdf`);
-  };
-
-  // open WhatsApp with prefilled message (web/mobile)
-  const shareViaWhatsApp = (r: RecordItem) => {
-    const receiptId = r.receiptId ?? generateReceiptId();
-    // if paid and no receiptId, persist it
-    if (r.status === "Paid" && !r.receiptId) {
-      setRecords((rs) =>
-        rs.map((it) => (it.id === r.id ? { ...it, receiptId } : it))
-      );
-    }
-
-    const messageLines = [
-      `*Fee Receipt*`,
-      `Receipt ID: ${receiptId}`,
-      `Student: ${r.student}`,
-      `Course: ${r.course}`,
-      `Amount: ₹${r.amount}`,
-      `Date: ${r.date}`,
-      `Payment Method: ${r.method}`,
-      ``,
-      `Verify at: https://your-domain.com/verify (enter Receipt ID)`,
-      `Powered by Codeflame Technology`,
-    ];
-    const text = encodeURIComponent(messageLines.join("\n"));
-    // open WhatsApp web/mobile
-    window.open(`https://wa.me/?text=${text}`, "_blank");
-  };
-
-  // send reminder (simulated client-side)
-  const sendReminder = (id: string) => {
-    setRecords((rs) => rs.map((r) => (r.id === id ? { ...r, reminderSent: true } : r)));
-    alert("Reminder marked as sent (simulate sending). Later integrate SMS/WhatsApp API.");
-  };
-
-  // Filtered records list
-  const filtered = records.filter((r) =>
-    filter === "all" ? true : filter === "paid" ? r.status === "Paid" : r.status === "Pending"
+  // Extract unique classes and batches
+  const uniqueClasses = Array.from(
+    new Map(students.map((s) => [s.class.class_id, s.class])).values()
+  );
+  const uniqueBatches = Array.from(
+    new Map(students.map((s) => [s.batch.batch_id, s.batch])).values()
   );
 
-  // Financial summaries (by month & year)
-  const summary = useMemo(() => {
-    const totals = { paid: 0, pending: 0, countPaid: 0, countPending: 0 } as any;
-    const monthly: Record<string, number> = {}; // YYYY-MM -> total paid
-    const yearly: Record<string, number> = {}; // YYYY -> total paid
+  // Fee summary
+  const totalFee = students.reduce(
+    (acc, s) => acc + (s.payment_status?.total_amount || 0),
+    0
+  );
+  const collectedFee = students.reduce(
+    (acc, s) => acc + (s.payment_status?.pay_amount || 0),
+    0
+  );
+  const pendingFee = totalFee - collectedFee;
 
-    for (const r of records) {
-      if (r.status === "Paid") {
-        totals.paid += r.amount;
-        totals.countPaid++;
-        const d = new Date(r.date);
-        const mKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-        const yKey = `${d.getFullYear()}`;
-        monthly[mKey] = (monthly[mKey] || 0) + r.amount;
-        yearly[yKey] = (yearly[yKey] || 0) + r.amount;
-      } else {
-        totals.pending += r.amount;
-        totals.countPending++;
-      }
+  // Filtering logic
+  const filteredStudents = students.filter((student) => {
+    const isPaid =
+      student.payment_status.pay_amount >= student.payment_status.total_amount;
+
+    const matchesStatus =
+      filterStatus === "all"
+        ? true
+        : filterStatus === "paid"
+          ? isPaid
+          : !isPaid;
+
+    const matchesSearch = student.name
+      .toLowerCase()
+      .includes(search.toLowerCase());
+
+    const matchesClass = selectedClass
+      ? student.class.class_id === selectedClass
+      : true;
+
+    const matchesBatch = selectedBatch
+      ? student.batch.batch_id === selectedBatch
+      : true;
+
+    return matchesStatus && matchesSearch && matchesClass && matchesBatch;
+  });
+
+  // Record payment
+  const handleRecordFee = async () => {
+    if (!selectedStudent || !amount) return toast.error("Please enter amount");
+
+    try {
+      setProcessing(true);
+      const token = localStorage.getItem("adminToken");
+      await axios.put(
+        `http://localhost:4000/api/v1/student/${selectedStudent._id}/payment`,
+        { pay_amount: Number(amount) },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      toast.success("Payment recorded successfully ✅");
+      setAmount("");
+      setSelectedStudent(null);
+
+      const res = await axios.get("http://localhost:4000/api/v1/fee/status", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setStudents(res.data);
+    } catch (err) {
+      toast.error("Failed to record payment ❌");
+    } finally {
+      setProcessing(false);
     }
-
-    return { totals, monthly, yearly };
-  }, [records]);
-
-  // Export CSV (simple)
-  const exportCSV = () => {
-    const headers = ["ReceiptId","Student","Course","Amount","Date","Method","Status","ReminderSent"];
-    const rows = records.map(r => [
-      r.receiptId ?? "",
-      r.student,
-      r.course,
-      r.amount,
-      r.date,
-      r.method,
-      r.status,
-      r.reminderSent ? "Yes" : "No"
-    ]);
-    const csv = [headers, ...rows].map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(",")).join("\n");
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "fee_records.csv";
-    a.click();
-    URL.revokeObjectURL(url);
   };
 
+
+  if (loading) {
+    return (
+      <main className="flex flex-col h-screen justify-center items-center">
+        <CircularIndeterminate size={80} />
+        <span>Loading...</span>
+      </main>
+    )
+
+  }
+
+
   return (
-    <main className="flex-1 overflow-y-auto p-6">
-      <div className="max-w-6xl mx-auto">
-        <header className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">Fee & Finance Management</h2>
-          <p className="text-sm text-gray-600 mt-1">Record fees, generate receipts, send reminders and view financial reports.</p>
-        </header>
+    <div className="p-4 sm:p-6">
+      {/* Header Summary */}
+      <h1 className="text-2xl font-bold mb-6 text-gray-800 text-center sm:text-left">
+        Finance Management
+      </h1>
 
-        {/* Tabs & Actions */}
-        <div className="flex items-center justify-between gap-4 mb-4">
-          <div className="flex gap-2">
-            <button
-              className={`py-2 px-3 rounded ${filter === "all" ? "bg-blue-600 text-white" : "bg-gray-100"}`}
-              onClick={() => setFilter("all")}
-            >
-              All
-            </button>
-            <button
-              className={`py-2 px-3 rounded ${filter === "paid" ? "bg-green-600 text-white" : "bg-gray-100"}`}
-              onClick={() => setFilter("paid")}
-            >
-              Paid
-            </button>
-            <button
-              className={`py-2 px-3 rounded ${filter === "pending" ? "bg-red-600 text-white" : "bg-gray-100"}`}
-              onClick={() => setFilter("pending")}
-            >
-              Pending
-            </button>
-          </div>
-
-          <div className="flex gap-2">
-            <button className="py-2 px-3 bg-indigo-600 text-white rounded" onClick={exportCSV}>Export CSV</button>
-            <button className="py-2 px-3 bg-gray-200 rounded" onClick={() => { localStorage.removeItem(LOCAL_KEY); setRecords([]); }}>Clear All (dev)</button>
-          </div>
+      {/* Fee Summary */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div className="p-4 bg-blue-100 rounded-xl text-center">
+          <p className="text-gray-600 text-sm">Total Fee</p>
+          <p className="text-xl font-bold text-blue-700">₹{totalFee}</p>
         </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Form */}
-          <section className="lg:col-span-1 bg-white p-4 rounded shadow">
-            <h3 className="font-semibold mb-3">Record Student Fee</h3>
-            <form onSubmit={handleSubmit} className="space-y-3">
-              <input name="student" value={form.student} onChange={handleChange} placeholder="Student name" className="w-full p-2 border rounded" required />
-              <input name="course" value={form.course} onChange={handleChange} placeholder="Course / Batch" className="w-full p-2 border rounded" />
-              <input name="amount" value={form.amount} onChange={handleChange} placeholder="Amount (₹)" type="number" className="w-full p-2 border rounded" required />
-              <input name="date" value={form.date} onChange={handleChange} type="date" className="w-full p-2 border rounded" required />
-              <select name="method" value={form.method} onChange={handleChange} className="w-full p-2 border rounded" required>
-                <option value="">Select payment method</option>
-                <option value="Cash">Cash</option>
-                <option value="UPI">UPI</option>
-                <option value="Card">Card</option>
-                <option value="NetBanking">NetBanking</option>
-              </select>
-              <select name="status" value={form.status} onChange={handleChange} className="w-full p-2 border rounded">
-                <option value="Pending">Pending</option>
-                <option value="Paid">Paid</option>
-              </select>
-              <div className="flex justify-end">
-                <button className="bg-blue-600 text-white px-4 py-2 rounded">Record Fee</button>
-              </div>
-            </form>
-
-            <div className="mt-4 text-sm text-gray-600">
-              Tip: Mark status as <b>Paid</b> to auto-generate a receipt id and allow download/share.
-            </div>
-          </section>
-
-          {/* Records Table */}
-          <section className="lg:col-span-2 bg-white p-4 rounded shadow">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="font-semibold">Fee Records</h3>
-              <div className="text-sm text-gray-600">
-                Total Paid: <b>₹{summary.totals.paid}</b> • Pending: <b>₹{summary.totals.pending}</b>
-              </div>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-left">
-                <thead className="text-sm text-gray-600">
-                  <tr>
-                    <th className="py-2 px-3">Receipt ID</th>
-                    <th className="py-2 px-3">Student</th>
-                    <th className="py-2 px-3">Course</th>
-                    <th className="py-2 px-3">Amount</th>
-                    <th className="py-2 px-3">Date</th>
-                    <th className="py-2 px-3">Status</th>
-                    <th className="py-2 px-3">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.length === 0 ? (
-                    <tr>
-                      <td colSpan={7} className="py-6 text-center text-gray-500">No records found.</td>
-                    </tr>
-                  ) : (
-                    filtered.map((r) => (
-                      <tr key={r.id} className="border-t">
-                        <td className="py-2 px-3 text-sm text-gray-700">{r.receiptId ?? "-"}</td>
-                        <td className="py-2 px-3 text-sm">{r.student}</td>
-                        <td className="py-2 px-3 text-sm">{r.course}</td>
-                        <td className="py-2 px-3 text-sm">₹{r.amount}</td>
-                        <td className="py-2 px-3 text-sm">{r.date}</td>
-                        <td className="py-2 px-3 text-sm">
-                          {r.status === "Paid" ? <span className="text-green-700">Paid</span> : <span className="text-red-700">Pending</span>}
-                        </td>
-                        <td className="py-2 px-3 text-sm space-x-2">
-                          {r.status === "Paid" ? (
-                            <>
-                              <button className="underline text-blue-600" onClick={() => generateReceipt(r)}>Download Receipt</button>
-                              <button className="underline text-green-600" onClick={() => shareViaWhatsApp(r)}>Share on WhatsApp</button>
-                            </>
-                          ) : (
-                            <>
-                              <button className="underline text-indigo-600" onClick={() => {
-                                // mark as paid quickly (simulate)
-                                setRecords(rs => rs.map(it => it.id === r.id ? { ...it, status: "Paid", receiptId: generateReceiptId() } : it));
-                              }}>Mark Paid</button>
-                              <button className="underline text-red-600" onClick={() => sendReminder(r.id)}>{r.reminderSent ? "Reminder Sent" : "Send Reminder"}</button>
-                            </>
-                          )}
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Simple Reports */}
-            <div className="mt-4 border-t pt-4">
-              <h4 className="font-semibold">Simple Financial Reports</h4>
-              <div className="mt-2 grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div className="p-3 bg-gray-50 rounded">
-                  <div className="text-sm text-gray-600">Total Paid</div>
-                  <div className="text-xl font-bold">₹{summary.totals.paid}</div>
-                  <div className="text-xs text-gray-500">Transactions: {summary.totals.countPaid}</div>
-                </div>
-                <div className="p-3 bg-gray-50 rounded">
-                  <div className="text-sm text-gray-600">Total Pending</div>
-                  <div className="text-xl font-bold">₹{summary.totals.pending}</div>
-                  <div className="text-xs text-gray-500">Transactions: {summary.totals.countPending}</div>
-                </div>
-                <div className="p-3 bg-gray-50 rounded">
-                  <div className="text-sm text-gray-600">Net</div>
-                  <div className="text-xl font-bold">₹{summary.totals.paid - summary.totals.pending}</div>
-                </div>
-              </div>
-
-              <div className="mt-4">
-                <h5 className="font-medium">Monthly Paid Breakdown</h5>
-                <div className="text-sm text-gray-700 mt-2">
-                  {Object.keys(summary.monthly).length === 0 ? (
-                    <div className="text-gray-500">No paid transactions yet.</div>
-                  ) : (
-                    <ul className="list-disc pl-6">
-                      {Object.entries(summary.monthly).map(([k, v]) => (
-                        <li key={k}>{k}: ₹{v}</li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              </div>
-
-              <div className="mt-3">
-                <h5 className="font-medium">Yearly Paid Breakdown</h5>
-                <div className="text-sm text-gray-700 mt-2">
-                  {Object.keys(summary.yearly).length === 0 ? (
-                    <div className="text-gray-500">No paid transactions yet.</div>
-                  ) : (
-                    <ul className="list-disc pl-6">
-                      {Object.entries(summary.yearly).map(([k, v]) => (
-                        <li key={k}>{k}: ₹{v}</li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              </div>
-            </div>
-          </section>
+        <div className="p-4 bg-green-100 rounded-xl text-center">
+          <p className="text-gray-600 text-sm">Collected Fee</p>
+          <p className="text-xl font-bold text-green-700">₹{collectedFee}</p>
+        </div>
+        <div className="p-4 bg-red-100 rounded-xl text-center">
+          <p className="text-gray-600 text-sm">Pending Fee</p>
+          <p className="text-xl font-bold text-red-700">₹{pendingFee}</p>
         </div>
       </div>
-    </main>
+
+      {/* Status Tabs */}
+      <div className="flex justify-center sm:justify-start gap-3 mb-6 flex-wrap">
+        {["all", "paid", "pending"].map((status) => (
+          <button
+            key={status}
+            onClick={() => setFilterStatus(status as any)}
+            className={`px-4 py-2 rounded-full border font-medium transition-all ${filterStatus === status
+              ? "bg-blue-600 text-white"
+              : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+              }`}
+          >
+            {status.charAt(0).toUpperCase() + status.slice(1)}
+          </button>
+        ))}
+      </div>
+
+      {/* Filters */}
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+          <input
+            type="text"
+            placeholder="🔍 Search by name..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="border px-3 py-2 rounded-md w-full sm:w-60"
+          />
+
+          <select
+            value={selectedClass}
+            onChange={(e) => setSelectedClass(e.target.value)}
+            className="border px-3 py-2 rounded-md"
+          >
+            <option value="">All Classes</option>
+            {uniqueClasses.map((cls) => (
+              <option key={cls.class_id} value={cls.class_id}>
+                {cls.name}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={selectedBatch}
+            onChange={(e) => setSelectedBatch(e.target.value)}
+            className="border px-3 py-2 rounded-md"
+          >
+            <option value="">All Batches</option>
+            {uniqueBatches.map((batch) => (
+              <option key={batch.batch_id} value={batch.batch_id}>
+                {batch.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Student Table */}
+      <div className="overflow-x-auto w-full">
+        <table className="min-w-[800px] w-full border border-gray-300 text-sm table-auto whitespace-nowrap">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="border px-3 py-2">#</th>
+              <th className="border px-3 py-2">Name</th>
+              <th className="border px-3 py-2">Gender</th>
+              <th className="border px-3 py-2">Class</th>
+              <th className="border px-3 py-2">Batch</th>
+              <th className="border px-3 py-2">Total Fee</th>
+              <th className="border px-3 py-2">Paid</th>
+              <th className="border px-3 py-2">Status</th>
+              <th className="border px-3 py-2">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredStudents.length > 0 ? (
+              filteredStudents.map((student, index) => {
+                const isPaid =
+                  student.payment_status.pay_amount >=
+                  student.payment_status.total_amount;
+
+                return (
+                  <tr key={student._id}>
+                    <td className="border px-3 py-2 text-center">{index + 1}</td>
+                    <td className="border px-3 py-2 truncate max-w-[150px]">{student.name}</td>
+                    <td className="border px-3 py-2">{student.gender}</td>
+                    <td className="border px-3 py-2">{student.class.name}</td>
+                    <td className="border px-3 py-2">{student.batch.name}</td>
+                    <td className="border px-3 py-2 text-center">
+                      ₹{student.payment_status.total_amount}
+                    </td>
+                    <td className="border px-3 py-2 text-center">
+                      ₹{student.payment_status.pay_amount}
+                    </td>
+                    <td
+                      className={`border px-3 py-2 text-center font-semibold ${isPaid ? "text-green-600" : "text-red-600"
+                        }`}
+                    >
+                      {isPaid ? "Paid" : "Pending"}
+                    </td>
+                    <td className="border px-3 py-2 text-center">
+                      {isPaid ? (
+                        <span className="text-green-700 font-medium">✅ Paid</span>
+                      ) : (
+                        <button
+                          onClick={() => setSelectedStudent(student)}
+                          className="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700"
+                        >
+                          Record Payment
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })
+            ) : (
+              <tr>
+                <td colSpan={9} className="text-center text-gray-500 py-4 border">
+                  No students found
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Record Payment Form */}
+      {selectedStudent && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-11/12 sm:w-96 shadow-lg">
+            <h2 className="text-lg font-semibold mb-4 text-center">
+              Record Payment for{" "}
+              <span className="text-blue-600">{selectedStudent.name}</span>
+            </h2>
+            <p className="text-sm mb-2">
+              Total Fee: ₹{selectedStudent.payment_status.total_amount}
+            </p>
+            <p className="text-sm mb-4">
+              Paid So Far: ₹{selectedStudent.payment_status.pay_amount}
+            </p>
+
+            <input
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              placeholder="Enter amount"
+              className="border rounded-md px-3 py-2 w-full mb-4"
+            />
+
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setSelectedStudent(null)}
+                className="border px-3 py-2 rounded-md"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleRecordFee}
+                disabled={processing}
+                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+              >
+                {processing ? "Saving..." : "Save"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

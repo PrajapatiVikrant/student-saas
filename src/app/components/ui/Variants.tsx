@@ -8,6 +8,8 @@ export type VariantLayout = {
   height: number;
 };
 
+
+
 type VariantProps = {
   layout: VariantLayout[];
 };
@@ -17,6 +19,7 @@ export default function Variants({ layout }: VariantProps) {
 
   return (
     <Stack spacing={1}>
+      <Skeleton animation="wave" />
       {layout.map((skl, index) => (
         <Skeleton
           key={index}

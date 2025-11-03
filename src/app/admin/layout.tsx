@@ -17,6 +17,9 @@ export default function StudentLayout({ children }: Readonly<{
             <section className="bg-white h-[90vh] overflow-auto w-full">
 
             {children}
+            <br />
+           <br/>
+
             </section>
             </section>
         </>
