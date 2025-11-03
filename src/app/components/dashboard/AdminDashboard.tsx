@@ -80,7 +80,7 @@ export default function StudentDashboard() {
       </div>
 
       {/* BOTTOM NAVBAR for Mobile */}
-      <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 flex justify-around items-center py-2 shadow-md md:hidden">
+      <div className="fixed bottom-0 z-30 left-0 w-full bg-white border-t border-gray-200 flex justify-around items-center py-2 shadow-md md:hidden">
         {mainNavItems.map((item) => {
           const isActive = pathname === item.path;
           return (

@@ -220,7 +220,7 @@ export default function Kaksha() {
                     </div>
 
                     {/* Batch Cards */}
-                    <section className="grid grid-cols-3 gap-2">
+                    <section className="grid grid-cols-1 sm:grid-cols-2  lg:grid-cols-3 gap-2">
                         {batch.length === 0 && (
                             <p className="text-gray-400 text-sm">No batches available</p>
                         )}

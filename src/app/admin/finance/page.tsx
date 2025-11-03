@@ -26,6 +26,10 @@ export default function FinanceManagement() {
   const [amount, setAmount] = useState("");
   const [processing, setProcessing] = useState(false);
   const [loading, setLoading] = useState(true);
+
+
+ 
+
   const router = useRouter();
 
   // Fetch students
@@ -110,9 +114,9 @@ export default function FinanceManagement() {
     try {
       setProcessing(true);
       const token = localStorage.getItem("adminToken");
-      await axios.put(
-        `http://localhost:4000/api/v1/student/${selectedStudent._id}/payment`,
-        { pay_amount: Number(amount) },
+      await axios.post(
+        `http://localhost:4000/api/v1/fee/record`,
+        {studentId:selectedStudent._id, recordAmount: Number(amount) },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -121,12 +125,16 @@ export default function FinanceManagement() {
       setAmount("");
       setSelectedStudent(null);
 
-      const res = await axios.get("http://localhost:4000/api/v1/fee/status", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setStudents(res.data);
-    } catch (err) {
-      toast.error("Failed to record payment ❌");
+      getAllstudent();
+    } catch (error:any) {
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        toast.error("Session expired. Please log in again.");
+        localStorage.removeItem("adminToken");
+        router.push("/login");
+      } else {
+        toast.error("Failed to record payment ❌");
+      }
+      console.error("Error recording payment:", error);
     } finally {
       setProcessing(false);
     }
@@ -270,7 +278,7 @@ export default function FinanceManagement() {
                       ) : (
                         <button
                           onClick={() => setSelectedStudent(student)}
-                          className="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700"
+                          className="bg-blue-600 cursor-grab text-white px-3 py-1 rounded-md hover:bg-blue-700"
                         >
                           Record Payment
                         </button>
