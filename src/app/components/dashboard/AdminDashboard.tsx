@@ -20,8 +20,6 @@ export default function StudentDashboard() {
 
   const navItems = [
     { name: "Dashboard", icon: <MdOutlineDashboard />, path: "/admin/dashboard" },
-    { name: "Students", icon: <MdOutlineGroup />, path: "/admin/students" },
-    { name: "Staff & Teachers", icon: <MdOutlineGroup />, path: "/admin/staff" },
     { name: "Fee & Finance", icon: <MdOutlinePayments />, path: "/admin/finance" },
     { name: "Class & Batches", icon: <SiGoogleclassroom />, path: "/admin/class_batch" },
     { name: "Reports", icon: <MdBarChart />, path: "/admin/reports" },

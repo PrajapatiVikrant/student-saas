@@ -34,7 +34,7 @@ export default function StudentAdmission({
   const kaksha = { class_name, classId };
   const batch = { batch_name, batchId };
   const [admissionDate, setAdmissionDate] = useState("");
-  const [paymentDate, setPaymentDate] = useState(""); // ✅ New field
+  const [paymentDate, setPaymentDate] = useState(0); 
   const [processing, setProcessing] = useState(false);
   const router = useRouter();
 
@@ -87,7 +87,14 @@ export default function StudentAdmission({
       isValid = false;
     } else setAdmissionDateError("");
 
-    if (!paymentDate.trim()) {
+    if (paymentDate > 31 || paymentDate <= 0) {
+      setPaymentDateError("Please enter a valid payment date between 1 and 31.");
+      isValid = false;
+    } else {
+        setPaymentDateError("");
+    }
+
+    if (!paymentDate) {
       setPaymentDateError("Payment date is required");
       isValid = false;
     } else setPaymentDateError("");
@@ -170,9 +177,8 @@ export default function StudentAdmission({
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className={`mt-1 block w-full border rounded-md shadow-sm p-2 focus:ring-blue-500 ${
-                  nameError ? "border-red-500" : "border-gray-300"
-                }`}
+                className={`mt-1 block w-full border rounded-md shadow-sm p-2 focus:ring-blue-500 ${nameError ? "border-red-500" : "border-gray-300"
+                  }`}
                 placeholder="Enter full name"
               />
               {nameError && (
@@ -189,9 +195,8 @@ export default function StudentAdmission({
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className={`mt-1 block w-full border rounded-md shadow-sm p-2 focus:ring-blue-500 ${
-                  emailError ? "border-red-500" : "border-gray-300"
-                }`}
+                className={`mt-1 block w-full border rounded-md shadow-sm p-2 focus:ring-blue-500 ${emailError ? "border-red-500" : "border-gray-300"
+                  }`}
                 placeholder="Enter email address"
               />
               {emailError && (
@@ -208,9 +213,8 @@ export default function StudentAdmission({
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className={`mt-1 block w-full border rounded-md shadow-sm p-2 focus:ring-blue-500 ${
-                  phoneError ? "border-red-500" : "border-gray-300"
-                }`}
+                className={`mt-1 block w-full border rounded-md shadow-sm p-2 focus:ring-blue-500 ${phoneError ? "border-red-500" : "border-gray-300"
+                  }`}
                 placeholder="Enter phone number"
               />
               {phoneError && (
@@ -226,9 +230,8 @@ export default function StudentAdmission({
               <select
                 value={gender}
                 onChange={(e) => setGender(e.target.value)}
-                className={`mt-1 block w-full border rounded-md shadow-sm p-2 focus:ring-blue-500 ${
-                  genderError ? "border-red-500" : "border-gray-300"
-                }`}
+                className={`mt-1 block w-full border rounded-md shadow-sm p-2 focus:ring-blue-500 ${genderError ? "border-red-500" : "border-gray-300"
+                  }`}
               >
                 <option value="">Select gender</option>
                 <option value="Male">Male</option>
@@ -249,9 +252,8 @@ export default function StudentAdmission({
                 type="text"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                className={`mt-1 block w-full border rounded-md shadow-sm p-2 focus:ring-blue-500 ${
-                  addressError ? "border-red-500" : "border-gray-300"
-                }`}
+                className={`mt-1 block w-full border rounded-md shadow-sm p-2 focus:ring-blue-500 ${addressError ? "border-red-500" : "border-gray-300"
+                  }`}
                 placeholder="Enter address"
               />
               {addressError && (
@@ -268,9 +270,8 @@ export default function StudentAdmission({
                 type="date"
                 value={admissionDate}
                 onChange={(e) => setAdmissionDate(e.target.value)}
-                className={`mt-1 block w-full border rounded-md shadow-sm p-2 focus:ring-blue-500 ${
-                  admissionDateError ? "border-red-500" : "border-gray-300"
-                }`}
+                className={`mt-1 block w-full border rounded-md shadow-sm p-2 focus:ring-blue-500 ${admissionDateError ? "border-red-500" : "border-gray-300"
+                  }`}
               />
               {admissionDateError && (
                 <p className="text-red-500 text-sm mt-1">
@@ -285,12 +286,11 @@ export default function StudentAdmission({
                 Payment Date
               </label>
               <input
-                type="date"
+                type="number"
                 value={paymentDate}
-                onChange={(e) => setPaymentDate(e.target.value)}
-                className={`mt-1 block w-full border rounded-md shadow-sm p-2 focus:ring-blue-500 ${
-                  paymentDateError ? "border-red-500" : "border-gray-300"
-                }`}
+                onChange={(e) => setPaymentDate(Number(e.target.value))}
+                className={`mt-1 block w-full border rounded-md shadow-sm p-2 focus:ring-blue-500 ${paymentDateError ? "border-red-500" : "border-gray-300"
+                  }`}
               />
               {paymentDateError && (
                 <p className="text-red-500 text-sm mt-1">
@@ -305,9 +305,8 @@ export default function StudentAdmission({
             <button
               type="submit"
               disabled={processing}
-              className={`${
-                processing ? "bg-blue-300" : "bg-blue-600"
-              } text-white px-4 py-2 rounded-md hover:bg-blue-300 cursor-pointer transition`}
+              className={`${processing ? "bg-blue-300" : "bg-blue-600"
+                } text-white px-4 py-2 rounded-md hover:bg-blue-300 cursor-pointer transition`}
             >
               {processing ? (
                 <div className="flex justify-center items-center gap-1.5">

@@ -23,12 +23,13 @@ export default function FinanceManagement() {
   const [selectedClass, setSelectedClass] = useState("");
   const [selectedBatch, setSelectedBatch] = useState("");
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [selectPaymentMethod, setSelectPaymentMethod] = useState<"select payment method"|"Cash" | "UPI" | "Card" | "Bank Transfer">("select payment method")
   const [amount, setAmount] = useState("");
   const [processing, setProcessing] = useState(false);
   const [loading, setLoading] = useState(true);
 
 
- 
+
 
   const router = useRouter();
 
@@ -107,26 +108,32 @@ export default function FinanceManagement() {
     return matchesStatus && matchesSearch && matchesClass && matchesBatch;
   });
 
-  // Record payment
   const handleRecordFee = async () => {
-    if (!selectedStudent || !amount) return toast.error("Please enter amount");
+    if (!selectedStudent || !amount || selectPaymentMethod === "select payment method")
+      return toast.error("Please fill all fields (amount and payment method)");
 
     try {
       setProcessing(true);
       const token = localStorage.getItem("adminToken");
-      await axios.post(
+      const response = await axios.post(
         `http://localhost:4000/api/v1/fee/record`,
-        {studentId:selectedStudent._id, recordAmount: Number(amount) },
+        {
+          studentId: selectedStudent._id,
+          recordAmount: Number(amount),
+          paymentMethod: selectPaymentMethod,
+        },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      toast.success("Payment recorded successfully ✅");
+
+      toast.success(response.data.message);
       setAmount("");
+      setSelectPaymentMethod("select payment method");
       setSelectedStudent(null);
 
       getAllstudent();
-    } catch (error:any) {
+    } catch (error: any) {
       if (error.response?.status === 401 || error.response?.status === 403) {
         toast.error("Session expired. Please log in again.");
         localStorage.removeItem("adminToken");
@@ -318,8 +325,25 @@ export default function FinanceManagement() {
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               placeholder="Enter amount"
-              className="border rounded-md px-3 py-2 w-full mb-4"
+              className="border rounded-md px-3 py-2 w-full mb-3"
             />
+
+            <select
+              value={selectPaymentMethod}
+              onChange={(e) =>
+                setSelectPaymentMethod(e.target.value as "Cash" | "UPI" | "Card" | "Bank Transfer")
+              }
+              className="border rounded-md px-3 py-2 w-full mb-4"
+            >
+              <option value="select payment method" disabled>
+                Select Payment Method
+              </option>
+              <option value="Cash">Cash</option>
+              <option value="UPI">UPI</option>
+              <option value="Card">Card</option>
+              <option value="Bank Transfer">Bank Transfer</option>
+            </select>
+
 
             <div className="flex justify-end gap-3">
               <button
