@@ -13,6 +13,7 @@ import {
 import { IoSettingsOutline } from "react-icons/io5";
 import { FaUserGraduate } from "react-icons/fa";
 import { SiGoogleclassroom } from "react-icons/si";
+import { SlCalender } from "react-icons/sl";
 
 export default function StudentDashboard() {
   const pathname = usePathname();
@@ -22,6 +23,7 @@ export default function StudentDashboard() {
     { name: "Dashboard", icon: <MdOutlineDashboard />, path: "/admin/dashboard" },
     { name: "Fee & Finance", icon: <MdOutlinePayments />, path: "/admin/finance" },
     { name: "Class & Batches", icon: <SiGoogleclassroom />, path: "/admin/class_batch" },
+    { name: "Events", icon: <SlCalender/>, path: "/admin/event"},
     { name: "Reports", icon: <MdBarChart />, path: "/admin/reports" },
     { name: "Settings", icon: <IoSettingsOutline />, path: "/admin/settings" },
   ];
