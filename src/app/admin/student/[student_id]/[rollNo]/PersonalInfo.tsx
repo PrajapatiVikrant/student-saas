@@ -7,6 +7,9 @@ type PersonalInfoProps = {
     phone: string;
     address: string;
     admissionDate: string;
+    gender:string;
+    class_name:string;
+    batch_name:string;
   };
 };
 
@@ -16,6 +19,14 @@ export default function PersonalInfo({ student }: PersonalInfoProps) {
       <h2 className="text-xl font-semibold border-b pb-2">Personal Information</h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <p className="font-semibold">Class</p>
+          <p>{student.class_name}</p>
+        </div>
+        <div>
+          <p className="font-semibold">Batch</p>
+          <p>{student.batch_name}</p>
+        </div>
         <div>
           <p className="font-semibold">Name</p>
           <p>{student.name}</p>

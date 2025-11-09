@@ -168,7 +168,7 @@ export default function EditStudent({
 
     return (
         <div className="fixed inset-0 bg-black/25 overflow-auto flex items-center justify-center z-50">
-            <div className="p-4 bg-white w-[35%] rounded-lg shadow-md">
+            <div className="p-4 bg-white  w-[90%] lg:w-[35%] rounded-lg shadow-md">
                 {/* Close Button */}
                 <p className="text-black flex justify-end text-2xl cursor-pointer transition">
                     <button

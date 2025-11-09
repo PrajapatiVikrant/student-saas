@@ -38,7 +38,7 @@ export default function StudentDetailsPage() {
       });
 
       const data = response.data;
-      console.log('getstudent',data.class)
+      console.log('getstudent',data)
 
       setStudent({
         id: data._id,
@@ -170,7 +170,7 @@ export default function StudentDetailsPage() {
 
           {/* --- Tab Content --- */}
           {activeTab === "personal" && <PersonalInfo student={student} />}
-          {activeTab === "academic" && <AcademicInfo />}
+          {activeTab === "academic" && <AcademicInfo student_id = {student.id} />}
           {activeTab === "payment" && <PaymentInfo />}
         </div>
       </div>
