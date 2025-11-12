@@ -175,8 +175,6 @@ export default function BatchForm({ setBatchForm, class_id }: BatchFormProps) {
             >
               <option value="Per Month">Per Month</option>
               <option value="One Time">One Time</option>
-              <option value="Per Quarter">Per Quarter</option>
-              <option value="Per Year">Per Year</option>
             </select>
             {feeMethodError && (
               <p className="text-red-500 text-sm mt-1">{feeMethodError}</p>

@@ -137,13 +137,13 @@ export default function Dashboard() {
           icon: "📊",
           title: "Attendance",
           desc: "Today",
-          value: "95%",
+          value: data.overallAttendancePercentage,
         },
         {
           icon: "📅",
           title: "Upcoming Exams",
           desc: "This month",
-          value: "2",
+          value: data.totalEvent,
         },
         {
           icon: "🔔",

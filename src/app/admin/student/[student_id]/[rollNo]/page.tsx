@@ -17,9 +17,11 @@ export default function StudentDetailsPage() {
   const { student_id } = useParams();
   const router = useRouter();
 
-  const [activeTab, setActiveTab] = useState<"personal" | "academic" | "payment">("personal");
+  const [activeTab, setActiveTab] = useState<
+    "personal" | "academic" | "payment"
+  >("personal");
   const [confirmationForm, setConfirmationForm] = useState(false);
-  const [editForm, setEditForm] = useState(false); // ✅ added for Edit form
+  const [editForm, setEditForm] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [student, setStudent] = useState<any>({});
@@ -31,18 +33,21 @@ export default function StudentDetailsPage() {
   async function getStudent() {
     const token = localStorage.getItem("adminToken");
     try {
-      const response = await axios.get(`http://localhost:4000/api/v1/student/student/${student_id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.get(
+        `http://localhost:4000/api/v1/student/student/${student_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       const data = response.data;
-      console.log('getstudent',data)
-
       setStudent({
         id: data._id,
-        profile_picture: data.profile_picture || "https://images.pexels.com/photos/6345317/pexels-photo-6345317.jpeg",
+        profile_picture:
+          data.profile_picture ||
+          "https://images.pexels.com/photos/6345317/pexels-photo-6345317.jpeg",
         name: data.name,
         email: data.email,
         phone: data.phone,
@@ -68,41 +73,35 @@ export default function StudentDetailsPage() {
     }
   }
 
-  const handleEdit = () => {
-    setEditForm(true); // ✅ open Edit form
-  };
+  const handleEdit = () => setEditForm(true);
+  const handleDelete = () => setConfirmationForm(true);
+  const onClose = () => setConfirmationForm(false);
 
-  const handleDelete = () => {
-    setConfirmationForm(true);
-  };
-
-  const onClose = () => {
-    setConfirmationForm(false);
-  };
-
-  const onConfirm = async()=>{
-     const token = localStorage.getItem("adminToken");
-      try {
-        const response = await axios.delete(`http://localhost:4000/api/v1/student/student/${student_id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        
-      });
-      
-          router.push(`/admin/class_batch/class/batch/students/${student.classId}/${student.batchId}`)
-          toast.success(response.data.message)
-     
-      } catch (error:any) {
-         if (error.response?.status === 401 || error.response?.status === 403) {
+  const onConfirm = async () => {
+    const token = localStorage.getItem("adminToken");
+    try {
+      const response = await axios.delete(
+        `http://localhost:4000/api/v1/student/student/${student_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      router.push(
+        `/admin/class_batch/class/batch/students/${student.classId}/${student.batchId}`
+      );
+      toast.success(response.data.message);
+    } catch (error: any) {
+      if (error.response?.status === 401 || error.response?.status === 403) {
         toast.error("Session expired. Please log in again.");
         localStorage.removeItem("adminToken");
         router.push("/login");
       }
-    }finally{
-        setProcessing(false)
-      }
-  }
+    } finally {
+      setProcessing(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -115,13 +114,13 @@ export default function StudentDetailsPage() {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-50 p-6">
-        <div className="max-w-5xl mx-auto bg-white shadow-md rounded-2xl p-6 relative">
+      <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
+        <div className="max-w-5xl mx-auto bg-white shadow-md rounded-2xl p-4 sm:p-6 relative">
           {/* --- Top Action Buttons --- */}
-          <div className="absolute top-4 right-4 flex gap-3">
+          <div className="absolute top-4 right-4 flex flex-wrap gap-3">
             <button
               onClick={handleEdit}
-              className="flex items-center cursor-pointer gap-2 bg-blue-100 text-blue-700 border border-blue-300 px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-200 transition-all shadow-sm"
+              className="flex items-center gap-2 bg-blue-100 text-blue-700 border border-blue-300 px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-200 transition-all shadow-sm"
             >
               <FiEdit2 size={16} />
               Edit
@@ -129,49 +128,62 @@ export default function StudentDetailsPage() {
 
             <button
               onClick={handleDelete}
-              className="flex items-center cursor-pointer gap-2 bg-red-100 text-red-700 border border-red-300 px-3 py-2 rounded-lg text-sm font-medium hover:bg-red-200 transition-all shadow-sm"
+              className="flex items-center gap-2 bg-red-100 text-red-700 border border-red-300 px-3 py-2 rounded-lg text-sm font-medium hover:bg-red-200 transition-all shadow-sm"
             >
               <FiTrash2 size={16} />
               Delete
             </button>
           </div>
+          <br /><br />
 
           {/* --- Student Profile --- */}
-          <div className="flex flex-col items-center mb-6 mt-8">
-            <Image
-              src={student.profile_picture}
-              alt={student.name}
-              width={160}
-              height={160}
-              className="rounded-full object-cover shadow-md"
-            />
+          <div className="flex flex-col items-center mb-6 mt-10">
+            <div className="w-28 h-28 rounded-full overflow-hidden shadow-md">
+              <Image
+                src={student.profile_picture}
+                alt="Student"
+                width={120}
+                height={120}
+                className="object-cover w-full h-full"
+              />
+            </div>
             <h1 className="text-2xl font-bold mt-3">{student.name}</h1>
             <p className="text-gray-500">
               {student.class_name} - {student.batch_name}
             </p>
           </div>
 
-          {/* --- Tabs --- */}
-          <div className="flex justify-center gap-4 mb-6">
-            {["personal", "academic", "payment"].map((tab) => (
+          {/* --- Tabs (Responsive + Attractive) --- */}
+          <div className="flex flex-wrap justify-center gap-3 sm:gap-4 mb-6 border-b border-gray-200">
+            {[
+              { key: "personal", label: "Personal Info" },
+              { key: "academic", label: "Academic Info" },
+              { key: "payment", label: "Payment Info" },
+            ].map((tab) => (
               <button
-                key={tab}
-                onClick={() => setActiveTab(tab as any)}
-                className={`px-5 py-2 rounded-full cursor-pointer text-sm font-semibold transition-all ${
-                  activeTab === tab ? "bg-blue-600 text-white shadow" : "bg-gray-200 hover:bg-gray-300"
-                }`}
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key as any)}
+                className={`relative px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base font-semibold transition-all duration-300 rounded-md 
+                  ${
+                    activeTab === tab.key
+                      ? "text-blue-600 bg-blue-50"
+                      : "text-gray-600 hover:text-blue-500 hover:bg-gray-100"
+                  }`}
               >
-                {tab === "personal" && "Personal Info"}
-                {tab === "academic" && "Academic Info"}
-                {tab === "payment" && "Payment Info"}
+                {tab.label}
+                {activeTab === tab.key && (
+                  <span className="absolute bottom-0 left-0 w-full h-[3px] bg-blue-600 rounded-t-md transition-all duration-300"></span>
+                )}
               </button>
             ))}
           </div>
 
           {/* --- Tab Content --- */}
-          {activeTab === "personal" && <PersonalInfo student={student} />}
-          {activeTab === "academic" && <AcademicInfo student_id = {student.id} />}
-          {activeTab === "payment" && <PaymentInfo />}
+          <div className="mt-4">
+            {activeTab === "personal" && <PersonalInfo student={student} />}
+            {activeTab === "academic" && <AcademicInfo student={student} />}
+            {activeTab === "payment" && <PaymentInfo student = {student} />}
+          </div>
         </div>
       </div>
 
