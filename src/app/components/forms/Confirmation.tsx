@@ -6,19 +6,21 @@ import { RxCross2 } from "react-icons/rx";
 interface DeleteConfirmationProps {
   onClose: () => void;
   onConfirm: () => void;
-  studentName?: string;
+  name?: string;
+  info?:string;
   processing?: boolean;
 }
 
 export default function Confirmation({
   onClose,
   onConfirm,
-  studentName = "this student",
+  name ,
+  info,
   processing = false,
 }: DeleteConfirmationProps) {
   return (
     <div className="fixed inset-0 bg-black/25 flex items-center justify-center z-50">
-      <div className="bg-white w-[32%] rounded-lg shadow-md p-6 relative animate-fadeIn">
+      <div className="bg-white w-[80%] lg:w-[32%] rounded-lg shadow-md p-6 relative animate-fadeIn">
         
         {/* Close Button */}
         <button
@@ -35,9 +37,8 @@ export default function Confirmation({
           </div>
           <h2 className="text-xl font-bold text-gray-800">Delete Confirmation</h2>
           <p className="text-gray-600 text-sm leading-relaxed">
-            Are you sure you want to <span className="font-semibold text-red-600">delete {studentName}</span>? <br />
-            This action cannot be undone and will permanently remove all related records including 
-            academic, attendance, and payment data associated with this student.
+            Are you sure you want to <span className="font-semibold text-red-600">delete {name}</span>? <br />
+            {info}
           </p>
         </div>
 

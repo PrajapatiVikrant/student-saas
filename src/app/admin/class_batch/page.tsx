@@ -10,6 +10,7 @@ import CreateClass from "@/app/components/forms/CreateClass";
 import ClassRoomCard from "@/app/components/ui/ClassRoomCard";
 import Variants from "@/app/components/ui/Variants";
 
+
 // ✅ Proper TypeScript types
 type VariantLayout = {
   variant: "rectangular" | "text" | "circular";
@@ -18,7 +19,7 @@ type VariantLayout = {
 };
 
 type ClassInfo = {
-  _id:string;
+  _id: string;
   class: {
     thumbnail: string;
     name: string;
@@ -36,6 +37,7 @@ const classCardSkeleton: VariantLayout[] = [
 
 export default function ClassBatch() {
   const [registerForm, setRegisterForm] = useState(false);
+
   const [classList, setClassList] = useState<ClassInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -56,7 +58,7 @@ export default function ClassBatch() {
       const response = await axios.get("http://localhost:4000/api/v1/kaksha", {
         headers: { Authorization: `Bearer ${token}` },
       });
-     
+
       setClassList(response.data);
     } catch (error: any) {
       if (error.response?.status === 401 || error.response?.status === 403) {
@@ -94,27 +96,27 @@ export default function ClassBatch() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {loading
               ? // ✅ Skeleton while loading
-                Array.from({ length: 6 }).map((_, index) => (
-                  <div key={index} className="p-2">
-                    <Variants layout={classCardSkeleton} />
-                  </div>
-                ))
+              Array.from({ length: 6 }).map((_, index) => (
+                <div key={index} className="p-2">
+                  <Variants layout={classCardSkeleton} />
+                </div>
+              ))
               : // ✅ Render real class cards
-                classList.map((kaksha, index) => (
-                  <ClassRoomCard
-                    key={kaksha._id}
-                    id={kaksha._id}
-                    imageUrl={kaksha.class.thumbnail}
-                    name={kaksha.class.name}
-                    subject={kaksha.class.subjects.length.toString()}
-                    batch={kaksha.class.batches.length.toString()}
-                  />
-                ))}
+              classList.map((kaksha, index) => (
+                <ClassRoomCard
+                  key={kaksha._id}
+                  id={kaksha._id}
+                  imageUrl={kaksha.class.thumbnail}
+                  name={kaksha.class.name}
+                  subject={kaksha.class.subjects.length.toString()}
+                  batch={kaksha.class.batches.length.toString()}
+                />
+              ))}
           </div>
         </div>
       </main>
-
-      {registerForm && <CreateClass setRegisterForm={setRegisterForm} />}
+        
+      {registerForm && <CreateClass id="" class_name="" setForm={setRegisterForm} />}
     </>
   );
 }

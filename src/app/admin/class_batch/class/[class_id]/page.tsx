@@ -229,7 +229,7 @@ export default function Kaksha() {
                         ))}
                     </section>
                 </section>
-                {batchForm && <BatchForm class_id={class_id} setBatchForm={setBatchForm}/>}
+                {batchForm && <BatchForm class_id={class_id} batch="" setBatchForm={setBatchForm}/>}
             </main>
         </>
     );

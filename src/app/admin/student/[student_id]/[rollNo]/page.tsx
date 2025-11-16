@@ -205,7 +205,9 @@ export default function StudentDetailsPage() {
         <Confirmation
           onClose={onClose}
           onConfirm={onConfirm}
-          studentName={student.name}
+          name={student.name}
+          info="This action cannot be undone and will permanently remove all related records including 
+            academic, attendance, and payment data associated with this student."
           processing={processing}
         />
       )}

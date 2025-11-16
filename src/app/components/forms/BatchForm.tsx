@@ -9,16 +9,17 @@ import { useRouter } from "next/navigation";
 
 interface BatchFormProps {
   setBatchForm: (value: boolean) => void;
+  batch:any;
   class_id: string;
 }
 
-export default function BatchForm({ setBatchForm, class_id }: BatchFormProps) {
+export default function BatchForm({ setBatchForm, batch,class_id }: BatchFormProps) {
   // ✅ Batch fields
-  const [batchName, setBatchName] = useState("");
-  const [batchFee, setBatchFee] = useState("");
-  const [batchTiming, setBatchTiming] = useState("");
-  const [batchDays, setBatchDays] = useState("");
-  const [feeMethod, setFeeMethod] = useState("Per Month"); // Default value
+  const [batchName, setBatchName] = useState(batch?batch.batch_name:"");
+  const [batchFee, setBatchFee] = useState(batch?batch.batch_fee:"");
+  const [batchTiming, setBatchTiming] = useState(batch?batch.batch_timing:"");
+  const [batchDays, setBatchDays] = useState(batch?batch.batch_days:"");
+  const [feeMethod, setFeeMethod] = useState(batch?batch.fee_method:"Per Month"); // Default value
 
   //process state
   const [processing,setProcessing] = useState(false);
@@ -42,8 +43,8 @@ export default function BatchForm({ setBatchForm, class_id }: BatchFormProps) {
       setBatchNameError("Batch name is required");
       isValid = false;
     } else setBatchNameError("");
-
-    if (!batchFee.trim() || isNaN(Number(batchFee))) {
+    console.log(batchFee)
+    if (!batchFee || isNaN(Number(batchFee))) {
       setBatchFeeError("Valid batch fee is required");
       isValid = false;
     } else setBatchFeeError("");
@@ -111,6 +112,57 @@ export default function BatchForm({ setBatchForm, class_id }: BatchFormProps) {
       setProcessing(false)
     }
   };
+  
+  
+  
+  // ✅ Submit Form
+  const handleEdit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    const token = localStorage.getItem("adminToken");
+
+    const data = {
+      batch_name: batchName,
+      batch_fee: Number(batchFee),
+      batch_timing: batchTiming,
+      batch_days: batchDays,
+      fee_method: feeMethod, // ✅ new field added
+    };
+    setProcessing(true);
+    try {
+      await axios.put(
+        `http://localhost:4000/api/v1/batch/${class_id}/${batch._id}`,
+        data,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      toast.success("Batch edited successfully 🎉");
+
+      // Reset
+      setBatchName("");
+      setBatchFee("");
+      setBatchTiming("");
+      setBatchDays("");
+      setFeeMethod("Per Month");
+      setBatchForm(false);
+      window.location.reload()
+    } catch (error:any) {
+       
+       if (error.response?.status === 401 || error.response?.status === 403) {
+        toast.error("Session expired. Please log in again.");
+        localStorage.removeItem("adminToken");
+        router.push("/login");
+      } else {
+        console.log(error)
+        toast.error("Failed to edit batch ❌");
+      }
+    } finally{
+      
+      setProcessing(false)
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black/25 overflow-auto flex items-center justify-center z-50">
@@ -128,7 +180,7 @@ export default function BatchForm({ setBatchForm, class_id }: BatchFormProps) {
         <h2 className="text-2xl font-bold mb-4 text-gray-800">Create New Batch</h2>
 
         {/* ✅ Form */}
-        <form className="space-y-4" onSubmit={handleSubmit}>
+        <form className="space-y-4" onSubmit={batch?handleEdit:handleSubmit}>
           {/* Batch Name */}
           <div>
             <label className="block text-sm font-medium text-gray-700">Batch Name</label>
