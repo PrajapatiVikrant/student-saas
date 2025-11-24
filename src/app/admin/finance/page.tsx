@@ -23,7 +23,7 @@ export default function FinanceManagement() {
   const [selectedClass, setSelectedClass] = useState("");
   const [selectedBatch, setSelectedBatch] = useState("");
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
-  const [selectPaymentMethod, setSelectPaymentMethod] = useState<"select payment method"|"Cash" | "UPI" | "Card" | "Bank Transfer">("select payment method")
+  const [selectPaymentMethod, setSelectPaymentMethod] = useState<"select payment method" | "Cash" | "UPI" | "Card" | "Bank Transfer">("select payment method")
   const [amount, setAmount] = useState("");
   const [processing, setProcessing] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -39,15 +39,16 @@ export default function FinanceManagement() {
   }, []);
 
 
-  function getAllstudent() {
+  async function getAllstudent() {
     try {
       const token = localStorage.getItem("adminToken");
-      axios
+      const response = await axios
         .get("http://localhost:4000/api/v1/fee/status", {
           headers: { Authorization: `Bearer ${token}` },
         })
-        .then((res) => setStudents(res.data))
-        .catch(() => toast.error("Failed to load students"));
+
+      setStudents(response.data)
+
     } catch (error: any) {
       if (error.response?.status === 401 || error.response?.status === 403) {
         toast.error("Session expired. Please log in again.");

@@ -10,7 +10,8 @@ import CircularIndeterminate from "../components/ui/CircularIndeterminate";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [processing, setProcessing] = useState(false); 
+  const [processing, setProcessing] = useState(false);
+  const [forgotProssessing, setForgotProssessing] = useState(false);
   const router = useRouter(); // ✅ correct usage
 
   // ✅ Validation regex
@@ -32,7 +33,7 @@ export default function Login() {
       );
       return;
     }
-     setProcessing(true);
+    setProcessing(true);
     try {
       const response = await axios.post(
         "http://localhost:4000/api/v1/admin/login",
@@ -49,12 +50,33 @@ export default function Login() {
       setEmail("");
       setPassword("");
       setProcessing(false);
-      
+
     } catch (error: any) {
       console.log(error);
       toast.error(error.response?.data?.message || "Login failed ❌");
+    } finally {
+      setProcessing(false)
     }
   }
+
+
+  const handleForgotPasssword = async () => {
+    setForgotProssessing(true);
+    try {
+      if (!emailRegex.test(email)) {
+        toast.error("Please enter a valid email address");
+        return;
+      }
+      const response = await axios.get(`http://localhost:4000/api/v1/admin/forgot/${email}`)
+      toast.success(response.data.message)
+    } catch (error: any) {
+      console.log(error)
+      toast.error(error.message);
+    } finally {
+      setForgotProssessing(false)
+    }
+  }
+
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
@@ -116,22 +138,26 @@ export default function Login() {
 
           {/* Actions */}
           <div className="flex items-center justify-end">
-            <a
-              href="#"
-              className="text-sm font-medium text-primary hover:underline"
+            <button
+              type="button"
+              disabled={forgotProssessing}
+              onClick={handleForgotPasssword}
+              className={`text-sm font-medium 
+      ${forgotProssessing ? "text-gray-400 cursor-not-allowed" : "text-primary hover:underline"}
+    `}
             >
               Forgot password?
-            </a>
+            </button>
           </div>
 
           <div>
             <button
               type="submit"
-              disabled = {processing}
-              className={`group relative flex items-center gap-1.5 w-full justify-center rounded-lg ${processing?"bg-blue-300":"bg-blue-600"}  hover:bg-blue-300 cursor-pointer px-4 py-3 text-sm font-medium text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2`}
-            > 
-            {processing ? <CircularIndeterminate size={20}/> : ""} <span>Login</span>
-             
+              disabled={processing}
+              className={`group relative flex items-center gap-1.5 w-full justify-center rounded-lg ${processing ? "bg-blue-300" : "bg-blue-600"}  hover:bg-blue-300 cursor-pointer px-4 py-3 text-sm font-medium text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2`}
+            >
+              {processing ? <CircularIndeterminate size={20} /> : ""} <span>Login</span>
+
             </button>
           </div>
         </form>

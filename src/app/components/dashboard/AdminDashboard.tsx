@@ -14,6 +14,8 @@ import { IoSettingsOutline } from "react-icons/io5";
 import { FaUserGraduate } from "react-icons/fa";
 import { SiGoogleclassroom } from "react-icons/si";
 import { SlCalender } from "react-icons/sl";
+import { MdFamilyRestroom } from "react-icons/md";
+import { GiTeacher } from "react-icons/gi";
 
 export default function StudentDashboard() {
   const pathname = usePathname();
@@ -24,8 +26,8 @@ export default function StudentDashboard() {
     { name: "Fee & Finance", icon: <MdOutlinePayments />, path: "/admin/finance" },
     { name: "Class & Batches", icon: <SiGoogleclassroom />, path: "/admin/class_batch" },
     { name: "Events", icon: <SlCalender/>, path: "/admin/event"},
-    { name: "Reports", icon: <MdBarChart />, path: "/admin/reports" },
-    { name: "Settings", icon: <IoSettingsOutline />, path: "/admin/settings" },
+    { name: "Teacher", icon: <GiTeacher />, path: "/admin/teacher" },
+    { name: "Parent Portal", icon: <MdFamilyRestroom />, path: "/admin/parent" },
   ];
 
   // Main 4 for mobile navbar

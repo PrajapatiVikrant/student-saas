@@ -27,8 +27,8 @@ type BatchCardProps = {
 export default function BatchCard({ batch, class_id }: BatchCardProps) {
   const [students, setStudents] = useState([]);
   const [batchForm, setBatchForm] = useState(false);
-  const [processing,setProcessing] = useState(false);
-    const [confirmationForm, setConfirmationForm] = useState(false);
+  const [processing, setProcessing] = useState(false);
+  const [confirmationForm, setConfirmationForm] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -66,36 +66,30 @@ export default function BatchCard({ batch, class_id }: BatchCardProps) {
   // -------------------------
   // DELETE BATCH FUNCTION
   // -------------------------
-  async function handleDelete() {
-    if (!confirm("Are you sure you want to delete this batch?")) return;
-
+  const onClose = () => setConfirmationForm(false);
+  const onConfirm = async () => {
     const token = localStorage.getItem("adminToken");
     if (!token) {
       toast.error("Session expired. Please log in again.");
       router.push("/login");
       return;
     }
-
+     setProcessing(true)
     try {
-      await axios.delete(
+     const response = await axios.delete(
         `http://localhost:4000/api/v1/batch/${class_id}/${batch._id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      toast.success("Batch deleted successfully!");
+      toast.success(response.data.message);
       router.refresh();
     } catch (error: any) {
       console.error("Delete error:", error);
       toast.error("Failed to delete batch.");
+    }finally{
+      setProcessing(false)
     }
   }
-
-
-
-const onClose = ()=>setConfirmationForm(false);
-const onConfirm = async()=>{
-         console.log("delete batch")
-}
 
 
   return (
@@ -126,7 +120,7 @@ const onConfirm = async()=>{
 
             {/* Delete */}
             <button
-              onClick={()=>setConfirmationForm(true)}
+              onClick={() => setConfirmationForm(true)}
               title="Delete Batch"
               className="text-gray-400 hover:text-red-600 cursor-pointer dark:hover:text-red-400 transition"
             >
