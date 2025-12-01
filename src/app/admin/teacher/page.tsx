@@ -1,4 +1,5 @@
 "use client";
+import Confirmation from "@/app/components/forms/Confirmation";
 import CircularIndeterminate from "@/app/components/ui/CircularIndeterminate";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -48,6 +49,7 @@ export default function TeachersPage() {
   const [salaryAmount, setSalaryAmount] = useState(0);
   const [dateJoined, setDateJoined] = useState(new Date().toISOString().split("T")[0]);
   const [isActive, setIsActive] = useState(true);
+    const [confirmationForm, setConfirmationForm] = useState(false);
 
   const [newSubject, setNewSubject] = useState("");
   const [newClass, setNewClass] = useState("");
@@ -193,12 +195,16 @@ export default function TeachersPage() {
   }
 
   async function handleDelete(id:any) {
-   
-    if (!window.confirm("Are you sure you want to delete this teacher?")) return;
-    setProcessing(true);
+        setTeacherId(id);
+        setConfirmationForm(true);
+  }
+  const onClose = () => setConfirmationForm(false);
+  const onConfirm = async () => {
+  
+     setProcessing(true);
     try {
       const token = localStorage.getItem("adminToken");
-      await axios.delete(`http://localhost:4000/api/v1/teacher/${id}`, {
+      await axios.delete(`http://localhost:4000/api/v1/teacher/${teacherId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success("Teacher deleted successfully");
@@ -211,7 +217,10 @@ export default function TeachersPage() {
     } finally {
       setProcessing(false);
     }
+   
   }
+
+
 
   const deleteSubject = (name: string) => setSubjects(subjects.filter((s) => s.name !== name));
   const deleteClass = (id: string) => setClasses(classes.filter((c) => c.id !== id));
@@ -455,6 +464,17 @@ export default function TeachersPage() {
         </>
       )
       }
+       {/* --- Confirmation Modal --- */}
+            {confirmationForm && (
+              <Confirmation
+                onClose={onClose}
+                onConfirm={onConfirm}
+                name={parent.name}
+                info="This action cannot be undone and will permanently remove all related records including 
+                              academic, attendance, and payment data associated with this teacher."
+                processing={processing}
+              />
+            )}
     </div>
   );
 }
