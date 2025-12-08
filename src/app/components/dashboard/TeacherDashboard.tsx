@@ -3,36 +3,56 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  MdOutlineDashboard,
-  MdOutlineGroup,
-  MdOutlinePayments,
-  MdBarChart,
-  MdMoreHoriz,
-} from "react-icons/md";
-import { IoSettingsOutline } from "react-icons/io5";
-import { FaUserGraduate } from "react-icons/fa";
+
+// ICONS
+import { MdOutlineDashboard } from "react-icons/md";
+import { GiTeacher } from "react-icons/gi";
 import { SiGoogleclassroom } from "react-icons/si";
 import { SlCalender } from "react-icons/sl";
-import { MdFamilyRestroom } from "react-icons/md";
-import { GiTeacher } from "react-icons/gi";
+import { MdOutlineNotificationsActive } from "react-icons/md";
+import { FaUserCog } from "react-icons/fa";
+import { FaChalkboardTeacher } from "react-icons/fa";
+import { HiMiniUserGroup } from "react-icons/hi2";
+import { MdMoreHoriz } from "react-icons/md";
 
-export default function AdminDashboard() {
+export default function TeacherDashboard() {
   const pathname = usePathname();
   const [showMore, setShowMore] = useState(false);
 
+  // --------------------------
+  // TEACHER NAVIGATION ITEMS
+  // --------------------------
   const navItems = [
-    { name: "Dashboard", icon: <MdOutlineDashboard />, path: "/admin/dashboard" },
-    { name: "Fee & Finance", icon: <MdOutlinePayments />, path: "/admin/finance" },
-    { name: "Class & Batches", icon: <SiGoogleclassroom />, path: "/admin/class_batch" },
-    { name: "Events", icon: <SlCalender/>, path: "/admin/event"},
-    { name: "Teacher", icon: <GiTeacher />, path: "/admin/teacher" },
-    { name: "Parent Portal", icon: <MdFamilyRestroom />, path: "/admin/parent" },
+    {
+      name: "Dashboard",
+      icon: <MdOutlineDashboard />,
+      path: "/teacher/dashboard",
+    },
+    {
+      name: "Classes",
+      icon: <FaChalkboardTeacher />,
+      path: "/teacher/classes",
+    },
+    {
+      name: "Attendance",
+      icon: <SiGoogleclassroom />,
+      path: "/teacher/attendance",
+    },
+    {
+      name: "Events",
+      icon: <SlCalender />,
+      path: "/teacher/event",
+    },
+    {
+      name: "Notifications",
+      icon: <MdOutlineNotificationsActive />,
+      path: "/teacher/notification",
+    },
+   
   ];
 
-  // Main 4 for mobile navbar
-  const mainNavItems = navItems.slice(0, 4);
-  const moreNavItems = navItems.slice(4);
+  const mainNavItems = navItems.slice(0, 3);
+  const moreNavItems = navItems.slice(3);
 
   return (
     <div
@@ -41,22 +61,23 @@ export default function AdminDashboard() {
     >
       <div className="layout-container flex grow flex-col">
         <div className="flex flex-1">
-          {/* SIDEBAR for Desktop */}
+          {/* SIDEBAR (DESKTOP) */}
           <div className="hidden md:block w-72 flex-shrink-0 border-r border-gray-200 bg-white">
             <div className="flex h-full flex-col justify-between p-4">
               <div className="flex flex-col gap-4">
-                {/* Logo */}
+                {/* LOGO */}
                 <div className="flex flex-col justify-center items-center gap-2 px-3 py-2">
-                  <FaUserGraduate className="text-3xl text-blue-600" />
+                  <GiTeacher className="text-3xl text-blue-600" />
                   <h1 className="text-gray-800 text-lg font-bold">
-                    Student Management
+                    Teacher Portal
                   </h1>
                 </div>
 
-                {/* Navigation */}
+                {/* NAVIGATION LINKS */}
                 <div className="flex flex-col gap-1 mt-4">
                   {navItems.map((item) => {
                     const isActive = pathname === item.path;
+
                     return (
                       <Link
                         key={item.name}
@@ -67,7 +88,7 @@ export default function AdminDashboard() {
                             : "text-gray-500 hover:bg-gray-100 hover:text-gray-900"
                         }`}
                       >
-                        <span>{item.icon}</span>
+                        <span className="text-lg">{item.icon}</span>
                         <p className="text-sm">{item.name}</p>
                       </Link>
                     );
@@ -77,11 +98,10 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-        
         </div>
       </div>
 
-      {/* BOTTOM NAVBAR for Mobile */}
+      {/* MOBILE BOTTOM NAVBAR */}
       <div className="fixed bottom-0 z-30 left-0 w-full bg-white border-t border-gray-200 flex justify-around items-center py-2 shadow-md md:hidden">
         {mainNavItems.map((item) => {
           const isActive = pathname === item.path;
@@ -99,27 +119,29 @@ export default function AdminDashboard() {
           );
         })}
 
-        {/* More Button */}
+        {/* MORE BUTTON */}
         <div className="relative">
           <button
             onClick={() => setShowMore(!showMore)}
-            className="flex flex-col items-center text-xs text-gray-500"
+            className={`flex flex-col items-center text-xs ${
+              showMore ? "text-blue-600" : "text-gray-500"
+            }`}
           >
             <MdMoreHoriz className="text-2xl" />
             <p>More</p>
           </button>
 
-          {/* Dropdown for More Options */}
+          {/* MORE DROPDOWN */}
           {showMore && (
-            <div className="absolute bottom-14 right-0 bg-white border rounded-lg shadow-lg w-40 py-2">
+            <div className="absolute bottom-14 right-0 bg-white border rounded-lg shadow-lg w-44 py-2">
               {moreNavItems.map((item) => (
                 <Link
                   key={item.name}
                   href={item.path}
-                  className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:bg-gray-100 text-sm"
+                  className="flex items-center gap-3 px-3 py-2 text-gray-600 hover:bg-gray-100 text-sm"
                   onClick={() => setShowMore(false)}
                 >
-                  <span>{item.icon}</span>
+                  <span className="text-lg">{item.icon}</span>
                   <p>{item.name}</p>
                 </Link>
               ))}

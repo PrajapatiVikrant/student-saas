@@ -1,7 +1,7 @@
-import AdminDashboard from "../components/dashboard/AdminDashboard";
+import TeacherDashboard from "../components/dashboard/TeacherDashboard";
 import Navbar from "../components/layout/Navbar";
 
-export default function AdminLayout({ children }: Readonly<{
+export default function TeacherLayout({ children }: Readonly<{
     children: React.ReactNode;
 }>) {
 
@@ -12,7 +12,7 @@ export default function AdminLayout({ children }: Readonly<{
             </header>
             <section className="flex">
             <aside >
-                <AdminDashboard />
+               <TeacherDashboard/>
             </aside>
             <section className="bg-white h-[90vh] overflow-auto w-full">
 

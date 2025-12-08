@@ -84,6 +84,11 @@ export default function Dashboard() {
   }, []);
 
   async function getDashboardData() {
+    if(!localStorage.getItem("adminToken")){
+      toast.error("Please login to access the admin dashboard.");
+      router.push("/login");
+      return;
+    }
     setLoading(true);
     try {
       const token = localStorage.getItem("adminToken");
