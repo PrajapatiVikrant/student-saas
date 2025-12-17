@@ -64,6 +64,7 @@ export default function Attendance() {
   }, [students, date]);
 
   async function getBatchStudents() {
+    alert("Fetching students...");
     const token = localStorage.getItem("adminToken");
     if (!token) {
       toast.error("Session expired. Please log in again.");

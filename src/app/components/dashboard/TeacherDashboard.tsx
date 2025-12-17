@@ -29,25 +29,21 @@ export default function TeacherDashboard() {
       path: "/teacher/dashboard",
     },
     {
-      name: "Classes",
-      icon: <FaChalkboardTeacher />,
-      path: "/teacher/classes",
-    },
-    {
       name: "Attendance",
       icon: <SiGoogleclassroom />,
       path: "/teacher/attendance",
+    },
+     {
+      name: "Notifications",
+      icon: <MdOutlineNotificationsActive />,
+      path: "/teacher/notification",
     },
     {
       name: "Events",
       icon: <SlCalender />,
       path: "/teacher/event",
     },
-    {
-      name: "Notifications",
-      icon: <MdOutlineNotificationsActive />,
-      path: "/teacher/notification",
-    },
+   
    
   ];
 

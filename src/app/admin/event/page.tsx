@@ -125,7 +125,7 @@ const EventPage: React.FC = () => {
       const selectedClass = classList.find((cls) => cls._id === value);
       const classBatches =
         selectedClass?.class?.batches?.map((batch) => ({
-          batch_id: batch.batch_id || batch._id,
+          batch_id: batch.batch_id ,
           batch_name: batch.batch_name,
         })) || [];
       setBatches(classBatches);
@@ -205,7 +205,7 @@ const EventPage: React.FC = () => {
     const selectedClass = classList.find((cls) => cls._id === event.class.id);
     const classBatches =
       selectedClass?.class?.batches?.map((batch) => ({
-        batch_id: batch.batch_id || batch._id,
+        batch_id: batch.batch_id,
         batch_name: batch.batch_name,
       })) || [];
     setBatches(classBatches);
