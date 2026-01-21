@@ -64,8 +64,8 @@ export default function Attendance() {
   }, [students, date]);
 
   async function getBatchStudents() {
-    alert("Fetching students...");
-    const token = localStorage.getItem("adminToken");
+   
+    const token = localStorage.getItem("codeflam01_token");
     if (!token) {
       toast.error("Session expired. Please log in again.");
       router.push("/login");
@@ -94,7 +94,7 @@ export default function Attendance() {
   }
 
   async function getAttendanceByDate() {
-    const token = localStorage.getItem("adminToken");
+    const token = localStorage.getItem("codeflam01_token");
     if (!token) return router.push("/login");
 
     setLoading(true);
@@ -152,7 +152,7 @@ export default function Attendance() {
     if (!date) return toast.error("Please select a date.");
     if (!isEditable) return toast.error("Cannot edit past attendance.");
 
-    const token = localStorage.getItem("adminToken");
+    const token = localStorage.getItem("codeflam01_token");
     if (!token) return router.push("/login");
 
     try {
@@ -182,7 +182,7 @@ export default function Attendance() {
 
   async function sendNotification() {
     if (!isEditable) return toast.error("Notifications only for today's attendance.");
-    const token = localStorage.getItem("adminToken");
+    const token = localStorage.getItem("codeflam01_token");
     if (!token) return toast.error("Please log in again.");
 
     try {

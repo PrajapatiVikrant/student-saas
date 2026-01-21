@@ -39,16 +39,41 @@ type Profile = {
 export default function Dashboard() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [greeting,setGreeting] = useState("");
   const router = useRouter();
 
   useEffect(() => {
+    getGreeting();
     fetchProfile();
   }, []);
+
+
+
+  function getGreeting() {
+  const hour = new Date().getHours();
+  console.log("hour", hour);
+  if (hour >= 5 && hour < 12) {
+   
+    setGreeting("Good Morning ☀️")
+    return "Good Morning";
+  } else if (hour >= 12 && hour < 16) {
+   
+    setGreeting("Good Afternoon")
+    return "Good Afternoon 🌤️";
+  } else if (hour >= 16 && hour < 21) {
+    setGreeting("Good Evening")
+    return "Good Evening 🌆";
+  } else {
+    setGreeting("Good Night")
+    return "Good Night 🌙";
+  }
+}
+
 
   async function fetchProfile() {
     setLoading(true);
     try {
-      const token = localStorage.getItem("teacherToken");
+      const token = localStorage.getItem("codeflam01_token");
 
       if (!token) {
         router.push("/teacher/login");
@@ -93,7 +118,7 @@ export default function Dashboard() {
   return (
     <main className="grow pb-24">
       <h1 className="text-[#111318] dark:text-white text-[32px] font-bold px-4 pb-3 pt-2">
-        Good Morning, {profile?.name ?? "Teacher"}
+        {greeting}, {profile?.name ?? "Teacher"}
       </h1>
 
       {/* HOMEROOM CARD */}

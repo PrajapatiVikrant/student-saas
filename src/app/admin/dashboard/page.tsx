@@ -84,14 +84,14 @@ export default function Dashboard() {
   }, []);
 
   async function getDashboardData() {
-    if(!localStorage.getItem("adminToken")){
+    if(!localStorage.getItem("codeflam01_token")){
       toast.error("Please login to access the admin dashboard.");
       router.push("/login");
       return;
     }
     setLoading(true);
     try {
-      const token = localStorage.getItem("adminToken");
+      const token = localStorage.getItem("codeflam01_token");
       if (!token) {
         toast.error("No token found. Please login again.");
         router.push("/login");
@@ -158,11 +158,11 @@ export default function Dashboard() {
         },
       ]);
 
-      toast.success("Welcome to EduConnect Admin Portal 🚀");
+     
     } catch (error: any) {
       if (error.response?.status === 401 || error.response?.status === 403) {
         toast.error("Session expired. Please log in again.");
-        localStorage.removeItem("adminToken");
+        localStorage.removeItem("codeflam01_token");
         router.push("/login");
       } else {
         toast.error("Failed to fetch dashboard data ❌");

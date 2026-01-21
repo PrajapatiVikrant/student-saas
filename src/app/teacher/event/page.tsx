@@ -14,7 +14,6 @@ interface Batch {
 
 interface ClassItem {
   _id: string;
-  admin_id: string;
   class: {
     name: string;
     batches: Batch[];
@@ -35,23 +34,27 @@ interface Event {
   date: string;
   type: string;
   description: string;
+  added_by: string;
 }
 
 const EventPage: React.FC = () => {
+  const router = useRouter();
+  const [myId,setMyId] = useState<string|null>("");
   const [events, setEvents] = useState<Event[]>([]);
-  const [showModal, setShowModal] = useState(false);
-  const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [classList, setClassList] = useState<ClassItem[]>([]);
   const [batches, setBatches] = useState<Batch[]>([]);
-  const [formLoading, setFormLoading] = useState(false);
+
+  const [showModal, setShowModal] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+
   const [loading, setLoading] = useState(false);
+  const [formLoading, setFormLoading] = useState(false);
   const [processing, setProcessing] = useState(false);
-  const router = useRouter();
 
   const [formData, setFormData] = useState({
-    class: "",
+    class_id: "",
     class_name: "",
-    batch: "",
+    batch_id: "",
     batch_name: "",
     title: "",
     date: "",
@@ -61,48 +64,40 @@ const EventPage: React.FC = () => {
 
   const API_URL = "http://localhost:4000/api/v1/event";
 
-  // ✅ Fetch Events
+  // ================= FETCH EVENTS =================
   const fetchEvents = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem("teacherToken");
+      const token = localStorage.getItem("codeflam01_token");
       const res = await axios.get(API_URL, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log(res.data)
-      setEvents(res.data);
+      setMyId(res.data.userId)
+      setEvents(res.data.events);
     } catch (err) {
-      console.error(err);
       toast.error("Failed to load events ❌");
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ Fetch Classes
+  // ================= FETCH CLASSES =================
   const getAllClasses = async () => {
-    setFormLoading(true);
     try {
-      const token = localStorage.getItem("teacherToken");
+      setFormLoading(true);
+      const token = localStorage.getItem("codeflam01_token");
       if (!token) {
-        toast.error("No token found. Please login again.");
+        toast.error("Session expired");
         router.push("/login");
         return;
       }
 
-      const response = await axios.get("http://localhost:4000/api/v1/kaksha", {
+      const res = await axios.get("http://localhost:4000/api/v1/kaksha", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setClassList(response.data);
-    } catch (error: any) {
-      if (error.response?.status === 401 || error.response?.status === 403) {
-        toast.error("Session expired. Please log in again.");
-        localStorage.removeItem("adminToken");
-        router.push("/login");
-      } else {
-        toast.error("Failed to load class list ❌");
-      }
-      console.error("Error fetching classes:", error);
+      setClassList(res.data);
+    } catch (err: any) {
+      toast.error("Failed to load classes ❌");
     } finally {
       setFormLoading(false);
     }
@@ -113,320 +108,265 @@ const EventPage: React.FC = () => {
     getAllClasses();
   }, []);
 
-  // ✅ Handle Input Change
+  // ================= HANDLE CHANGE =================
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >
   ) => {
     const { name, value } = e.target;
+  
 
-    if (name === "class") {
+    // CLASS CHANGE
+    if (name === "class_id") {
       const selectedClass = classList.find((cls) => cls._id === value);
-      const classBatches =
-        selectedClass?.class?.batches?.map((batch) => ({
-          batch_id: batch.batch_id ,
-          batch_name: batch.batch_name,
-        })) || [];
-      setBatches(classBatches);
+      console.log(selectedClass)
+      setBatches(
+        selectedClass?.class?.batches?.map((b:any) => ({
+          batch_id: b._id,
+          batch_name: b.batch_name,
+        })) || []
+      );
 
-      setFormData({
-        ...formData,
-        class: value,
+      setFormData((prev) => ({
+        ...prev,
+        class_id: value,
         class_name: selectedClass?.class?.name || "",
-        batch: "",
+        batch_id: "",
         batch_name: "",
-      });
+      }));
       return;
     }
 
-    if (name === "batch") {
+    // BATCH CHANGE
+    if (name === "batch_id") {
       const selectedBatch = batches.find((b) => b.batch_id === value);
-      setFormData({
-        ...formData,
-        batch: value,
+
+      setFormData((prev) => ({
+        ...prev,
+        batch_id: value,
         batch_name: selectedBatch?.batch_name || "",
-      });
+      }));
       return;
     }
 
-    setFormData({ ...formData, [name]: value });
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // ✅ Add or Edit Event
+  // ================= SUBMIT =================
   const handleSubmit = async () => {
-    if (!formData.class || !formData.title || !formData.date || !formData.type) {
-      toast.warn("All fields except description are required!");
+    const { class_id, batch_id, title, date, type } = formData;
+
+    if (!class_id || !batch_id || !title || !date || !type) {
+      toast.warn("All required fields must be filled");
       return;
     }
 
-    const token = localStorage.getItem("teacherToken");
-    setProcessing(true);
-
     try {
+      setProcessing(true);
+      const token = localStorage.getItem("codeflam01_token");
+
       if (editingEvent) {
         await axios.put(`${API_URL}/${editingEvent._id}`, formData, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        toast.success("Event updated successfully ✅");
+        toast.success("Event updated ✅");
       } else {
         await axios.post(API_URL, formData, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        toast.success("Event added successfully ✅");
+        toast.success("Event added ✅");
       }
 
-      setFormData({
-        class: "",
-        class_name: "",
-        batch: "",
-        batch_name: "",
-        title: "",
-        date: "",
-        type: "",
-        description: "",
-      });
-      setShowModal(false);
-      setEditingEvent(null);
+      resetForm();
       fetchEvents();
     } catch (err) {
-      console.error(err);
-      toast.error("Something went wrong!");
+      toast.error("Something went wrong ❌");
     } finally {
       setProcessing(false);
     }
   };
 
-  // ✅ Edit Event
+  // ================= EDIT =================
   const handleEdit = (event: Event) => {
-    setEditingEvent(event);
-
-    // Load batches for selected class
     const selectedClass = classList.find((cls) => cls._id === event.class.id);
-    const classBatches =
-      selectedClass?.class?.batches?.map((batch) => ({
-        batch_id: batch.batch_id || batch._id,
-        batch_name: batch.batch_name,
-      })) || [];
-    setBatches(classBatches);
+    
+    setBatches(
+      selectedClass?.class?.batches?.map((b) => ({
+        batch_id: b.batch_id,
+        batch_name: b.batch_name,
+      })) || []
+    );
 
     setFormData({
-      class: event.class.id,
+      class_id: event.class.id,
       class_name: event.class.class_name,
-      batch: event.batch.id,
+      batch_id: event.batch.id,
       batch_name: event.batch.batch_name,
       title: event.title,
       date: event.date.split("T")[0],
       type: event.type,
       description: event.description,
     });
+
+    setEditingEvent(event);
     setShowModal(true);
   };
 
-  // ✅ Delete Event
+  // ================= DELETE =================
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this event?")) return;
-
-    const token = localStorage.getItem("teacherToken");
-    setProcessing(true);
+    if (!confirm("Delete this event?")) return;
 
     try {
+      setProcessing(true);
+      const token = localStorage.getItem("codeflam01_token");
       await axios.delete(`${API_URL}/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      toast.success("Event deleted successfully ✅");
+      toast.success("Event deleted ✅");
       fetchEvents();
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to delete event ❌");
+    } catch {
+      toast.error("Delete failed ❌");
     } finally {
       setProcessing(false);
     }
   };
 
+  const resetForm = () => {
+    setFormData({
+      class_id: "",
+      class_name: "",
+      batch_id: "",
+      batch_name: "",
+      title: "",
+      date: "",
+      type: "",
+      description: "",
+    });
+    setEditingEvent(null);
+    setShowModal(false);
+  };
+
+  // ================= UI =================
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      {/* Header */}
-      <div className="flex flex-col gap-4 justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Event Management</h1>
-        <button
-          onClick={() => setShowModal(true)}
-          className="flex items-center cursor-pointer gap-2 w-fit bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
-        >
-          <PlusCircle size={18} />
-          Add Event
-        </button>
-      </div>
+      {/* Header */} <div className="flex flex-col gap-4 justify-between mb-6"> 
+        <h1 className="text-2xl font-bold text-gray-800">Event Management</h1> 
+        <button 
+        onClick={() => setShowModal(true)} 
+        className="flex items-center cursor-pointer gap-2 w-fit bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg" >
+         <PlusCircle size={18} /> Add Event
+         </button> </div>
 
-      {/* Loading */}
       {loading ? (
-        <div className="flex justify-center items-center h-40">
-          <Loader2 className="animate-spin text-blue-600" size={32} />
-          <p className="ml-3 text-gray-600">Loading events...</p>
-        </div>
-      ) : events.length === 0 ? (
-        <p className="text-gray-500 text-center mt-10">
-          No events found. Add your first event!
-        </p>
+        <Loader2 className="animate-spin mx-auto" />
       ) : (
         <div className="grid sm:grid-cols-2 gap-4">
           {events.map((event) => (
-            <div
-              key={event._id}
-              className="bg-white shadow-md rounded-xl p-4 flex flex-col justify-between border hover:shadow-lg transition"
-            >
-              <div>
-                <h2 className="text-lg font-semibold text-gray-800">
-                  {event.title}
-                </h2>
-                <p className="text-sm text-gray-600">
-                  📅 {event.date.split("T")[0]}
-                </p>
-                <p className="text-sm text-blue-600 font-medium mt-1">
-                  Class: {event.class.class_name}
-                </p>
-                <p className="text-sm text-purple-600 font-medium">
-                  Batch: {event.batch.batch_name}
-                </p>
-                {event.description && (
-                  <p className="text-sm mt-2 text-gray-700 border-t pt-2">
-                    {event.description}
-                  </p>
-                )}
-              </div>
-              <div className="flex justify-end gap-3 mt-4">
-                <button
+            <div key={event._id} className="border rounded-xl p-4">
+              <h2 className="font-semibold">{event.title}</h2>
+              <p>📅 {event.date.split("T")[0]}</p>
+              <p>Class: {event.class.class_name}</p>
+              <p>Batch: {event.batch.batch_name}</p>
+              {event.added_by === myId && (
+
+              <div className="flex gap-3 mt-3 justify-end">
+                <Pencil
                   onClick={() => handleEdit(event)}
-                  className="text-yellow-600 cursor-pointer hover:text-yellow-700"
-                >
-                  <Pencil size={18} />
-                </button>
-                <button
+                  className="cursor-pointer text-yellow-600"
+                />
+                <Trash2
                   onClick={() => handleDelete(event._id)}
-                  className="text-red-600 cursor-pointer hover:text-red-700"
-                >
-                  <Trash2 size={18} />
-                </button>
+                  className="cursor-pointer text-red-600"
+                />
               </div>
+              )}
             </div>
           ))}
         </div>
       )}
 
-      {/* Modal */}
+      {/* MODAL */}
       {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-          <div className="bg-white rounded-xl shadow-lg w-[90%] sm:w-[400px] p-6">
-            <h2 className="text-xl font-semibold mb-4 text-gray-800">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-xl w-[400px]">
+            <h2 className="text-lg font-semibold mb-4">
               {editingEvent ? "Edit Event" : "Add Event"}
             </h2>
 
-            <div className="flex flex-col gap-3">
-              <select
-                name="class"
-                value={formData.class}
-                onChange={handleChange}
-                className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
-              >
-                <option value="">Select Class</option>
-                {formLoading && <CircularIndeterminate size={50} />}
-                {classList.map((option) => (
-                  <option key={option._id} value={option._id}>
-                    {option.class.name}
-                  </option>
-                ))}
-              </select>
+            <select
+              name="class_id"
+              value={formData.class_id}
+              onChange={handleChange}
+              className="w-full border p-2 mb-3"
+            >
+              <option value="">Select Class</option>
+              {formLoading && <CircularIndeterminate size={15} />}
+              {classList.map((cls) => (
+                <option key={cls._id} value={cls._id}>
+                  {cls.class.name}
+                </option>
+              ))}
+            </select>
 
-              <select
-                name="batch"
-                value={formData.batch}
-                onChange={handleChange}
-                className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
-              >
-                <option value="">Select Batch</option>
-                {batches.map((batch) => (
-                  <option key={batch.batch_id} value={batch.batch_id}>
-                    {batch.batch_name}
-                  </option>
-                ))}
-              </select>
+            <select
+              name="batch_id"
+              value={formData.batch_id}
+              onChange={handleChange}
+              className="w-full border p-2 mb-3"
+            >
+              <option value="">Select Batch</option>
+              {batches.map((b) => (
+                <option key={b.batch_id} value={b.batch_id}>
+                  {b.batch_name} 
+                </option>
+              ))}
+            </select>
 
-              <input
-                type="text"
-                name="title"
-                placeholder="Event title"
-                value={formData.title}
-                onChange={handleChange}
-                className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
-              />
+            <input
+              name="title"
+              placeholder="Title"
+              value={formData.title}
+              onChange={handleChange}
+              className="w-full border p-2 mb-3"
+            />
 
-              <input
-                type="date"
-                name="date"
-                value={formData.date}
-                onChange={handleChange}
-                className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
-              />
+            <input
+              type="date"
+              name="date"
+              value={formData.date}
+              onChange={handleChange}
+              className="w-full border p-2 mb-3"
+            />
 
-              <select
-                name="type"
-                value={formData.type}
-                onChange={handleChange}
-                className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
-              >
-                <option value="">Select Type</option>
-                <option value="Test">Test</option>
-                <option value="Exam">Exam</option>
-                <option value="Holiday">Holiday</option>
-                <option value="Other">Other</option>
-              </select>
+            <select
+              name="type"
+              value={formData.type}
+              onChange={handleChange}
+              className="w-full border p-2 mb-3"
+            >
+              <option value="">Select Type</option>
+              <option value="Test">Test</option>
+              <option value="Exam">Exam</option>
+              <option value="Holiday">Holiday</option>
+            </select>
 
-              <textarea
-                name="description"
-                placeholder="Add description (optional)"
-                value={formData.description}
-                onChange={handleChange}
-                className="border rounded-lg px-3 py-2 h-20 focus:ring-2 focus:ring-blue-400 outline-none resize-none"
-              />
-            </div>
+            <textarea
+              name="description"
+              placeholder="Description"
+              value={formData.description}
+              onChange={handleChange}
+              className="w-full border p-2 mb-3"
+            />
 
-            <div className="flex justify-end gap-3 mt-5">
-              <button
-                onClick={() => {
-                  setShowModal(false);
-                  setEditingEvent(null);
-                  setFormData({
-                    class: "",
-                    class_name: "",
-                    batch: "",
-                    batch_name: "",
-                    title: "",
-                    date: "",
-                    type: "",
-                    description: "",
-                  });
-                }}
-                className="px-4 py-2 border cursor-pointer rounded-lg text-gray-700 hover:bg-gray-100"
-              >
-                Cancel
-              </button>
-
+            <div className="flex justify-end gap-3">
+              <button onClick={resetForm}>Cancel</button>
               <button
                 onClick={handleSubmit}
                 disabled={processing}
-                className={`px-4 py-2 rounded-lg text-white ${
-                  processing
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-blue-600 cursor-pointer hover:bg-blue-700"
-                }`}
+                className="bg-blue-600 text-white px-4 py-2 rounded"
               >
-                {processing ? (
-                  <Loader2 className="animate-spin inline-block" size={16} />
-                ) : editingEvent ? (
-                  "Update"
-                ) : (
-                  "Add"
-                )}
+                {processing ? "Saving..." : "Save"}
               </button>
             </div>
           </div>

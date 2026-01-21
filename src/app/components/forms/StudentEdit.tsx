@@ -49,7 +49,7 @@ export default function EditStudent({
     useEffect(() => {
         const fetchStudent = async () => {
             try {
-                const token = localStorage.getItem("adminToken");
+                const token = localStorage.getItem("codeflam01_token");
                 const response = await axios.get(
                     `http://localhost:4000/api/v1/student/student/${studentId}`,
                     {
@@ -68,6 +68,7 @@ export default function EditStudent({
                 setGender(student.gender || "");
                 setAdmissionDate(student.admissionDate?.split("T")[0] || "");
             } catch (error: any) {
+                console.error("Error fetching student:", error);
                 toast.error("Failed to load student data ❌");
             }
         };
@@ -124,7 +125,7 @@ export default function EditStudent({
         if (!validate()) return;
 
         try {
-            const token = localStorage.getItem("adminToken");
+            const token = localStorage.getItem("codeflam01_token");
             setProcessing(true);
             console.log(batch);
             console.log(kaksha)

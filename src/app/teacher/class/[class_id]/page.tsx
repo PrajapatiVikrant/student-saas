@@ -12,7 +12,7 @@ export default function ClassPage() {
   const [loading, setLoading] = useState(true);
   const token =
     typeof window !== "undefined"
-      ? localStorage.getItem("teacherToken")
+      ? localStorage.getItem("codeflam01_token")
       : null;
   const router = useRouter();
 

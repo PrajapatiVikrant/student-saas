@@ -38,7 +38,7 @@ export default function Students() {
   }, [class_id, batch_id]);
 
   async function getBatchStudents() {
-    const token = localStorage.getItem("adminToken");
+    const token = localStorage.getItem("codeflam01_token");
     if (!token) {
       toast.error("Session expired. Please log in again.");
       router.push("/login");
@@ -63,7 +63,7 @@ export default function Students() {
       console.error("Error fetching students:", error);
       if (error.response?.status === 401 || error.response?.status === 403) {
         toast.error("Session expired. Please log in again.");
-        localStorage.removeItem("adminToken");
+        localStorage.removeItem("codeflam01_token");
         router.push("/login");
       } else {
         toast.error("Failed to fetch students.");

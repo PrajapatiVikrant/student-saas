@@ -34,7 +34,7 @@ export default function CreateClass({ id, class_name, setForm }: ClassCreationPr
     e.preventDefault();
     if (!validate()) return;
 
-    const token = localStorage.getItem("adminToken");
+    const token = localStorage.getItem("codeflam01_token");
     if (!token) {
       toast.error("Please log in first.");
       router.push("/login");
@@ -75,7 +75,7 @@ export default function CreateClass({ id, class_name, setForm }: ClassCreationPr
     e.preventDefault();
     if (!validate()) return;
 
-    const token = localStorage.getItem("adminToken");
+    const token = localStorage.getItem("codeflam01_token");
     if (!token) {
       toast.error("Please log in first.");
       router.push("/login");

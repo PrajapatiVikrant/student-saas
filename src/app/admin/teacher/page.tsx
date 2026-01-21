@@ -64,7 +64,7 @@ export default function TeachersPage() {
   async function getAllClasses() {
     setLoading(true);
     try {
-      const token = localStorage.getItem("adminToken");
+      const token = localStorage.getItem("codeflam01_token");
       if (!token) throw new Error("No token found. Please login again.");
       const response = await axios.get("http://localhost:4000/api/v1/kaksha", {
         headers: { Authorization: `Bearer ${token}` },
@@ -87,7 +87,7 @@ export default function TeachersPage() {
   async function getAllTeacher() {
     setLoading(true);
     try {
-      const token = localStorage.getItem("adminToken");
+      const token = localStorage.getItem("codeflam01_token");
       if (!token) throw new Error("No token found. Please login again.");
       const teachers = await axios.get("http://localhost:4000/api/v1/teacher", {
         headers: { Authorization: `Bearer ${token}` },
@@ -105,7 +105,7 @@ export default function TeachersPage() {
   function sessionExpiryHandler(error: any) {
     if (error.response?.status === 401 || error.response?.status === 403) {
       toast.error("Session expired. Please log in again.");
-      localStorage.removeItem("adminToken");
+      localStorage.removeItem("codeflam01_token");
       router.push("/login");
     }
   }
@@ -130,7 +130,7 @@ export default function TeachersPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-   
+     console.log(subjects)
     const form: Teacher = {
      
       name, email, phone,
@@ -148,7 +148,7 @@ export default function TeachersPage() {
     console.log("updated data : ", form)
     setProcessing(true);
     try {
-      const token = localStorage.getItem("adminToken");
+      const token = localStorage.getItem("codeflam01_token");
       let response;
       if (editMode) {
      
@@ -181,7 +181,7 @@ export default function TeachersPage() {
     setPhone(teacher.phone);
     setClassTeacherClassId(teacher.class_teacher.class_id);
     setClassTeacherBatchId(teacher.class_teacher.batch_id);
-   
+    console.log(teacher)
     setSubjects(teacher.subject);
     setClasses(teacher.classes.map((c:any)=>({id:c.class_id,name:c.class_name})));
     setSalaryType(teacher.salary_type);
@@ -203,7 +203,7 @@ export default function TeachersPage() {
   
      setProcessing(true);
     try {
-      const token = localStorage.getItem("adminToken");
+      const token = localStorage.getItem("codeflam01_token");
       await axios.delete(`http://localhost:4000/api/v1/teacher/${teacherId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });

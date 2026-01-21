@@ -48,7 +48,7 @@ export default function ClassBatch() {
 
   async function getAllClasses() {
     try {
-      const token = localStorage.getItem("adminToken");
+      const token = localStorage.getItem("codeflam01_token");
       if (!token) {
         toast.error("No token found. Please login again.");
         router.push("/login");
@@ -63,7 +63,7 @@ export default function ClassBatch() {
     } catch (error: any) {
       if (error.response?.status === 401 || error.response?.status === 403) {
         toast.error("Session expired. Please log in again.");
-        localStorage.removeItem("adminToken");
+        localStorage.removeItem("codeflam01_token");
         router.push("/login");
       } else {
         toast.error("Failed to load class list ❌");

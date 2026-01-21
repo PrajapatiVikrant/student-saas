@@ -40,7 +40,7 @@ export default function ReportForm() {
   function handleAuthError(error: any) {
     if (error.response?.status === 401 || error.response?.status === 403) {
       toast.error("Session expired. Please login again.");
-      localStorage.removeItem("teacherToken");
+      localStorage.removeItem("codeflam01_token");
       router.push("/teacher/login");
     } else {
       toast.error(error.response?.data?.message || "Something went wrong");
@@ -49,7 +49,7 @@ export default function ReportForm() {
 
   /* ------------------ GET EXAMS ------------------ */
   async function getExamData() {
-    const token = localStorage.getItem("teacherToken");
+    const token = localStorage.getItem("codeflam01_token");
     if (!token) return;
 
     try {
@@ -112,7 +112,7 @@ console.log("Grouped Data:", groupedData);
 
   /* ------------------ TEACHER PROFILE ------------------ */
   async function teacherProfile() {
-    const token = localStorage.getItem("teacherToken");
+    const token = localStorage.getItem("codeflam01_token");
     if (!token) return;
 
     try {
@@ -145,7 +145,7 @@ console.log("Grouped Data:", groupedData);
     if (!validateForm()) return;
 
     setProcessing(true);
-    const token = localStorage.getItem("teacherToken");
+    const token = localStorage.getItem("codeflam01_token");
 
     try {
       const payload = {
@@ -216,7 +216,7 @@ console.log("Grouped Data:", groupedData);
 
   /* ------------------ DELETE ------------------ */
   async function handleDelete(id: string) {
-    const token = localStorage.getItem("teacherToken");
+    const token = localStorage.getItem("codeflam01_token");
     if (!confirm("Delete this report?")) return;
 
     try {

@@ -60,7 +60,7 @@ export default function PaymentInfo({ student }: PaymentInfoProps) {
   // 🧾 Fetch Fee Data
   async function getFeeStatus() {
     try {
-      const token = localStorage.getItem("adminToken");
+      const token = localStorage.getItem("codeflam01_token");
       const { data } = await axios.get<FeeStatusResponse>(
         `http://localhost:4000/api/v1/fee/status/${student.id}`,
         {
@@ -71,7 +71,7 @@ export default function PaymentInfo({ student }: PaymentInfoProps) {
     } catch (error: any) {
       if (error.response?.status === 401 || error.response?.status === 403) {
         toast.error("Session expired. Please log in again.");
-        localStorage.removeItem("adminToken");
+        localStorage.removeItem("codeflam01_token");
         router.push("/login");
       } else {
         toast.error("Failed to fetch fee details ❌");

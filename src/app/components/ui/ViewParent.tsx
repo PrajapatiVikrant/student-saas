@@ -20,7 +20,7 @@ export default function ViewParent({ parent, getParents, setViewParent }: ViewPa
   const [registerForm, setRegisterForm] = useState(false);
   const [confirmationForm, setConfirmationForm] = useState(false);
   const [processing, setProcessing] = useState(false);
-  const token = localStorage.getItem("adminToken") || "";
+  const token = localStorage.getItem("codeflam01_token") || "";
   const router = useRouter();
 
   const onDelete = () => setConfirmationForm(true);
@@ -48,7 +48,7 @@ export default function ViewParent({ parent, getParents, setViewParent }: ViewPa
       console.log(error);
       if (error.response?.status === 401 || error.response?.status === 403) {
         toast.error("Session expired. Please log in again.");
-        localStorage.removeItem("adminToken");
+        localStorage.removeItem("codeflam01_token");
         router.push("/login");
       } else {
         toast.error("Failed to delete parent ❌");

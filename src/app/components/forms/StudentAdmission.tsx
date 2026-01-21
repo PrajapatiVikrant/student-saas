@@ -118,7 +118,7 @@ export default function StudentAdmission({
         admissionDate,
         paymentDate,
       };
-      const token = localStorage.getItem("adminToken");
+      const token = localStorage.getItem("codeflam01_token");
       setProcessing(true);
 
       const response = await axios.post(

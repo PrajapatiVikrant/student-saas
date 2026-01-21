@@ -12,7 +12,7 @@ export default function ParentPage() {
   const [parents, setParents] = useState([]);
   const [parent, setParent] = useState({});
 
-  const token = typeof window !== "undefined" ? localStorage.getItem("adminToken") : null;
+  const token = typeof window !== "undefined" ? localStorage.getItem("codeflam01_token") : null;
 
   useEffect(() => {
     getAllPortalParent();

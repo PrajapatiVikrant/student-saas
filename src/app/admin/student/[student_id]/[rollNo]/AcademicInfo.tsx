@@ -38,7 +38,7 @@ type AcademicProps = {
 export default function AcademicInfo({ student }: AcademicProps) {
   const router = useRouter();
   const token =
-    typeof window !== "undefined" ? localStorage.getItem("adminToken") : null;
+    typeof window !== "undefined" ? localStorage.getItem("codeflam01_token") : null;
 
   const [attendanceData, setAttendanceData] = useState<any[]>([]);
   const [examData, setExamData] = useState<any[]>([]);
@@ -81,14 +81,19 @@ export default function AcademicInfo({ student }: AcademicProps) {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      const fetched =
+    const fetched =
         res.data.data?.map((test: any) => ({
           id: test._id,
           exam: test.test_name,
-          subject: test.subject,
-          score: test.score.obt_marks,
+          subject: {
+            _id: test.subject?.id,
+            name: test.subject?.name,
+          },
+          score: Number(test.score.obt_marks),
           feedback: test.feedback,
+          added_by: test.added_by,
         })) || [];
+        console.log(fetched)
 
       setExamData(fetched);
     } catch (error: any) {
@@ -101,91 +106,44 @@ export default function AcademicInfo({ student }: AcademicProps) {
   function handleAuthError(error: any) {
     if (error.response?.status === 401 || error.response?.status === 403) {
       toast.error("Session expired. Please log in again.");
-      localStorage.removeItem("adminToken");
+      localStorage.removeItem("codeflam01_token");
       router.push("/login");
     } else {
       toast.error("Failed to fetch data.");
     }
   }
 
-  const groupedData = useMemo(() => {
-    const map: Record<string, any[]> = {};
-    examData.forEach((item) => {
-      if (!map[item.subject]) map[item.subject] = [];
-      map[item.subject].push({
-        exam: item.exam,
-        score: Number(item.score),
-      });
-    });
-    return map;
-  }, [examData]);
+ /* 📊 Group data subject-wise (SAFE) */
+  const groupedData = useMemo(() => Object.values(
+  examData.reduce((acc, item) => {
+    const subjectId = item.subject._id;
 
-  const handleAddOrUpdate = async () => {
-    if (!newExam.exam || !newExam.subject || !newExam.score)
-      return toast.error("Please fill all required fields");
-
-    const testData = {
-      student: {
-        student_id: student.id,
-        student_name: student.name,
-      },
-      class_id: student.classId,
-      batch_id: student.batchId,
-      test_name: newExam.exam,
-      subject: newExam.subject,
-      score: { max_marks: 100, obt_marks: Number(newExam.score) },
-      feedback: newExam.feedback || "No feedback",
-    };
-
-    try {
-      if (editId) {
-        await axios.put(
-          `http://localhost:4000/api/v1/test/${editId}`,
-          testData,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        toast.success("Record updated successfully");
-      } else {
-        await axios.post(`http://localhost:4000/api/v1/test`, testData, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        toast.success("Record added successfully");
-      }
-
-      setNewExam({ exam: "", subject: "", score: "", feedback: "" });
-      setEditId("");
-      setShowForm(false);
-      getExamData();
-    } catch {
-      toast.error("Failed to submit record");
+    if (!acc[subjectId]) {
+      acc[subjectId] = {
+        subject: {
+          _id: item.subject._id,
+          name: item.subject.name,
+        },
+        exams: [],
+      };
     }
-  };
 
-  const handleEdit = (id: string) => {
-    const record = examData.find((t) => t.id === id);
-    if (!record) return;
-    setNewExam({
-      exam: record.exam,
-      subject: record.subject,
-      score: String(record.score),
-      feedback: record.feedback,
+    acc[subjectId].exams.push({
+      id: item.id,
+      exam: item.exam,
+      score: item.score,
+      feedback: item.feedback,
+      added_by: item.added_by,
     });
-    setEditId(id);
-    setShowForm(true);
-  };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this record?")) return;
-    try {
-      await axios.delete(`http://localhost:4000/api/v1/test/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      toast.success("Record deleted successfully");
-      getExamData();
-    } catch {
-      toast.error("Failed to delete record");
-    }
-  };
+    return acc;
+  }, {})
+), [examData]);
+
+  
+ 
+
+  
 
   return (
     <div className="space-y-10 p-4 sm:p-8">
@@ -229,181 +187,62 @@ export default function AcademicInfo({ student }: AcademicProps) {
         )}
       </div>
 
-      {/* 📈 Subject-wise Charts */}
-      <div className="space-y-10">
+       {/* Charts */}
+      <div className="mt-6 space-y-10">
         {loadingExam ? (
           <p className="text-center text-gray-500">Loading test data...</p>
         ) : Object.keys(groupedData).length === 0 ? (
-          <p className="text-center text-gray-500">No test data available</p>
+          <p className="text-center text-gray-500">
+            No performance data available
+          </p>
         ) : (
-          Object.keys(groupedData).map((subject) => (
-            <div key={subject}>
-              <h3 className="text-lg font-semibold text-green-600 mb-3">
-                {subject} Performance
-              </h3>
-              <div className="bg-gray-50 p-4 rounded-xl shadow-md w-full overflow-hidden">
-                <div className="w-full h-[250px] sm:h-[350px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={groupedData[subject]}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="exam" />
-                      <YAxis domain={[0, 100]} />
-                      <Tooltip />
-                      <Legend />
-                      <Line
-                        type="monotone"
-                        dataKey="score"
-                        stroke="#16a34a"
-                        strokeWidth={3}
-                        name="Score"
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
+          Object.entries(groupedData).map(
+            ([subjectId, data]: any) => (
+              <div key={subjectId}>
+                <h3 className="text-lg font-semibold text-green-600 mb-3">
+                  {data.subject.name} Performance
+                </h3>
+
+                <div className="bg-gray-50 p-4 rounded-xl shadow-md">
+                  <div className="w-full h-[300px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={data.exams}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="exam" />
+                        <YAxis domain={[0, 100]} />
+                       
+                        <Tooltip />
+                        <Legend />
+                        
+                        <Line
+                          type="monotone"
+                          dataKey="score"
+                          stroke="#16a34a"
+                          strokeWidth={3}
+                          name="Score"
+                        />
+                       
+                         <Line
+                          type="monotone"
+                          dataKey="added_by.name"
+                          stroke="#16a34a"
+                          strokeWidth={3}
+                          name="Added By"
+                        />
+                       
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))
+            )
+          )
         )}
       </div>
 
-      {/* 📄 Test Record Table */}
-      <div>
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-3">
-          <h3 className="text-lg font-semibold text-purple-600 text-center sm:text-left">
-            All Test Records
-          </h3>
-          <button
-            onClick={() => setShowForm(true)}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all text-sm sm:text-base w-full sm:w-auto"
-          >
-            ➕ Add New Record
-          </button>
-        </div>
+  
 
-        {loadingExam ? (
-          <p className="text-center text-gray-500">Loading test records...</p>
-        ) : examData.length === 0 ? (
-          <p className="text-center text-gray-500">No test records available</p>
-        ) : (
-          <div className="overflow-x-auto bg-white rounded-lg shadow-md">
-            <table className="w-full border border-gray-200 text-xs sm:text-sm">
-              <thead className="bg-gray-100 text-gray-700">
-                <tr>
-                  <th className="p-2 border">Exam</th>
-                  <th className="p-2 border">Subject</th>
-                  <th className="p-2 border">Score</th>
-                  <th className="p-2 border w-[300px]">Feedback</th>
-                  <th className="p-2 border">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {examData.map((e) => (
-                  <tr
-                    key={e.id}
-                    className="text-center border-t hover:bg-gray-50 transition-all"
-                  >
-                    <td className="p-2 border break-words">{e.exam}</td>
-                    <td className="p-2 border break-words">{e.subject}</td>
-                    <td className="p-2 border font-semibold text-green-600">
-                      {e.score}/100
-                    </td>
-                    <td className="p-2 border text-left w-[300px]">
-                      <pre>
-
-                      {e.feedback}
-                      </pre>
-                    </td>
-                    <td className="p-2 border">
-                      <div className="flex flex-row justify-center items-center gap-2">
-                        <button
-                          onClick={() => handleEdit(e.id)}
-                          className="p-1  text-gray rounded-lg  cursor-pointer  text-xs  "
-                        >
-                         <FaPencil/>
-                        </button>
-                        <button
-                          onClick={() => handleDelete(e.id)}
-                          className="p-1  text-gray rounded-lg cursor-pointer  text-xs "
-                        >
-                         <FaRegTrashAlt/>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-
-      {/* 🧾 Add/Edit Modal */}
-      {showForm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
-          <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-lg">
-            <h4 className="font-semibold mb-4 text-gray-700 text-lg">
-              {editId ? "Edit Test Record" : "Add Test Record"}
-            </h4>
-
-            <div className="grid gap-3">
-              <input
-                type="text"
-                placeholder="Exam Name"
-                value={newExam.exam}
-                onChange={(e) =>
-                  setNewExam({ ...newExam, exam: e.target.value })
-                }
-                className="border border-gray-300 rounded-lg p-2 w-full focus:ring-2 focus:ring-blue-500 outline-none"
-              />
-              <input
-                type="text"
-                placeholder="Subject"
-                value={newExam.subject}
-                onChange={(e) =>
-                  setNewExam({ ...newExam, subject: e.target.value })
-                }
-                className="border border-gray-300 rounded-lg p-2 w-full focus:ring-2 focus:ring-blue-500 outline-none"
-              />
-              <input
-                type="number"
-                placeholder="Score (0–100)"
-                value={newExam.score}
-                onChange={(e) =>
-                  setNewExam({ ...newExam, score: e.target.value })
-                }
-                className="border border-gray-300 rounded-lg p-2 w-full focus:ring-2 focus:ring-blue-500 outline-none"
-              />
-              <textarea
-                placeholder="Feedback (optional)"
-                value={newExam.feedback}
-                onChange={(e) =>
-                  setNewExam({ ...newExam, feedback: e.target.value })
-                }
-                className="border border-gray-300 rounded-lg p-2 w-full focus:ring-2 focus:ring-blue-500 outline-none"
-              />
-            </div>
-
-            <div className="mt-5 flex flex-col sm:flex-row gap-3 justify-end">
-              <button
-                onClick={handleAddOrUpdate}
-                className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition-all text-sm sm:text-base"
-              >
-                {editId ? "Update Record" : "Add Record"}
-              </button>
-              <button
-                onClick={() => {
-                  setShowForm(false);
-                  setNewExam({ exam: "", subject: "", score: "", feedback: "" });
-                  setEditId("");
-                }}
-                className="bg-gray-500 text-white px-5 py-2 rounded-lg hover:bg-gray-600 transition-all text-sm sm:text-base"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+     
     </div>
   );
 }

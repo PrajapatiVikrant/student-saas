@@ -29,7 +29,7 @@ export default function AttendancePage() {
     }, [student_id]);
 
     async function getAttendance() {
-        const token = localStorage.getItem("teacherToken");
+        const token = localStorage.getItem("codeflam01_token");
         console.log(token)
 
         try {
@@ -51,7 +51,7 @@ export default function AttendancePage() {
     function handleAuthError(error: any) {
         if (error.response?.status === 401 || error.response?.status === 403) {
             toast.error("Session expired. Please log in again.");
-            localStorage.removeItem("teacherToken");
+            localStorage.removeItem("codeflam01_token");
             router.push("/teacher/login");
         } else {
             toast.error("Failed to fetch attendance data.");

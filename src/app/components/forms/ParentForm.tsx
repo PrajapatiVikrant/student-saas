@@ -32,7 +32,7 @@ export default function ParentPortalAccessForm({ parent, setRegisterForm, getPar
 
     const [processing, setProcessing] = useState(false);
 
-    const token = typeof window !== "undefined" ? localStorage.getItem("adminToken") : null;
+    const token = typeof window !== "undefined" ? localStorage.getItem("codeflam01_token") : null;
 
     // --------------------------
     // FETCH CLASSES

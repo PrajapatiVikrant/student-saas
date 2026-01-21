@@ -59,7 +59,7 @@ export default function Attendance() {
   }, []);
 
   async function fetchTeacherProfile() {
-    const token = localStorage.getItem("teacherToken");
+    const token = localStorage.getItem("codeflam01_token");
     if (!token) {
       toast.error("Session expired");
       return router.push("/login");
@@ -88,7 +88,7 @@ export default function Attendance() {
 
   /* -------------------- FETCH STUDENTS -------------------- */
   async function fetchStudents(class_id: string, batch_id: string) {
-    const token = localStorage.getItem("teacherToken");
+    const token = localStorage.getItem("codeflam01_token");
 
     try {
       const res = await axios.get(
@@ -118,7 +118,7 @@ export default function Attendance() {
   }, [students, date]);
 
   async function fetchAttendance() {
-    const token = localStorage.getItem("teacherToken");
+    const token = localStorage.getItem("codeflam01_token");
     if (!token) return router.push("/login");
 
     try {
@@ -183,7 +183,7 @@ export default function Attendance() {
   async function saveAttendance() {
     if (!isEditable) return toast.error("Cannot edit past attendance");
 
-    const token = localStorage.getItem("teacherToken");
+    const token = localStorage.getItem("codeflam01_token");
 
     try {
       setProcessing(true);
@@ -197,7 +197,7 @@ export default function Attendance() {
 
       await axios.post(
         "http://localhost:4000/api/v1/attendance/mark",
-        { classId, batchId, date, attendance: attendanceArray, admin_id: teacher.admin_id },
+        { classId,class_name:classData.class_name, batchId,batch_name:classData.batch_name, date, attendance: attendanceArray, admin_id: teacher.admin_id },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 

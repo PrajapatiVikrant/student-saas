@@ -72,7 +72,7 @@ export default function BatchForm({ setBatchForm, batch,class_id }: BatchFormPro
     e.preventDefault();
     if (!validate()) return;
 
-    const token = localStorage.getItem("adminToken");
+    const token = localStorage.getItem("codeflam01_token");
 
     const data = {
       batch_name: batchName,
@@ -102,7 +102,7 @@ export default function BatchForm({ setBatchForm, batch,class_id }: BatchFormPro
     } catch (error:any) {
        if (error.response?.status === 401 || error.response?.status === 403) {
         toast.error("Session expired. Please log in again.");
-        localStorage.removeItem("adminToken");
+        localStorage.removeItem("codeflam01_token");
         router.push("/login");
       } else {
         toast.error("Failed to create batch ❌");
@@ -120,7 +120,7 @@ export default function BatchForm({ setBatchForm, batch,class_id }: BatchFormPro
     e.preventDefault();
     if (!validate()) return;
 
-    const token = localStorage.getItem("adminToken");
+    const token = localStorage.getItem("codeflam01_token");
 
     const data = {
       batch_name: batchName,
@@ -152,7 +152,7 @@ export default function BatchForm({ setBatchForm, batch,class_id }: BatchFormPro
        
        if (error.response?.status === 401 || error.response?.status === 403) {
         toast.error("Session expired. Please log in again.");
-        localStorage.removeItem("adminToken");
+        localStorage.removeItem("codeflam01_token");
         router.push("/login");
       } else {
         console.log(error)

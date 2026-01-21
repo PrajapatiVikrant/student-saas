@@ -1,16 +1,18 @@
 "use client";
 import CircularIndeterminate from "@/app/components/ui/CircularIndeterminate";
 import axios from "axios";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { MdEmail } from "react-icons/md";
 import { toast } from "react-toastify";
+import {enableNotification} from "@/app/utils/useNotificaiton"
 
 export default function VerifyEmailPage() {
   const [processing, setProcessing] = useState(false);
   const params = useParams();
   const rawEmail = params.email as string;
   const email = decodeURIComponent(rawEmail || "");
+  const router = useRouter();
 
   // Refs for OTP inputs
   const inputRefs = useRef<HTMLInputElement[]>([]);
@@ -68,9 +70,11 @@ export default function VerifyEmailPage() {
     if(response.status === 200){
       console.log(response);
       toast.success(response.data.message || "OTP verified successfully 🎉"); 
-       localStorage.setItem("adminToken", response.data.token); 
+      enableNotification();
 
-      window.location.href = '/admin/dashboard'
+      localStorage.setItem("codeflam01_token", response.data.token); 
+       toast.success("Welcome to EduConnect Admin Portal 🚀");
+     router.push("/admin/dashboard")
      
 
     }

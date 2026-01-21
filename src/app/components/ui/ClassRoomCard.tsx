@@ -33,7 +33,7 @@ export default function ClassRoomCard({
   const onClose = () => setConfirmationForm(false)
   const onConfirm = async() => {
 
-    const token = localStorage.getItem("adminToken");
+    const token = localStorage.getItem("codeflam01_token");
     setProcessing(true);
     try {
       if (!token) {
@@ -52,7 +52,7 @@ export default function ClassRoomCard({
     } catch (error: any) {
       if (error.response?.status === 401 || error.response?.status === 403) {
         toast.error("Session expired. Please log in again.");
-        localStorage.removeItem("adminToken");
+        localStorage.removeItem("codeflam01_token");
         router.push("/login");
       } else {
         toast.error("Failed to delete class ❌");

@@ -57,7 +57,7 @@ export default function Kaksha() {
 
     // ✅ Get class data
     async function getClass() {
-        const token = localStorage.getItem("adminToken");
+        const token = localStorage.getItem("codeflam01_token");
         try {
             const response = await axios.get<ClassResponse>(
                 `http://localhost:4000/api/v1/kaksha/${class_id}`,
@@ -74,7 +74,7 @@ export default function Kaksha() {
         } catch (error: any) {
             if (error.response?.status === 401 || error.response?.status === 403) {
                 toast.error("Session expired. Please log in again.");
-                localStorage.removeItem("adminToken");
+                localStorage.removeItem("codeflam01_token");
                 router.push("/login");
             } else {
                 toast.error("Failed to load class list ❌");
@@ -87,7 +87,7 @@ export default function Kaksha() {
 
     // ✅ Add new subject
     async function addSubject() {
-        const token = localStorage.getItem("adminToken");
+        const token = localStorage.getItem("codeflam01_token");
 
         if (!subject.trim()) {
             toast.info("Please fill the subject input field");
@@ -113,7 +113,7 @@ export default function Kaksha() {
         } catch (error: any) {
             if (error.response?.status === 401 || error.response?.status === 403) {
                 toast.error("Session expired. Please log in again.");
-                localStorage.removeItem("adminToken");
+                localStorage.removeItem("codeflam01_token");
                 router.push("/login");
             } else {
                 toast.error("Failed to add subject ❌");
@@ -125,7 +125,7 @@ export default function Kaksha() {
     }
 
     async function removeSubject(id:String) {
-    const token = localStorage.getItem("adminToken")
+    const token = localStorage.getItem("codeflam01_token")
     try {
       setLoading(true)
       const response = await axios.delete(`http://localhost:4000/api/v1/kaksha/deleteSubject/${class_id}/${id}`,
@@ -138,7 +138,7 @@ export default function Kaksha() {
     } catch (error: any) {
       if (error.response?.status === 401 || error.response?.status === 403) {
         toast.error("Session expired. Please log in again.");
-        localStorage.removeItem("adminToken");
+        localStorage.removeItem("codeflam01_token");
         router.push("/login");
       }
     } finally{

@@ -15,7 +15,7 @@ export default function StudentDetail({id,student,setStudent}:{id:string,student
     },[]);
 
      async function getStudent() {
-        const token = localStorage.getItem("teacherToken");
+        const token = localStorage.getItem("codeflam01_token");
         try {
           const response = await axios.get(
             `http://localhost:4000/api/v1/student/student/${id}`,
@@ -77,18 +77,7 @@ export default function StudentDetail({id,student,setStudent}:{id:string,student
           <p className="font-semibold">Name</p>
           <p>{student.name}</p>
         </div>
-        <div>
-          <p className="font-semibold">Email</p>
-          <p>{student.email}</p>
-        </div>
-        <div>
-          <p className="font-semibold">Phone</p>
-          <p>{student.phone}</p>
-        </div>
-        <div>
-          <p className="font-semibold">Address</p>
-          <p>{student.address}</p>
-        </div>
+       
         <div>
           <p className="font-semibold">Admission Date</p>
           <p>{new Date(student.admissionDate).toDateString()}</p>

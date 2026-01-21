@@ -1,5 +1,6 @@
 "use client";
 import CircularIndeterminate from "@/app/components/ui/CircularIndeterminate";
+import { enableNotification } from "@/app/utils/useNotificaiton";
 import axios from "axios";
 import { useParams } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
@@ -67,9 +68,9 @@ export default function VerifyEmailPage() {
     });
     if(response.status === 200){
       console.log(response);
-      toast.success(response.data.message || "OTP verified successfully 🎉"); 
-       localStorage.setItem("teacherToken", response.data.token); 
-
+       toast.success(response.data.message || "OTP verified successfully 🎉"); 
+       localStorage.setItem("codeflam01_token", response.data.token); 
+       enableNotification();
       window.location.href = '/teacher/dashboard'
      
 

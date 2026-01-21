@@ -31,7 +31,7 @@ export default function StudentDetailsPage() {
   }, []);
 
   async function getStudent() {
-    const token = localStorage.getItem("adminToken");
+    const token = localStorage.getItem("codeflam01_token");
     try {
       const response = await axios.get(
         `http://localhost:4000/api/v1/student/student/${student_id}`,
@@ -63,7 +63,7 @@ export default function StudentDetailsPage() {
       console.error("Error fetching student:", error);
       if (error.response?.status === 401 || error.response?.status === 403) {
         toast.error("Session expired. Please log in again.");
-        localStorage.removeItem("adminToken");
+        localStorage.removeItem("codeflam01_token");
         router.push("/login");
       } else {
         toast.error("Failed to fetch student.");

@@ -41,7 +41,7 @@ export default function FinanceManagement() {
 
   async function getAllstudent() {
     try {
-      const token = localStorage.getItem("adminToken");
+      const token = localStorage.getItem("codeflam01_token");
       const response = await axios
         .get("http://localhost:4000/api/v1/fee/status", {
           headers: { Authorization: `Bearer ${token}` },
@@ -52,7 +52,7 @@ export default function FinanceManagement() {
     } catch (error: any) {
       if (error.response?.status === 401 || error.response?.status === 403) {
         toast.error("Session expired. Please log in again.");
-        localStorage.removeItem("adminToken");
+        localStorage.removeItem("codeflam01_token");
         router.push("/login");
       } else {
         toast.error("Failed to fetch student data ❌");
@@ -115,7 +115,7 @@ export default function FinanceManagement() {
 
     try {
       setProcessing(true);
-      const token = localStorage.getItem("adminToken");
+      const token = localStorage.getItem("codeflam01_token");
       const response = await axios.post(
         `http://localhost:4000/api/v1/fee/record`,
         {
@@ -137,7 +137,7 @@ export default function FinanceManagement() {
     } catch (error: any) {
       if (error.response?.status === 401 || error.response?.status === 403) {
         toast.error("Session expired. Please log in again.");
-        localStorage.removeItem("adminToken");
+        localStorage.removeItem("codeflam01_token");
         router.push("/login");
       } else {
         toast.error("Failed to record payment ❌");

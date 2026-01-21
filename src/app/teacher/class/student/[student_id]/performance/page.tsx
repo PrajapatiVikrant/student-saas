@@ -28,7 +28,7 @@ export default function PerformancePage() {
 
   /* 🔐 Read token */
   useEffect(() => {
-    const storedToken = localStorage.getItem("teacherToken");
+    const storedToken = localStorage.getItem("codeflam01_token");
     if (!storedToken) {
       toast.error("Session expired. Please login again.");
       router.push("/login");
