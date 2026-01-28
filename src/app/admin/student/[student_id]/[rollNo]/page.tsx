@@ -78,7 +78,7 @@ export default function StudentDetailsPage() {
   const onClose = () => setConfirmationForm(false);
 
   const onConfirm = async () => {
-    const token = localStorage.getItem("adminToken");
+    const token = localStorage.getItem("codeflam01_token");
     try {
       const response = await axios.delete(
         `http://localhost:4000/api/v1/student/student/${student_id}`,
@@ -94,9 +94,10 @@ export default function StudentDetailsPage() {
       toast.success(response.data.message);
     } catch (error: any) {
       if (error.response?.status === 401 || error.response?.status === 403) {
+       
         toast.error("Session expired. Please log in again.");
-        localStorage.removeItem("adminToken");
-        router.push("/login");
+        localStorage.removeItem("codeflam01_token");
+        //router.push("/login");
       }
     } finally {
       setProcessing(false);

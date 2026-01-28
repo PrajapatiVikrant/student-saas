@@ -3,8 +3,6 @@
 type PersonalInfoProps = {
   student: {
     name: string;
-    email: string;
-    phone: string;
     address: string;
     admissionDate: string;
     gender:string;
@@ -30,14 +28,6 @@ export default function PersonalInfo({ student }: PersonalInfoProps) {
         <div>
           <p className="font-semibold">Name</p>
           <p>{student.name}</p>
-        </div>
-        <div>
-          <p className="font-semibold">Email</p>
-          <p>{student.email}</p>
-        </div>
-        <div>
-          <p className="font-semibold">Phone</p>
-          <p>{student.phone}</p>
         </div>
         <div>
           <p className="font-semibold">Address</p>
