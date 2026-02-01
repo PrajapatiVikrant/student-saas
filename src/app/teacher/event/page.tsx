@@ -16,7 +16,10 @@ interface ClassItem {
   _id: string;
   class: {
     name: string;
-    batches: Batch[];
+    batches: {
+      _id: string;
+      batch_name: string;
+    }[];
   };
 }
 
@@ -39,7 +42,8 @@ interface Event {
 
 const EventPage: React.FC = () => {
   const router = useRouter();
-  const [myId,setMyId] = useState<string|null>("");
+
+  const [myId, setMyId] = useState<string | null>(null);
   const [events, setEvents] = useState<Event[]>([]);
   const [classList, setClassList] = useState<ClassItem[]>([]);
   const [batches, setBatches] = useState<Batch[]>([]);
@@ -72,9 +76,9 @@ const EventPage: React.FC = () => {
       const res = await axios.get(API_URL, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setMyId(res.data.userId)
+      setMyId(res.data.userId);
       setEvents(res.data.events);
-    } catch (err) {
+    } catch {
       toast.error("Failed to load events ❌");
     } finally {
       setLoading(false);
@@ -96,7 +100,7 @@ const EventPage: React.FC = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       setClassList(res.data);
-    } catch (err: any) {
+    } catch {
       toast.error("Failed to load classes ❌");
     } finally {
       setFormLoading(false);
@@ -115,33 +119,30 @@ const EventPage: React.FC = () => {
     >
   ) => {
     const { name, value } = e.target;
-  
 
-    // CLASS CHANGE
     if (name === "class_id") {
-      const selectedClass = classList.find((cls) => cls._id === value);
-      console.log(selectedClass)
-      setBatches(
-        selectedClass?.class?.batches?.map((b:any) => ({
+      const selectedClass = classList.find((c) => c._id === value);
+
+      const mappedBatches =
+        selectedClass?.class.batches.map((b) => ({
           batch_id: b._id,
           batch_name: b.batch_name,
-        })) || []
-      );
+        })) || [];
+
+      setBatches(mappedBatches);
 
       setFormData((prev) => ({
         ...prev,
         class_id: value,
-        class_name: selectedClass?.class?.name || "",
+        class_name: selectedClass?.class.name || "",
         batch_id: "",
         batch_name: "",
       }));
       return;
     }
 
-    // BATCH CHANGE
     if (name === "batch_id") {
       const selectedBatch = batches.find((b) => b.batch_id === value);
-
       setFormData((prev) => ({
         ...prev,
         batch_id: value,
@@ -180,28 +181,29 @@ const EventPage: React.FC = () => {
 
       resetForm();
       fetchEvents();
-    } catch (err) {
+    } catch {
       toast.error("Something went wrong ❌");
     } finally {
       setProcessing(false);
     }
   };
 
-  // ================= EDIT =================
+  // ================= EDIT (🔥 FIXED) =================
   const handleEdit = (event: Event) => {
-    const selectedClass = classList.find((cls) => cls._id === event.class.id);
-    
-    setBatches(
-      selectedClass?.class?.batches?.map((b) => ({
-        batch_id: b.batch_id,
+    const selectedClass = classList.find((c) => c._id === event.class.id);
+
+    const mappedBatches =
+      selectedClass?.class.batches.map((b) => ({
+        batch_id: b._id,
         batch_name: b.batch_name,
-      })) || []
-    );
+      })) || [];
+
+    setBatches(mappedBatches);
 
     setFormData({
       class_id: event.class.id,
       class_name: event.class.class_name,
-      batch_id: event.batch.id,
+      batch_id: event.batch.id, // ✅ NOW MATCHES
       batch_name: event.batch.batch_name,
       title: event.title,
       date: event.date.split("T")[0],
@@ -243,6 +245,7 @@ const EventPage: React.FC = () => {
       type: "",
       description: "",
     });
+    setBatches([]);
     setEditingEvent(null);
     setShowModal(false);
   };
@@ -250,13 +253,15 @@ const EventPage: React.FC = () => {
   // ================= UI =================
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      {/* Header */} <div className="flex flex-col gap-4 justify-between mb-6"> 
-        <h1 className="text-2xl font-bold text-gray-800">Event Management</h1> 
-        <button 
-        onClick={() => setShowModal(true)} 
-        className="flex items-center cursor-pointer gap-2 w-fit bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg" >
-         <PlusCircle size={18} /> Add Event
-         </button> </div>
+      <div className="flex flex-col gap-4 mb-6">
+        <h1 className="text-2xl font-bold">Event Management</h1>
+        <button
+          onClick={() => setShowModal(true)}
+          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg w-fit"
+        >
+          <PlusCircle size={18} /> Add Event
+        </button>
+      </div>
 
       {loading ? (
         <Loader2 className="animate-spin mx-auto" />
@@ -268,18 +273,18 @@ const EventPage: React.FC = () => {
               <p>📅 {event.date.split("T")[0]}</p>
               <p>Class: {event.class.class_name}</p>
               <p>Batch: {event.batch.batch_name}</p>
-              {event.added_by === myId && (
 
-              <div className="flex gap-3 mt-3 justify-end">
-                <Pencil
-                  onClick={() => handleEdit(event)}
-                  className="cursor-pointer text-yellow-600"
-                />
-                <Trash2
-                  onClick={() => handleDelete(event._id)}
-                  className="cursor-pointer text-red-600"
-                />
-              </div>
+              {event.added_by === myId && (
+                <div className="flex gap-3 mt-3 justify-end">
+                  <Pencil
+                    onClick={() => handleEdit(event)}
+                    className="cursor-pointer text-yellow-600"
+                  />
+                  <Trash2
+                    onClick={() => handleDelete(event._id)}
+                    className="cursor-pointer text-red-600"
+                  />
+                </div>
               )}
             </div>
           ))}
@@ -318,7 +323,7 @@ const EventPage: React.FC = () => {
               <option value="">Select Batch</option>
               {batches.map((b) => (
                 <option key={b.batch_id} value={b.batch_id}>
-                  {b.batch_name} 
+                  {b.batch_name}
                 </option>
               ))}
             </select>

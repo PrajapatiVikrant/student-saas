@@ -14,7 +14,7 @@ export const enableNotification = async () => {
       vapidKey: "BOvn9PI5E7TjXhGcqD6weOmti9J3nLHRb8Kzjbzs9-13y9lSj5F35vhV2e64EDKUf_q_fJ15lH_pJ2kYPMboU6Y"
     });
 
-  const response =  await axios.post("http://localhost:4000/api/v1/notification/save-token", {
+  const response =  await axios.post("https://student-backend-saas.vercel.app/api/v1/notification/save-token", {
       fcmToken: fcmtoken,
       device: "WEB"
     },
@@ -24,6 +24,7 @@ export const enableNotification = async () => {
     alert("You have denied notification permission");
   }
   } catch (error) {
+    console.log(error);
      toast.error("failed to notification")
   }
  

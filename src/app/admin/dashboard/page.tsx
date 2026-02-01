@@ -146,16 +146,10 @@ export default function Dashboard() {
         },
         {
           icon: "📅",
-          title: "Upcoming Exams",
+          title: "Scheduled Events",
           desc: "This month",
           value: data.totalEvent,
-        },
-        {
-          icon: "🔔",
-          title: "Reminders",
-          desc: "Pending",
-          value: "3",
-        },
+        }
       ]);
 
      
