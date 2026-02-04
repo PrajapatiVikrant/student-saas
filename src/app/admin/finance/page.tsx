@@ -161,7 +161,7 @@ export default function FinanceManagement() {
 
 
   return (
-    <div className="p-4 sm:p-6">
+    <div className="p-4 sm:p-6 bg-gradient-to-br from-slate-50 to-slate-100 ">
       {/* Header Summary */}
       <h1 className="text-2xl font-bold mb-6 text-gray-800 text-center sm:text-left">
         Finance Management

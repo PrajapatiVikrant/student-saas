@@ -10,11 +10,12 @@ import CircularIndeterminate from "../ui/CircularIndeterminate";
 interface Props {
     parent: any;
     setRegisterForm: (value: boolean) => void;
+    setViewParent: (value: boolean) => void;
     getParents: () => void;
 
 }
 
-export default function ParentPortalAccessForm({ parent, setRegisterForm, getParents }: Props) {
+export default function ParentPortalAccessForm({ parent, setRegisterForm, setViewParent, getParents }: Props) {
     const [name, setName] = useState(parent ? parent.name : "");
     const [email, setEmail] = useState(parent ? parent.email : "");
     const [phone, setPhone] = useState(parent ? parent.phone : "");
@@ -194,6 +195,7 @@ export default function ParentPortalAccessForm({ parent, setRegisterForm, getPar
             toast.success("Updated successfully");
             setRegisterForm(false);
             getParents();
+            setViewParent(false);
         } catch (err: any) {
             console.log(err)
             toast.error(err.response?.data?.message || "Failed to update");

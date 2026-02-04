@@ -45,13 +45,7 @@ export default function AdminDashboard() {
           <div className="hidden md:block w-72 flex-shrink-0 border-r border-gray-200 bg-white">
             <div className="flex h-full flex-col justify-between p-4">
               <div className="flex flex-col gap-4">
-                {/* Logo */}
-                <div className="flex flex-col justify-center items-center gap-2 px-3 py-2">
-                  <FaUserGraduate className="text-3xl text-blue-600" />
-                  <h1 className="text-gray-800 text-lg font-bold">
-                    Student Management
-                  </h1>
-                </div>
+               
 
                 {/* Navigation */}
                 <div className="flex flex-col gap-1 mt-4">

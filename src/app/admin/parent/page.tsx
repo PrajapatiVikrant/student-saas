@@ -105,6 +105,7 @@ export default function ParentPage() {
       {registerForm && (
         <ParentPortalAccessForm
           parent={null}
+          setViewParent={setViewParent}
           setRegisterForm={setRegisterForm}
           getParents={getAllPortalParent}
          

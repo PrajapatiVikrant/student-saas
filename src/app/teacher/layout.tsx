@@ -7,9 +7,9 @@ export default function TeacherLayout({ children }: Readonly<{
 
     return (
         <>
-            <header>
+            {/* <header>
                 <Navbar />
-            </header>
+            </header> */}
             <section className="flex">
             <aside >
                <TeacherDashboard/>
@@ -17,8 +17,7 @@ export default function TeacherLayout({ children }: Readonly<{
             <section className="bg-white h-[90vh] overflow-auto w-full">
 
             {children}
-            <br />
-           <br/>
+          
 
             </section>
             </section>

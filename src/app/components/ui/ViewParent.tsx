@@ -149,6 +149,7 @@ export default function ViewParent({ parent, getParents, setViewParent }: ViewPa
       {registerForm && (
         <ParentPortalAccessForm
           parent={parent}
+          setViewParent={setViewParent}
           setRegisterForm={setRegisterForm}
           getParents={getParents}
 

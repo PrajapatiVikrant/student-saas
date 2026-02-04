@@ -1,5 +1,6 @@
 "use client";
-import { JSX, useEffect, useState } from "react";
+
+import { JSX, useEffect, useMemo, useState } from "react";
 import { PiStudentBold } from "react-icons/pi";
 import { FaPeopleGroup, FaLayerGroup } from "react-icons/fa6";
 import { MdOutlinePayments } from "react-icons/md";
@@ -9,131 +10,177 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import Variants from "@/app/components/ui/Variants";
 import Quickstatus from "@/app/components/ui/QuickStatus";
+import { CalendarDays } from "lucide-react";
 
-// ✅ Correct primitive types
+// ================= TYPES =================
 type DashboardCard = {
   title: string;
   data: string;
   icon: JSX.Element;
+  bg: string;
 };
 
 type QuickStatus = {
-  icon: string; // ✅ lowercase string
+  icon: string;
   title: string;
   desc: string;
   value: string;
 };
 
 type VariantLayout = {
-  variant: "rectangular" | "text" | "circular"; // ✅ matches MUI Skeleton variants
+  variant: "rectangular" | "text" | "circular";
   width: number;
   height: number;
 };
 
-// ✅ Skeleton layouts
+type EventType = {
+  _id: string;
+  title: string;
+  date: string;
+  description: string;
+  added_by: string;
+  class: {
+    id: string;
+    class_name: string;
+  };
+  batch: {
+    id: string;
+    batch_name: string;
+  };
+};
+
+// ================= SKELETON =================
 const dashboardSkeleton: VariantLayout[] = [
-  {
-    variant: "rectangular",
-    width: 210,
-    height: 60,
-  },
+  { variant: "rectangular", width: 300, height: 90 },
 ];
 
 const quickStsSkeleton: VariantLayout[] = [
-  {
-    variant: "rectangular",
-    width: 1000,
-    height: 100,
-  },
+  { variant: "rectangular", width: 1000, height: 100 },
 ];
 
+const eventSkeleton: VariantLayout[] = [
+  { variant: "rectangular", width: 1000, height: 140 },
+];
+
+// ================= UTILS =================
+const formatDate = (iso: string) => {
+  const date = new Date(iso);
+  return date.toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+};
+
+const isSameDay = (iso: string) => {
+  const d = new Date(iso);
+  const today = new Date();
+  return (
+    d.getDate() === today.getDate() &&
+    d.getMonth() === today.getMonth() &&
+    d.getFullYear() === today.getFullYear()
+  );
+};
+
 export default function Dashboard() {
+  const router = useRouter();
+
   const [dashboardCards, setDashboardCards] = useState<DashboardCard[]>([
     {
-          title: "Total Students",
-          data: "0",
-          icon: <PiStudentBold className="text-2xl text-blue-600" />,
-        },
-        {
-          title: "Total Teachers",
-          data: "0",
-          icon: <FaPeopleGroup className="text-2xl text-green-600" />,
-        },
-        {
-          title: "Total Classes",
-          data: "0",
-          icon: <FaLayerGroup className="text-2xl text-purple-600" />,
-        },
-        {
-          title: "Fee Collected",
-          data: `₹0`,
-          icon: <MdOutlinePayments className="text-2xl text-emerald-600" />,
-        },
-        {
-          title: "Pending Dues",
-          data: `₹0`,
-          icon: <GiTimeTrap className="text-2xl text-red-600" />,
-        },
+      title: "Total Students",
+      data: "0",
+      icon: <PiStudentBold className="text-2xl text-blue-600" />,
+      bg: "from-blue-50 to-blue-100",
+    },
+    {
+      title: "Total Teachers",
+      data: "0",
+      icon: <FaPeopleGroup className="text-2xl text-green-600" />,
+      bg: "from-green-50 to-green-100",
+    },
+    {
+      title: "Total Classes",
+      data: "0",
+      icon: <FaLayerGroup className="text-2xl text-purple-600" />,
+      bg: "from-purple-50 to-purple-100",
+    },
+    {
+      title: "Fee Collected",
+      data: `₹0`,
+      icon: <MdOutlinePayments className="text-2xl text-emerald-600" />,
+      bg: "from-emerald-50 to-emerald-100",
+    },
+    {
+      title: "Pending Dues",
+      data: `₹0`,
+      icon: <GiTimeTrap className="text-2xl text-red-600" />,
+      bg: "from-red-50 to-red-100",
+    },
   ]);
+
   const [quickSts, setQuickSts] = useState<QuickStatus[]>([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
+
+  const [events, setEvents] = useState<EventType[]>([]);
+  const [myId, setMyId] = useState<string>("");
 
   useEffect(() => {
     getDashboardData();
+    getEvents();
   }, []);
 
+  // ================= FETCH DASHBOARD =================
   async function getDashboardData() {
-    if(!localStorage.getItem("codeflam01_token")){
+    if (!localStorage.getItem("codeflam01_token")) {
       toast.error("Please login to access the admin dashboard.");
       router.push("/login");
       return;
     }
+
     setLoading(true);
+
     try {
       const token = localStorage.getItem("codeflam01_token");
-      if (!token) {
-        toast.error("No token found. Please login again.");
-        router.push("/login");
-        return;
-      }
 
       const response = await axios.get(
         "http://localhost:4000/api/v1/admin/dashboard/stats",
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
       const data = response.data;
-
+      console.log("Dashboard Data:", data);
       setDashboardCards([
         {
           title: "Total Students",
           data: data.totalStudents?.toString() || "0",
           icon: <PiStudentBold className="text-2xl text-blue-600" />,
+          bg: "from-blue-50 to-blue-100",
         },
         {
           title: "Total Teachers",
           data: data.totalTeachers?.toString() || "0",
           icon: <FaPeopleGroup className="text-2xl text-green-600" />,
+          bg: "from-green-50 to-green-100",
         },
         {
           title: "Total Classes",
           data: data.totalClasses?.toString() || "0",
           icon: <FaLayerGroup className="text-2xl text-purple-600" />,
+          bg: "from-purple-50 to-purple-100",
         },
         {
           title: "Fee Collected",
           data: `₹${data.totalFeeCollected || 0}`,
           icon: <MdOutlinePayments className="text-2xl text-emerald-600" />,
+          bg: "from-emerald-50 to-emerald-100",
         },
         {
           title: "Pending Dues",
           data: `₹${data.totalPendingDues || 0}`,
           icon: <GiTimeTrap className="text-2xl text-red-600" />,
+          bg: "from-red-50 to-red-100",
         },
       ]);
 
@@ -142,17 +189,15 @@ export default function Dashboard() {
           icon: "📊",
           title: "Attendance",
           desc: "Today",
-          value: data.overallAttendancePercentage,
+          value: data.overallAttendancePercentage || "0%",
         },
         {
           icon: "📅",
           title: "Scheduled Events",
           desc: "This month",
-          value: data.totalEvent,
-        }
+          value: data.totalEvent?.toString() || "0",
+        },
       ]);
-
-     
     } catch (error: any) {
       if (error.response?.status === 401 || error.response?.status === 403) {
         toast.error("Session expired. Please log in again.");
@@ -167,33 +212,69 @@ export default function Dashboard() {
     }
   }
 
+  // ================= FETCH EVENTS =================
+  async function getEvents() {
+    try {
+      const token = localStorage.getItem("codeflam01_token");
+      if (!token) return;
+
+      const res = await axios.get("http://localhost:4000/api/v1/event", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setMyId(res.data.userId);
+      setEvents(res.data.events || []);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  // ================= TODAY & UPCOMING =================
+  const todayEvents = useMemo(() => {
+    return events
+      .filter((e) => e.added_by === myId)
+      .filter((e) => isSameDay(e.date));
+  }, [events, myId]);
+
+  const upcomingEvents = useMemo(() => {
+    const today = new Date();
+    return events
+      .filter((e) => new Date(e.date) > today)
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      .slice(0, 6);
+  }, [events]);
+
   return (
-    <>
-      <header>
-        <h1 className="font-bold text-3xl m-5">Dashboard</h1>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
+      <header className="max-w-6xl mx-auto mb-8">
+        <h1 className="font-bold text-3xl text-slate-800">Dashboard</h1>
+        <p className="text-sm text-slate-500 mt-1">
+          Overview of students, teachers, fees and events.
+        </p>
       </header>
 
-      <main className="p-4">
+      <main className="max-w-6xl mx-auto">
         {/* Dashboard Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {dashboardCards.map((card, index) => (
             <div key={index}>
               {loading ? (
-                <div className="flex justify-center items-center">
-                  <Variants layout={dashboardSkeleton} />
-                </div>
+                <Variants layout={dashboardSkeleton} />
               ) : (
-                <div className="flex items-center gap-4 rounded-xl bg-blue-50 p-4 shadow-md border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700">
-                    {card.icon}
-                  </div>
+                <div
+                  className={`flex items-center justify-between gap-4 rounded-2xl bg-gradient-to-r ${card.bg} p-5 shadow-md border border-slate-200 hover:shadow-lg transition`}
+                >
                   <div>
-                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    <p className="text-sm font-medium text-slate-600">
                       {card.title}
                     </p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                    <p className="text-3xl font-bold text-slate-900 mt-1">
                       {card.data}
                     </p>
+                  </div>
+
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white shadow-sm border">
+                    {card.icon}
                   </div>
                 </div>
               )}
@@ -202,16 +283,15 @@ export default function Dashboard() {
         </div>
 
         {/* Quick Stats */}
-        <h2 className="mt-8 mb-4 text-lg font-bold text-gray-900 dark:text-white">
+        <h2 className="mt-10 mb-4 text-xl font-bold text-slate-800">
           Quick Stats
         </h2>
 
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {loading ? (
             <>
-            <Variants layout={quickStsSkeleton} />
-            <Variants layout={quickStsSkeleton} />
-            <Variants layout={quickStsSkeleton} />
+              <Variants layout={quickStsSkeleton} />
+              <Variants layout={quickStsSkeleton} />
             </>
           ) : (
             quickSts.map((stat, i) => (
@@ -225,7 +305,106 @@ export default function Dashboard() {
             ))
           )}
         </div>
+
+        {/* EVENTS SECTION */}
+        <div className="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* TODAY EVENTS */}
+          <div className="bg-white border border-slate-200 rounded-2xl shadow p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <CalendarDays className="text-blue-600" size={20} />
+              <h2 className="text-lg font-bold text-slate-800">
+                Today Events (Added By You)
+              </h2>
+            </div>
+
+            {loading ? (
+              <Variants layout={eventSkeleton} />
+            ) : todayEvents.length === 0 ? (
+              <p className="text-slate-500 text-sm">
+                No events added by you for today.
+              </p>
+            ) : (
+              <div className="space-y-4">
+                {todayEvents.map((event) => (
+                  <div
+                    key={event._id}
+                    className="border border-slate-200 rounded-xl p-4 bg-slate-50"
+                  >
+                    <h3 className="font-bold text-slate-800">{event.title}</h3>
+
+                    <p className="text-xs text-slate-500 mt-1">
+                      📅 {formatDate(event.date)}
+                    </p>
+
+                    <p className="text-sm text-slate-700 mt-2">
+                      <span className="font-semibold">Class:</span>{" "}
+                      {event.class.class_name} |{" "}
+                      <span className="font-semibold">Batch:</span>{" "}
+                      {event.batch.batch_name}
+                    </p>
+
+                    {event.description && (
+                      <p className="text-sm text-slate-600 mt-2">
+                        {event.description}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* UPCOMING EVENTS */}
+          <div className="bg-white border border-slate-200 rounded-2xl shadow p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <CalendarDays className="text-emerald-600" size={20} />
+              <h2 className="text-lg font-bold text-slate-800">
+                Upcoming Events
+              </h2>
+            </div>
+
+            {loading ? (
+              <Variants layout={eventSkeleton} />
+            ) : upcomingEvents.length === 0 ? (
+              <p className="text-slate-500 text-sm">
+                No upcoming events available.
+              </p>
+            ) : (
+              <div className="space-y-4">
+                {upcomingEvents.map((event) => (
+                  <div
+                    key={event._id}
+                    className="border border-slate-200 rounded-xl p-4 hover:bg-slate-50 transition"
+                  >
+                    <div className="flex justify-between items-start gap-2">
+                      <h3 className="font-bold text-slate-800">
+                        {event.title}
+                      </h3>
+
+                      <span className="text-xs px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 font-semibold">
+                        {formatDate(event.date)}
+                      </span>
+                    </div>
+
+                    <p className="text-sm text-slate-700 mt-2">
+                      <span className="font-semibold">Class:</span>{" "}
+                      {event.class.class_name} |{" "}
+                      <span className="font-semibold">Batch:</span>{" "}
+                      {event.batch.batch_name}
+                    </p>
+
+                    {event.description && (
+                      <p className="text-sm text-slate-600 mt-2">
+                        {event.description}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </main>
-    </>
+    </div>
   );
 }
