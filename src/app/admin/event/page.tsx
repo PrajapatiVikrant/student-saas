@@ -2,9 +2,10 @@
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Pencil, Trash2, PlusCircle, Loader2 } from "lucide-react";
+import { Pencil, Trash2, PlusCircle, Loader2, Plus, School } from "lucide-react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { Button } from "@/app/components/ui/attendanceUi/Button";
 
 interface Batch {
   batch_id: string;
@@ -32,7 +33,7 @@ interface Event {
   title: string;
   date: string;
   description: string;
-  added_by: string;
+  added_by: any;
 }
 
 const EventPage: React.FC = () => {
@@ -70,7 +71,7 @@ const EventPage: React.FC = () => {
       const res = await axios.get(API_URL, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
+      console.log("Events:", res.data);
       setMyId(res.data.userId);
       setEvents(res.data.events);
     } catch (err) {
@@ -253,26 +254,40 @@ const EventPage: React.FC = () => {
 
   // ================= UI =================
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 ">
+      {/* HEADER */}
+        
+              <div className="bg-white border-b mb-2.5 border-slate-200 sticky top-0 z-10">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                      <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                        <School className="w-6 h-6 text-indigo-600" />
+                        Event Management
+                      </h1>
+                      <p className="text-slate-500 text-sm mt-1">
+                        Manage your classes, subjects, and student batches efficiently.
+                      </p>
+                    </div>
+        
+                  
+        
+                      <Button
+                        onClick={() => setShowModal(true)}
+                        className="bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm"
+                      >
+                        <PlusCircle size={18} className="mr-2" /> Add Event
+                      </Button>
+                    </div>
+                  </div>
+                  </div>
       <div className="max-w-5xl mx-auto">
-        {/* HEADER */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-800">
-              Event Management
-            </h1>
-            <p className="text-sm text-slate-500 mt-1">
-              Add, edit and manage school events easily.
-            </p>
-          </div>
+        
+       
 
-          <button
-            onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 transition text-white px-5 py-2.5 rounded-xl shadow-md w-fit"
-          >
-            <PlusCircle size={18} /> Add Event
-          </button>
-        </div>
+
+
+                
 
         {/* LOADING */}
         {loading ? (
@@ -288,7 +303,7 @@ const EventPage: React.FC = () => {
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {events.map((event) => (
+            {events.map((event:any) => (
               <div
                 key={event._id}
                 className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-lg transition"
@@ -317,6 +332,10 @@ const EventPage: React.FC = () => {
                     <span className="font-semibold text-slate-600">Batch:</span>{" "}
                     {event.batch.batch_name}
                   </p>
+                  <p>
+                    <span className="font-semibold text-slate-600">Added by:</span>{" "}
+                    {event.added_by._id === myId ? "You" : event.added_by.name}
+                  </p>
                 </div>
 
                 {event.description && (
@@ -325,7 +344,7 @@ const EventPage: React.FC = () => {
                   </div>
                 )}
 
-                {event.added_by === myId && (
+                {event.added_by._id === myId && (
                   <div className="flex gap-3 mt-5 justify-end">
                     <button
                       onClick={() => handleEdit(event)}

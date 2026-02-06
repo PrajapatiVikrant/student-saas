@@ -5,6 +5,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import CircularIndeterminate from "@/app/components/ui/CircularIndeterminate";
+import { School } from "lucide-react";
 
 interface Student {
   _id: string;
@@ -161,14 +162,28 @@ export default function FinanceManagement() {
 
 
   return (
-    <div className="p-4 sm:p-6 bg-gradient-to-br from-slate-50 to-slate-100 ">
-      {/* Header Summary */}
-      <h1 className="text-2xl font-bold mb-6 text-gray-800 text-center sm:text-left">
-        Finance Management
-      </h1>
+    <div className=" bg-gradient-to-br from-slate-50 to-slate-100 ">
+      {/* Header */}
+      <div className="bg-white border-b border-slate-200 sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                <School className="w-6 h-6 text-indigo-600" />
+                Finance Management
+              </h1>
+              <p className="text-slate-500 text-sm mt-1">
+                Manage student fees, payments, and financial records efficiently.
+              </p>
+            </div>
 
+
+          </div>
+        </div>
+      </div>
+      <br />
       {/* Fee Summary */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+      <div className="grid px-4 sm:px-6 grid-cols-1  sm:grid-cols-3 gap-4 mb-6">
         <div className="p-4 bg-blue-100 rounded-xl text-center">
           <p className="text-gray-600 text-sm">Total Fee</p>
           <p className="text-xl font-bold text-blue-700">₹{totalFee}</p>
@@ -184,7 +199,7 @@ export default function FinanceManagement() {
       </div>
 
       {/* Status Tabs */}
-      <div className="flex justify-center sm:justify-start gap-3 mb-6 flex-wrap">
+      <div className="flex px-4 sm:px-6 justify-center sm:justify-start gap-3 mb-6 flex-wrap">
         {["all", "paid", "pending"].map((status) => (
           <button
             key={status}
@@ -200,7 +215,7 @@ export default function FinanceManagement() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+      <div className="flex px-4 sm:px-6  flex-wrap items-center justify-between gap-3 mb-4">
         <div className="flex flex-wrap gap-2 w-full sm:w-auto">
           <input
             type="text"
@@ -239,7 +254,7 @@ export default function FinanceManagement() {
       </div>
 
       {/* Student Table */}
-      <div className="overflow-x-auto w-full">
+      <div className="overflow-x-auto px-4 sm:px-6 w-full">
         <table className="min-w-[800px] w-full border border-gray-300 text-sm table-auto whitespace-nowrap">
           <thead className="bg-gray-100">
             <tr>
@@ -262,7 +277,7 @@ export default function FinanceManagement() {
                   student.payment_status.total_amount;
 
                 return (
-                  <tr key={student._id}>
+                  <tr className="bg-white" key={student._id}>
                     <td className="border px-3 py-2 text-center">{index + 1}</td>
                     <td className="border px-3 py-2 truncate max-w-[150px]">{student.name}</td>
                     <td className="border px-3 py-2">{student.gender}</td>
@@ -308,7 +323,7 @@ export default function FinanceManagement() {
 
       {/* Record Payment Form */}
       {selectedStudent && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed p-4 sm:p-6 inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-11/12 sm:w-96 shadow-lg">
             <h2 className="text-lg font-semibold mb-4 text-center">
               Record Payment for{" "}

@@ -83,7 +83,7 @@ export default function Students() {
   }
 
   return (
-    <main className="flex-1 px-4 py-8 sm:px-6 lg:px-10">
+    <main className="flex-1 px-4 py-8 sm:px-6 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 lg:px-10">
       <div className="mx-auto max-w-5xl">
         {/* Header */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">

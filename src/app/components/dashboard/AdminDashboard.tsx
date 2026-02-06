@@ -5,17 +5,17 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   MdOutlineDashboard,
-  MdOutlineGroup,
   MdOutlinePayments,
-  MdBarChart,
   MdMoreHoriz,
 } from "react-icons/md";
 import { IoSettingsOutline } from "react-icons/io5";
-import { FaUserGraduate } from "react-icons/fa";
 import { SiGoogleclassroom } from "react-icons/si";
 import { SlCalender } from "react-icons/sl";
 import { MdFamilyRestroom } from "react-icons/md";
 import { GiTeacher } from "react-icons/gi";
+import { FiLogOut } from "react-icons/fi";
+import { FaUserCircle } from "react-icons/fa";
+import Image from "next/image";
 
 export default function AdminDashboard() {
   const pathname = usePathname();
@@ -25,67 +25,102 @@ export default function AdminDashboard() {
     { name: "Dashboard", icon: <MdOutlineDashboard />, path: "/admin/dashboard" },
     { name: "Fee & Finance", icon: <MdOutlinePayments />, path: "/admin/finance" },
     { name: "Class & Batches", icon: <SiGoogleclassroom />, path: "/admin/class_batch" },
-    { name: "Events", icon: <SlCalender/>, path: "/admin/event"},
+    { name: "Events", icon: <SlCalender />, path: "/admin/event" },
     { name: "Teacher", icon: <GiTeacher />, path: "/admin/teacher" },
     { name: "Parent Portal", icon: <MdFamilyRestroom />, path: "/admin/parent" },
   ];
+
+  function handleSignout() {
+    // Sign out logic here
+    localStorage.removeItem("codeflam01_token");
+    window.location.href = "/login";
+  }
+
 
   // Main 4 for mobile navbar
   const mainNavItems = navItems.slice(0, 4);
   const moreNavItems = navItems.slice(4);
 
   return (
-    <div
-      className="relative flex h-[90vh] w-full flex-col overflow-x-hidden"
-      style={{ fontFamily: "Manrope, Noto Sans, sans-serif" }}
-    >
-      <div className="layout-container flex grow flex-col">
-        <div className="flex flex-1">
-          {/* SIDEBAR for Desktop */}
-          <div className="hidden md:block w-72 flex-shrink-0 border-r border-gray-200 bg-white">
-            <div className="flex h-full flex-col justify-between p-4">
-              <div className="flex flex-col gap-4">
-               
+    <div className="relative flex min-h-screen w-full bg-slate-50">
+      {/* SIDEBAR for Desktop */}
+      <aside className="hidden md:flex w-80 flex-col border-r border-slate-200 bg-white">
+        {/* Logo */}
+        <div className="flex items-center  px-6 py-5 border-b border-slate-100">
+          <div className="flex  border items-center justify-center rounded-xl  text-white font-bold">
+            <Image
+              src="/plateform_logo.png"
+              width={100}
+              height={100}
+              alt="platform_logo"
+              className="cursor-pointer border"
+            />
 
-                {/* Navigation */}
-                <div className="flex flex-col gap-1 mt-4">
-                  {navItems.map((item) => {
-                    const isActive = pathname === item.path;
-                    return (
-                      <Link
-                        key={item.name}
-                        href={item.path}
-                        className={`flex items-center gap-3 px-3 py-2 rounded-md transition-all ${
-                          isActive
-                            ? "bg-blue-50 text-blue-600 font-semibold"
-                            : "text-gray-500 hover:bg-gray-100 hover:text-gray-900"
-                        }`}
-                      >
-                        <span>{item.icon}</span>
-                        <p className="text-sm">{item.name}</p>
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
+          </div>
+          <div>
+            <h1 className="text-lg font-bold text-slate-800">Codeflame</h1>
+            <p className="text-xs text-slate-500 font-medium tracking-wide">
+              ADMIN PANEL
+            </p>
+          </div>
+        </div>
+
+
+
+        {/* Navigation */}
+        <div className="flex-1 px-6 pt-6 pb-3 overflow-y-auto">
+          <p className="text-xs font-semibold text-slate-400 tracking-wider mb-3">
+            MAIN MENU
+          </p>
+
+          <div className="flex flex-col gap-2">
+            {navItems.map((item) => {
+              const isActive = pathname === item.path;
+              return (
+                <Link
+                  key={item.name}
+                  href={item.path}
+                  className={`flex items-center justify-between px-4 py-3 rounded-xl transition-all ${isActive
+                      ? "bg-blue-50 text-blue-600 font-semibold shadow-sm border border-blue-100"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                    }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl">{item.icon}</span>
+                    <p className="text-sm">{item.name}</p>
+                  </div>
+
+
+                </Link>
+              );
+            })}
           </div>
 
-        
+
+
         </div>
-      </div>
+
+        {/* Sign Out */}
+        <div className="px-6 py-5 border-t border-slate-100">
+          <button onClick={handleSignout} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition font-semibold">
+            <FiLogOut className="text-lg" />
+            Sign Out
+          </button>
+        </div>
+      </aside>
+
+
 
       {/* BOTTOM NAVBAR for Mobile */}
-      <div className="fixed bottom-0 z-30 left-0 w-full bg-white border-t border-gray-200 flex justify-around items-center py-2 shadow-md md:hidden">
+      <div className="fixed bottom-0 z-30 left-0 w-full bg-white border-t border-slate-200 flex justify-around items-center py-2 shadow-md md:hidden">
         {mainNavItems.map((item) => {
           const isActive = pathname === item.path;
           return (
             <Link
               key={item.name}
               href={item.path}
-              className={`flex flex-col items-center text-xs ${
-                isActive ? "text-blue-600" : "text-gray-500"
-              }`}
+              className={`flex flex-col items-center text-xs ${isActive ? "text-blue-600 font-semibold" : "text-slate-500"
+                }`}
             >
               <span className="text-2xl">{item.icon}</span>
               <p>{item.name.split(" ")[0]}</p>
@@ -97,26 +132,36 @@ export default function AdminDashboard() {
         <div className="relative">
           <button
             onClick={() => setShowMore(!showMore)}
-            className="flex flex-col items-center text-xs text-gray-500"
+            className="flex flex-col items-center text-xs text-slate-500"
           >
             <MdMoreHoriz className="text-2xl" />
             <p>More</p>
           </button>
 
-          {/* Dropdown for More Options */}
+          {/* Dropdown */}
           {showMore && (
-            <div className="absolute bottom-14 right-0 bg-white border rounded-lg shadow-lg w-40 py-2">
+            <div className="absolute bottom-14 right-0 bg-white border border-slate-200 rounded-xl shadow-lg w-44 py-2 overflow-hidden">
               {moreNavItems.map((item) => (
                 <Link
                   key={item.name}
                   href={item.path}
-                  className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:bg-gray-100 text-sm"
+                  className="flex items-center gap-2 px-4 py-2 text-slate-600 hover:bg-slate-100 text-sm"
                   onClick={() => setShowMore(false)}
                 >
-                  <span>{item.icon}</span>
+                  <span className="text-lg">{item.icon}</span>
                   <p>{item.name}</p>
                 </Link>
               ))}
+
+              {/* Sign Out */}
+              <div className=" border-t border-slate-100">
+                <button onClick={handleSignout} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition font-semibold">
+                  <FiLogOut className="text-lg" />
+                  Sign Out
+                </button>
+              </div>
+
+
             </div>
           )}
         </div>

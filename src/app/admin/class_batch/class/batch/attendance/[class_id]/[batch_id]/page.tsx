@@ -180,26 +180,7 @@ export default function Attendance() {
     }
   }
 
-  async function sendNotification() {
-    if (!isEditable) return toast.error("Notifications only for today's attendance.");
-    const token = localStorage.getItem("codeflam01_token");
-    if (!token) return toast.error("Please log in again.");
 
-    try {
-      setProcessing(true);
-      await axios.post(
-        `http://localhost:4000/api/v1/attendance/notify`,
-        { classId: class_id, batchId: batch_id, date },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      toast.success("Notifications sent!");
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to send notifications.");
-    } finally {
-      setProcessing(false);
-    }
-  }
 
   async function exportAttendanceCSV() {
     if (!date) return toast.error("Please select a date.");
@@ -294,16 +275,7 @@ export default function Attendance() {
               <span>Export CSV</span>
             </button>
 
-            <button
-              onClick={sendNotification}
-              disabled={!isEditable || processing}
-              className={`px-4 py-1 flex items-center cursor-pointer gap-1.5 rounded text-white ${
-                isEditable ? "bg-yellow-600" : "bg-gray-400"
-              } disabled:opacity-50`}
-            >
-              {processing ? <CircularIndeterminate size={20} /> : <FiBell />}
-              <span>Notify</span>
-            </button>
+           
 
             <button
               onClick={saveAttendance}
@@ -311,6 +283,9 @@ export default function Attendance() {
               className={`px-4 py-1 flex items-center cursor-pointer gap-1.5 rounded text-white ${
                 isEditable ? "bg-blue-600" : "bg-gray-400"
               } disabled:opacity-50`}
+
+
+              
             >
               {processing ? <CircularIndeterminate size={20} /> : <FiSave />}
               <span>Save</span>

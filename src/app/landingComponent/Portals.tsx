@@ -19,7 +19,7 @@ const portals = [
       'Custom notification system for parents and teachers',
       'Comprehensive dashboard with insights'
     ],
-    link: '/login'
+    link: '/admin/dashboard'
   },
   {
     icon: BookOpen,

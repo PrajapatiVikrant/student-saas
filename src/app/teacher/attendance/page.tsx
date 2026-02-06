@@ -308,7 +308,7 @@ export default function Attendance() {
 
   /* ---------- UI (UNCHANGED) ---------- */
   return (
-    <main className="max-w-6xl bg-slate-50 dark:bg-slate-900   mx-auto px-4 pb-10">
+    <main className="max-w-6xl bg-slate-50 dark:bg-slate-900   mx-auto  pb-10">
       {/* Top Navigation / Header */}
       <header className="bg-white border-b sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -346,7 +346,7 @@ export default function Attendance() {
       </header>
       <br />
 
-      <Card className="lg:col-span-2 shadow-sm border-slate-200 bg-white">
+      <Card className="lg:col-span-2 mx-4 shadow-sm border-slate-200 bg-white">
         <CardHeader className="pb-3 border-b border-slate-50">
           <CardTitle className="text-base font-semibold text-slate-800 flex items-center gap-2">
             <CalendarIcon className="w-4 h-4 text-slate-500" />
@@ -382,7 +382,7 @@ export default function Attendance() {
       </Card>
       <br />
       {/* Statistics Card */}
-      <Card className="shadow-sm border-slate-200 bg-white">
+      <Card className="shadow-sm mx-4 border-slate-200 bg-white">
         <CardHeader className="pb-3 border-b border-slate-50">
           <CardTitle className="text-base font-semibold text-slate-800">Summary</CardTitle>
         </CardHeader>
@@ -410,7 +410,7 @@ export default function Attendance() {
         </CardContent>
       </Card>
 
-      <div className="sticky top-16 z-20 my-2 bg-white backdrop-blur pb-4 border-b ">
+      <div className="sticky mx-4 top-16 z-20 my-2 bg-white backdrop-blur pb-4 border-b ">
         <div className="px-1 space-y-2">
 
           {/* Top labels */}
@@ -449,7 +449,7 @@ export default function Attendance() {
 
 
       {/* Desktop Table View */}
-      <div className="hidden md:block bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="hidden mx-4 md:block bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <Table>
           <TableHeader className="bg-slate-50/80 border-b border-slate-200">
             <TableRow className="hover:bg-slate-50/80">
@@ -520,7 +520,7 @@ export default function Attendance() {
         </Table>
       </div>
       {/* Mobile Card View */}
-      <div className="md:hidden space-y-4">
+      <div className="md:hidden mx-4 space-y-4">
         {students.map((student) => {
           const status = attendance[student._id]?.status;
           return (

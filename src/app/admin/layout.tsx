@@ -7,18 +7,17 @@ export default function AdminLayout({ children }: Readonly<{
 
     return (
         <>
-            <header>
+            {/* <header>
                 <Navbar />
-            </header>
+            </header> */}
             <section className="flex">
-            <aside >
+            <aside  className="overflow-auto h-[100vh]">
                 <AdminDashboard />
             </aside>
-            <section className="bg-white h-[90vh] overflow-auto w-full">
+            <section className="bg-slate-50 h-[100vh] overflow-auto w-full">
 
             {children}
-            <br />
-           <br/>
+           
 
             </section>
             </section>

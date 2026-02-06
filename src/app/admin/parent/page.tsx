@@ -1,8 +1,11 @@
 "use client";
 
 import ParentPortalAccessForm from "@/app/components/forms/ParentForm";
+import { Button } from "@/app/components/ui/attendanceUi/Button";
 import ViewParent from "@/app/components/ui/ViewParent";
 import axios from "axios";
+import { PlusCircle } from "lucide-react";
+import { School } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function ParentPage() {
@@ -41,23 +44,39 @@ export default function ParentPage() {
   }
 
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="font-bold text-xl">Parent Portal</h1>
-        <button
-          onClick={() => setRegisterForm(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
-        >
-          Give Access
-        </button>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 ">
+         <div className="bg-white border-b mb-2.5 border-slate-200 sticky top-0 z-10">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                      <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                        <School className="w-6 h-6 text-indigo-600" />
+                        Parent Portal
+                      </h1>
+                      <p className="text-slate-500 text-sm mt-1">
+                        Manage parent access and view parent details
+                      </p>
+                    </div>
+        
+                  
+        
+                      <Button
+                       onClick={() => setRegisterForm(true)}
+                        className="bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm"
+                      >
+                        <PlusCircle size={18} className="mr-2" /> Give Access
+                      </Button>
+                    </div>
+                  </div>
+                  </div>
+      
 
       {/* Loading */}
       {loading && <p className="text-center mt-4">Loading parents...</p>}
 
       {/* Responsive Table */}
       {!loading && parents.length > 0 && (
-        <div className="overflow-x-auto shadow-md rounded-lg">
+        <div className="overflow-x-auto  rounded-lg p-6">
           <table className="min-w-[800px]  w-full  border  border-gray-300 text-sm table-auto whitespace-nowrap">
             <thead>
               <tr className="bg-gray-100 text-left text-sm md:text-base">
@@ -70,7 +89,7 @@ export default function ParentPage() {
             </thead>
             <tbody>
               {parents.map((p:any) => (
-                <tr key={p._id} className="hover:bg-gray-50 text-sm md:text-base">
+                <tr key={p._id} className="bg-white text-sm md:text-base">
                   <td className="p-3 border">{p.name}</td>
                   <td className="p-3 border">{p.email}</td>
                   <td className="p-3 border">{p.phone}</td>

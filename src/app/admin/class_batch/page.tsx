@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import {
   Plus,
@@ -26,12 +26,6 @@ import {
   CardTitle,
 } from "@/app/components/ui/attendanceUi/Card";
 import { Skeleton } from "@/app/components/ui/attendanceUi/Skeleton";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/app/components/ui/attendanceUi/Dropdown-menu";
 
 import {
   Dialog,
@@ -74,6 +68,70 @@ const getGradient = (str: string) => {
   return gradients[Math.abs(hash) % gradients.length];
 };
 
+// ---------------- CUSTOM DROPDOWN COMPONENT ----------------
+function ActionDropdown({
+  onEdit,
+  onDelete,
+}: {
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
+
+  return (
+    <div ref={dropdownRef} className="relative">
+      <Button
+        variant="ghost"
+        size="icon"
+        type="button"
+        className="h-8 w-8 text-slate-400 hover:text-slate-600"
+        onClick={() => setOpen((prev) => !prev)}
+      >
+        <MoreVertical className="w-4 h-4" />
+      </Button>
+
+      {open && (
+        <div className="absolute right-0 mt-2 w-40 bg-white border border-slate-200 shadow-lg rounded-xl overflow-hidden z-50">
+          <button
+            onClick={() => {
+              setOpen(false);
+              onEdit();
+            }}
+            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 transition"
+          >
+            <Pencil className="w-4 h-4" /> Edit
+          </button>
+
+          <button
+            onClick={() => {
+              setOpen(false);
+              onDelete();
+            }}
+            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition"
+          >
+            <Trash2 className="w-4 h-4" /> Delete
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function ClassBatch() {
   const router = useRouter();
 
@@ -115,7 +173,7 @@ export default function ClassBatch() {
       const response = await axios.get("http://localhost:4000/api/v1/kaksha", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log("Fetched classes:", response.data);
+
       setClassList(response.data);
     } catch (error: any) {
       if (error.response?.status === 401 || error.response?.status === 403) {
@@ -172,7 +230,6 @@ export default function ClassBatch() {
 
   // ---------------- OPEN EDIT ----------------
   const openEditDialog = (cls: ClassInfo) => {
-    console.log("Opening edit dialog for class:", cls);
     setEditClassId(cls._id);
     setEditClassName(cls.class.name);
     setIsEditDialogOpen(true);
@@ -184,7 +241,7 @@ export default function ClassBatch() {
       toast.warning("Class name is required");
       return;
     }
-     console.log("Editing class with ID:", editClassId, "New name:", editClassName);
+
     if (!editClassId) return;
 
     setProcessing(true);
@@ -386,36 +443,10 @@ export default function ClassBatch() {
                         <GraduationCap className="w-6 h-6" />
                       </div>
 
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 -mr-2 text-slate-400 hover:text-slate-600"
-                          >
-                            <MoreVertical className="w-4 h-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onSelect={(e)=>{
-                            e.preventDefault();
-                            openEditDialog(item);
-                          }}>
-                            <Pencil className="w-4 h-4 mr-2" /> Edit
-                          </DropdownMenuItem>
-
-                          <DropdownMenuItem
-                            onSelect={(e)=>{
-                              e.preventDefault();
-                              openDeleteDialog(item._id);
-                            }}
-                            className="text-red-600 focus:text-red-600"
-                          >
-                            <Trash2 className="w-4 h-4 mr-2" /> Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <ActionDropdown
+                        onEdit={() => openEditDialog(item)}
+                        onDelete={() => openDeleteDialog(item._id)}
+                      />
                     </div>
 
                     <CardTitle className="text-lg font-bold text-slate-900 line-clamp-1">
@@ -504,36 +535,10 @@ export default function ClassBatch() {
                         View Details
                       </Link>
 
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-slate-400"
-                          >
-                            <MoreVertical className="w-4 h-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onSelect={(e)=>{
-                            e.preventDefault();
-                            openEditDialog(item);
-                          }} >
-                            <Pencil className="w-4 h-4 mr-2" /> Edit
-                          </DropdownMenuItem>
-
-                          <DropdownMenuItem
-                           onSelect={(e)=>{
-                            e.preventDefault();
-                            openDeleteDialog(item._id);
-                          }}
-                            className="text-red-600 focus:text-red-600"
-                          >
-                            <Trash2 className="w-4 h-4 mr-2" /> Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <ActionDropdown
+                        onEdit={() => openEditDialog(item)}
+                        onDelete={() => openDeleteDialog(item._id)}
+                      />
                     </div>
                   </div>
                 </Card>
@@ -609,9 +614,7 @@ export default function ClassBatch() {
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Edit Class</DialogTitle>
-            <DialogDescription>
-              Update your class name.
-            </DialogDescription>
+            <DialogDescription>Update your class name.</DialogDescription>
           </DialogHeader>
 
           <div className="grid gap-4 py-4">
@@ -651,13 +654,17 @@ export default function ClassBatch() {
           <DialogHeader>
             <DialogTitle className="text-red-600">Delete Class</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete this class? This action cannot be undone and will permanently remove all related records including 
-                  academic, attendance, and payment data associated with this class.
+              Are you sure you want to delete this class? This action cannot be
+              undone and will permanently remove all related records including
+              academic, attendance, and payment data associated with this class.
             </DialogDescription>
           </DialogHeader>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setIsDeleteDialogOpen(false)}
+            >
               Cancel
             </Button>
 

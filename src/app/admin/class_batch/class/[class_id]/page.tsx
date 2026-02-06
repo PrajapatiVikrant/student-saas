@@ -157,7 +157,7 @@ export default function Kaksha() {
     }
 
     return (
-        <>
+        <div className="min-h-screen overflow-auto bg-gradient-to-br from-slate-50 to-slate-100">
             <header className="p-6">
                 <h1 className="text-3xl font-bold">{class_name}</h1>
             </header>
@@ -231,6 +231,6 @@ export default function Kaksha() {
                 </section>
                 {batchForm && <BatchForm class_id={class_id} batch="" setBatchForm={setBatchForm}/>}
             </main>
-        </>
+        </div>
     );
 }

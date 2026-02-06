@@ -106,7 +106,6 @@ export default function ViewParent({ parent, getParents, setViewParent }: ViewPa
                   <th className="p-2 border">Name</th>
                   <th className="p-2 border">Class</th>
                   <th className="p-2 border">Batch</th>
-                  <th className="p-2 border">Phone</th>
                   <th className="p-2 border text-center">View</th>
                 </tr>
               </thead>
@@ -117,7 +116,6 @@ export default function ViewParent({ parent, getParents, setViewParent }: ViewPa
                     <td className="p-2 border">{child.name}</td>
                     <td className="p-2 border">{child.class?.name}</td>
                     <td className="p-2 border">{child.batch?.name}</td>
-                    <td className="p-2 border">{child.phone}</td>
 
                     <td className="p-2 border text-center">
                       <Link
