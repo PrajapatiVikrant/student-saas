@@ -1,14 +1,20 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { Pencil, Trash2, PlusCircle, Loader2, Plus, School } from "lucide-react";
+import axios, { AxiosError } from "axios";
+import { Pencil, Trash2, PlusCircle, Loader2, School } from "lucide-react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { Button } from "@/app/components/ui/attendanceUi/Button";
 
+// ================= TYPES =================
 interface Batch {
   batch_id: string;
+  batch_name: string;
+}
+
+interface ApiBatch {
+  _id: string;
   batch_name: string;
 }
 
@@ -16,11 +22,16 @@ interface ClassItem {
   _id: string;
   class: {
     name: string;
-    batches: any[];
+    batches: ApiBatch[];
   };
 }
 
-interface Event {
+interface AddedBy {
+  _id: string;
+  name: string;
+}
+
+interface EventItem {
   _id: string;
   class: {
     id: string;
@@ -33,18 +44,24 @@ interface Event {
   title: string;
   date: string;
   description: string;
-  added_by: any;
+  added_by: AddedBy;
+}
+
+interface EventResponse {
+  userId: string;
+  events: EventItem[];
 }
 
 const EventPage: React.FC = () => {
   const router = useRouter();
-  const [myId, setMyId] = useState<string | null>("");
-  const [events, setEvents] = useState<Event[]>([]);
+
+  const [myId, setMyId] = useState<string>("");
+  const [events, setEvents] = useState<EventItem[]>([]);
   const [classList, setClassList] = useState<ClassItem[]>([]);
   const [batches, setBatches] = useState<Batch[]>([]);
 
   const [showModal, setShowModal] = useState(false);
-  const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+  const [editingEvent, setEditingEvent] = useState<EventItem | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
@@ -60,7 +77,7 @@ const EventPage: React.FC = () => {
     description: "",
   });
 
-  const API_URL = "http://localhost:4000/api/v1/event";
+  const API_URL = "https://student-backend-saas.vercel.app/api/v1/event";
 
   // ================= FETCH EVENTS =================
   const fetchEvents = async () => {
@@ -68,13 +85,21 @@ const EventPage: React.FC = () => {
       setLoading(true);
       const token = localStorage.getItem("codeflam01_token");
 
-      const res = await axios.get(API_URL, {
+      if (!token) {
+        toast.error("Session expired. Please login again.");
+        router.push("/login");
+        return;
+      }
+
+      const res = await axios.get<EventResponse>(API_URL, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log("Events:", res.data);
+
       setMyId(res.data.userId);
       setEvents(res.data.events);
-    } catch (err) {
+    } catch (err: unknown) {
+      const error = err as AxiosError;
+      console.error("Fetch events error:", error);
       toast.error("Failed to load events ❌");
     } finally {
       setLoading(false);
@@ -88,17 +113,19 @@ const EventPage: React.FC = () => {
       const token = localStorage.getItem("codeflam01_token");
 
       if (!token) {
-        toast.error("Session expired");
+        toast.error("Session expired. Please login again.");
         router.push("/login");
         return;
       }
 
-      const res = await axios.get("http://localhost:4000/api/v1/kaksha", {
+      const res = await axios.get<ClassItem[]>("https://student-backend-saas.vercel.app/api/v1/kaksha", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       setClassList(res.data);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as AxiosError;
+      console.error("Fetch classes error:", error);
       toast.error("Failed to load classes ❌");
     } finally {
       setFormLoading(false);
@@ -122,8 +149,8 @@ const EventPage: React.FC = () => {
     if (name === "class_id") {
       const selectedClass = classList.find((cls) => cls._id === value);
 
-      const mappedBatches =
-        selectedClass?.class?.batches?.map((b: any) => ({
+      const mappedBatches: Batch[] =
+        selectedClass?.class?.batches?.map((b) => ({
           batch_id: b._id,
           batch_name: b.batch_name,
         })) || [];
@@ -168,6 +195,12 @@ const EventPage: React.FC = () => {
       setProcessing(true);
       const token = localStorage.getItem("codeflam01_token");
 
+      if (!token) {
+        toast.error("Session expired. Please login again.");
+        router.push("/login");
+        return;
+      }
+
       if (editingEvent) {
         await axios.put(`${API_URL}/${editingEvent._id}`, formData, {
           headers: { Authorization: `Bearer ${token}` },
@@ -182,8 +215,9 @@ const EventPage: React.FC = () => {
 
       resetForm();
       fetchEvents();
-    } catch (err) {
-      console.log(err);
+    } catch (err: unknown) {
+      const error = err as AxiosError;
+      console.error("Submit error:", error);
       toast.error("Something went wrong ❌");
     } finally {
       setProcessing(false);
@@ -191,11 +225,11 @@ const EventPage: React.FC = () => {
   };
 
   // ================= EDIT =================
-  const handleEdit = (event: Event) => {
+  const handleEdit = (event: EventItem) => {
     const selectedClass = classList.find((cls) => cls._id === event.class.id);
 
-    const mappedBatches =
-      selectedClass?.class?.batches?.map((b: any) => ({
+    const mappedBatches: Batch[] =
+      selectedClass?.class?.batches?.map((b) => ({
         batch_id: b._id,
         batch_name: b.batch_name,
       })) || [];
@@ -224,13 +258,21 @@ const EventPage: React.FC = () => {
       setProcessing(true);
       const token = localStorage.getItem("codeflam01_token");
 
+      if (!token) {
+        toast.error("Session expired. Please login again.");
+        router.push("/login");
+        return;
+      }
+
       await axios.delete(`${API_URL}/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       toast.success("Event deleted ✅");
       fetchEvents();
-    } catch {
+    } catch (err: unknown) {
+      const error = err as AxiosError;
+      console.error("Delete error:", error);
       toast.error("Delete failed ❌");
     } finally {
       setProcessing(false);
@@ -254,41 +296,32 @@ const EventPage: React.FC = () => {
 
   // ================= UI =================
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 ">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       {/* HEADER */}
-        
-              <div className="bg-white border-b mb-2.5 border-slate-200 sticky top-0 z-10">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                      <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-                        <School className="w-6 h-6 text-indigo-600" />
-                        Event Management
-                      </h1>
-                      <p className="text-slate-500 text-sm mt-1">
-                        Manage your classes, subjects, and student batches efficiently.
-                      </p>
-                    </div>
-        
-                  
-        
-                      <Button
-                        onClick={() => setShowModal(true)}
-                        className="bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm"
-                      >
-                        <PlusCircle size={18} className="mr-2" /> Add Event
-                      </Button>
-                    </div>
-                  </div>
-                  </div>
-      <div className="max-w-5xl mx-auto">
-        
-       
+      <div className="bg-white border-b mb-2.5 border-slate-200 sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                <School className="w-6 h-6 text-indigo-600" />
+                Event Management
+              </h1>
+              <p className="text-slate-500 text-sm mt-1">
+                Manage your classes, subjects, and student batches efficiently.
+              </p>
+            </div>
 
+            <Button
+              onClick={() => setShowModal(true)}
+              className="bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm"
+            >
+              <PlusCircle size={18} className="mr-2" /> Add Event
+            </Button>
+          </div>
+        </div>
+      </div>
 
-
-                
-
+      <div className="max-w-5xl mx-auto px-4">
         {/* LOADING */}
         {loading ? (
           <div className="flex justify-center items-center py-20">
@@ -303,7 +336,7 @@ const EventPage: React.FC = () => {
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {events.map((event:any) => (
+            {events.map((event) => (
               <div
                 key={event._id}
                 className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-lg transition"
@@ -381,6 +414,7 @@ const EventPage: React.FC = () => {
               value={formData.class_id}
               onChange={handleChange}
               className="w-full border p-2 mb-3 rounded"
+              disabled={formLoading}
             >
               <option value="">Select Class</option>
               {classList.map((cls) => (

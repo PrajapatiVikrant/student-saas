@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import CircularIndeterminate from "@/app/components/ui/CircularIndeterminate";
@@ -23,6 +23,8 @@ export default function FinanceManagement() {
   const [search, setSearch] = useState("");
   const [selectedClass, setSelectedClass] = useState("");
   const [selectedBatch, setSelectedBatch] = useState("");
+  const [batchList, setBatchList] = useState([]);
+  const [classList, setClassList] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [selectPaymentMethod, setSelectPaymentMethod] = useState<"select payment method" | "Cash" | "UPI" | "Card" | "Bank Transfer">("select payment method")
   const [amount, setAmount] = useState("");
@@ -37,21 +39,57 @@ export default function FinanceManagement() {
   // Fetch students
   useEffect(() => {
     getAllstudent()
+    fetchClasses();
   }, []);
+
+
+  
+  
+    const fetchClasses = async () => {
+      setLoading(true);
+      try {
+        const token = localStorage.getItem("codeflam01_token");
+        if (!token) {
+          toast.error("No token found. Please login again.");
+          router.push("/login");
+          return;
+        }
+  
+        const response = await axios.get("https://student-backend-saas.vercel.app/api/v1/kaksha", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+  
+        setClassList(response.data);
+      } catch (error: unknown) {
+        const err = error as AxiosError;
+        if (err.response?.status === 401 || err.response?.status === 403) {
+          toast.error("Session expired. Please log in again.");
+          localStorage.removeItem("codeflam01_token");
+          router.push("/login");
+        } else {
+          toast.error("Failed to load class list ❌");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+
 
 
   async function getAllstudent() {
     try {
       const token = localStorage.getItem("codeflam01_token");
       const response = await axios
-        .get("http://localhost:4000/api/v1/fee/status", {
+        .get("https://student-backend-saas.vercel.app/api/v1/fee/status", {
           headers: { Authorization: `Bearer ${token}` },
         })
 
       setStudents(response.data)
 
-    } catch (error: any) {
-      if (error.response?.status === 401 || error.response?.status === 403) {
+    } catch (error: unknown) {
+       const err = error as AxiosError;
+        if (err.response?.status === 401 || err.response?.status === 403) {
         toast.error("Session expired. Please log in again.");
         localStorage.removeItem("codeflam01_token");
         router.push("/login");
@@ -64,13 +102,7 @@ export default function FinanceManagement() {
     }
   }
 
-  // Extract unique classes and batches
-  const uniqueClasses = Array.from(
-    new Map(students.map((s) => [s.class.class_id, s.class])).values()
-  );
-  const uniqueBatches = Array.from(
-    new Map(students.map((s) => [s.batch.batch_id, s.batch])).values()
-  );
+ 
 
   // Fee summary
   const totalFee = students.reduce(
@@ -118,7 +150,7 @@ export default function FinanceManagement() {
       setProcessing(true);
       const token = localStorage.getItem("codeflam01_token");
       const response = await axios.post(
-        `http://localhost:4000/api/v1/fee/record`,
+        `https://student-backend-saas.vercel.app/api/v1/fee/record`,
         {
           studentId: selectedStudent._id,
           recordAmount: Number(amount),
@@ -135,8 +167,9 @@ export default function FinanceManagement() {
       setSelectedStudent(null);
 
       getAllstudent();
-    } catch (error: any) {
-      if (error.response?.status === 401 || error.response?.status === 403) {
+    } catch (error: unknown) {
+       const err = error as AxiosError;
+        if (err.response?.status === 401 || err.response?.status === 403) {
         toast.error("Session expired. Please log in again.");
         localStorage.removeItem("codeflam01_token");
         router.push("/login");
@@ -148,6 +181,15 @@ export default function FinanceManagement() {
       setProcessing(false);
     }
   };
+
+
+
+function handleChangeClass(classId: string) {
+  setSelectedClass(classId);
+
+  setBatchList(classList.find((cls:{_id:string;}) => cls._id === classId)?.class.batches || []);
+}
+
 
 
   if (loading) {
@@ -203,7 +245,7 @@ export default function FinanceManagement() {
         {["all", "paid", "pending"].map((status) => (
           <button
             key={status}
-            onClick={() => setFilterStatus(status as any)}
+            onClick={() => setFilterStatus(status as "all" | "paid" | "pending")}
             className={`px-4 py-2 rounded-full border font-medium transition-all ${filterStatus === status
               ? "bg-blue-600 text-white"
               : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
@@ -227,13 +269,13 @@ export default function FinanceManagement() {
 
           <select
             value={selectedClass}
-            onChange={(e) => setSelectedClass(e.target.value)}
+            onChange={(e) => handleChangeClass(e.target.value)}
             className="border px-3 py-2 rounded-md"
           >
             <option value="">All Classes</option>
-            {uniqueClasses.map((cls) => (
-              <option key={cls.class_id} value={cls.class_id}>
-                {cls.name}
+            {classList.map((cls) => (
+              <option key={cls._id} value={cls._id}>
+                {cls.class.name}
               </option>
             ))}
           </select>
@@ -244,9 +286,9 @@ export default function FinanceManagement() {
             className="border px-3 py-2 rounded-md"
           >
             <option value="">All Batches</option>
-            {uniqueBatches.map((batch) => (
-              <option key={batch.batch_id} value={batch.batch_id}>
-                {batch.name}
+            {batchList.map((batch) => (
+              <option key={batch._id} value={batch._id}>
+                {batch.batch_name}
               </option>
             ))}
           </select>
@@ -379,6 +421,7 @@ export default function FinanceManagement() {
           </div>
         </div>
       )}
+      <br /><br /><br />
     </div>
   );
 }

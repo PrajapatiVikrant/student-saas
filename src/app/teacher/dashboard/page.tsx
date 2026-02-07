@@ -85,7 +85,7 @@ export default function Dashboard() {
 
         // 1) Fetch Profile
         const profileResponse = await axios.get(
-          "http://localhost:4000/api/v1/teacher/profile",
+          "https://student-backend-saas.vercel.app/api/v1/teacher/profile",
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -102,7 +102,7 @@ export default function Dashboard() {
         // 2) Fetch Attendance (Today)
         try {
           const homeclassResponse = await axios.get(
-            `http://localhost:4000/api/v1/attendance/${today}/${classId}/${batchId}`,
+            `https://student-backend-saas.vercel.app/api/v1/attendance/${today}/${classId}/${batchId}`,
             {
               headers: { Authorization: `Bearer ${token}` },
             }
@@ -126,7 +126,7 @@ export default function Dashboard() {
         setEventLoading(true);
 
         const eventRes = await axios.get(
-          "http://localhost:4000/api/v1/event",
+          "https://student-backend-saas.vercel.app/api/v1/event",
           {
             headers: { Authorization: `Bearer ${token}` },
           }

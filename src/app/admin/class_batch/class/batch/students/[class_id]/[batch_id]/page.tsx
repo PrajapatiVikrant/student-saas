@@ -1,11 +1,11 @@
 "use client";
 import StudentAdmission from "@/app/components/forms/StudentAdmission";
 import CircularIndeterminate from "@/app/components/ui/CircularIndeterminate";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FiUserPlus, FiEye, FiEdit2, FiTrash2 } from "react-icons/fi";
+import { FiUserPlus, FiEye} from "react-icons/fi";
 import { toast } from "react-toastify";
 
 interface Student {
@@ -19,6 +19,12 @@ interface GetAllStudentResponse {
   batch_name: string;
   students: Student[];
 }
+
+
+
+
+
+
 
 export default function Students() {
   const { class_id, batch_id } = useParams();
@@ -48,7 +54,7 @@ export default function Students() {
     setLoading(true);
     try {
       const response = await axios.get<GetAllStudentResponse>(
-        `http://localhost:4000/api/v1/student/${class_id}/${batch_id}`,
+        `https://student-backend-saas.vercel.app/api/v1/student/${class_id}/${batch_id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -59,9 +65,10 @@ export default function Students() {
         batch_name: response.data.batch_name,
       });
       setStudents(response.data.students);
-    } catch (error: any) {
+    } catch (error:unknown) {
+      const err = error as AxiosError
       console.error("Error fetching students:", error);
-      if (error.response?.status === 401 || error.response?.status === 403) {
+      if (err.response?.status === 401 || err.response?.status === 403) {
         toast.error("Session expired. Please log in again.");
         localStorage.removeItem("codeflam01_token");
         router.push("/login");

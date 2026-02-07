@@ -49,7 +49,7 @@ export default function PerformancePage() {
       setLoadingExam(true);
 
       const res = await axios.get(
-        `http://localhost:4000/api/v1/test/${student_id}`,
+        `https://student-backend-saas.vercel.app/api/v1/test/${student_id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

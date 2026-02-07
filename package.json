@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint"
   },
@@ -30,6 +30,7 @@
     "lucide-react": "^0.487.0",
     "motion": "^12.29.0",
     "next": "15.5.3",
+    "next-pwa": "^5.6.0",
     "node-cron": "^4.2.1",
     "postcss-preset-env": "^10.4.0",
     "react": "19.1.0",

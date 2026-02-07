@@ -53,7 +53,7 @@ export default function Signup() {
 
     try {
       const response = await axios.post(
-        "http://localhost:4000/api/v1/admin/signup",
+        "https://student-backend-saas.vercel.app/api/v1/admin/signup",
         {
           instituteName,
           adminName,

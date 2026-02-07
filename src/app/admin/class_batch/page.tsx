@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import {
   Plus,
   Search,
@@ -170,13 +170,14 @@ export default function ClassBatch() {
         return;
       }
 
-      const response = await axios.get("http://localhost:4000/api/v1/kaksha", {
+      const response = await axios.get("https://student-backend-saas.vercel.app/api/v1/kaksha", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       setClassList(response.data);
-    } catch (error: any) {
-      if (error.response?.status === 401 || error.response?.status === 403) {
+    } catch (error: unknown) {
+       const err = error as AxiosError;
+                  if (err.response?.status === 401 || err.response?.status === 403) {
         toast.error("Session expired. Please log in again.");
         localStorage.removeItem("codeflam01_token");
         router.push("/login");
@@ -206,7 +207,7 @@ export default function ClassBatch() {
       }
 
       const response = await axios.post(
-        "http://localhost:4000/api/v1/kaksha",
+        "https://student-backend-saas.vercel.app/api/v1/kaksha",
         { name: newClassName.trim() },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -215,8 +216,9 @@ export default function ClassBatch() {
       setNewClassName("");
       setIsCreateDialogOpen(false);
       fetchClasses();
-    } catch (error: any) {
-      if (error.response?.status === 401 || error.response?.status === 403) {
+    } catch (error: unknown) {
+       const err = error as AxiosError;
+            if (err.response?.status === 401 || err.response?.status === 403) {
         toast.error("Session expired. Please log in again.");
         localStorage.removeItem("codeflam01_token");
         router.push("/login");
@@ -255,7 +257,7 @@ export default function ClassBatch() {
       }
 
       const response = await axios.put(
-        `http://localhost:4000/api/v1/kaksha/${editClassId}`,
+        `https://student-backend-saas.vercel.app/api/v1/kaksha/${editClassId}`,
         { class_name: editClassName.trim() },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -265,8 +267,9 @@ export default function ClassBatch() {
       setEditClassId(null);
       setEditClassName("");
       fetchClasses();
-    } catch (error: any) {
-      if (error.response?.status === 401 || error.response?.status === 403) {
+    } catch (error: unknown) {
+       const err = error as AxiosError;
+            if (err.response?.status === 401 || err.response?.status === 403) {
         toast.error("Session expired. Please log in again.");
         localStorage.removeItem("codeflam01_token");
         router.push("/login");
@@ -298,7 +301,7 @@ export default function ClassBatch() {
         return;
       }
 
-      await axios.delete(`http://localhost:4000/api/v1/kaksha/${deleteClassId}`, {
+      await axios.delete(`https://student-backend-saas.vercel.app/api/v1/kaksha/${deleteClassId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -306,8 +309,9 @@ export default function ClassBatch() {
       setIsDeleteDialogOpen(false);
       setDeleteClassId(null);
       fetchClasses();
-    } catch (error: any) {
-      if (error.response?.status === 401 || error.response?.status === 403) {
+    } catch (error: unknown) {
+      const err = error as AxiosError;
+            if (err.response?.status === 401 || err.response?.status === 403) {
         toast.error("Session expired. Please log in again.");
         localStorage.removeItem("codeflam01_token");
         router.push("/login");

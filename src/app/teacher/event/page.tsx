@@ -66,7 +66,7 @@ const EventPage: React.FC = () => {
     description: "",
   });
 
-  const API_URL = "http://localhost:4000/api/v1/event";
+  const API_URL = "https://student-backend-saas.vercel.app/api/v1/event";
 
   // ================= FETCH EVENTS =================
   const fetchEvents = async () => {
@@ -99,7 +99,7 @@ const EventPage: React.FC = () => {
         return;
       }
 
-      const res = await axios.get("http://localhost:4000/api/v1/kaksha", {
+      const res = await axios.get("https://student-backend-saas.vercel.app/api/v1/kaksha", {
         headers: { Authorization: `Bearer ${token}` },
       });
 

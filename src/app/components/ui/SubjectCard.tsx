@@ -4,8 +4,8 @@ import {  useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { toast } from "react-toastify";
 type subjectCareProps = {
-  id: String;
-  subject: String;
+  id: string;
+  subject: string;
  
   removeSubject:(id: string) => void;
 }

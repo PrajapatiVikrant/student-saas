@@ -62,7 +62,7 @@ export default function VerifyEmailPage() {
 
     setProcessing(true);
     try {
-      const response =  await axios.post("http://localhost:4000/api/v1/teacher/verify-otp", {
+      const response =  await axios.post("https://student-backend-saas.vercel.app/api/v1/teacher/verify-otp", {
       email,
       otp: enteredOtp,
     });

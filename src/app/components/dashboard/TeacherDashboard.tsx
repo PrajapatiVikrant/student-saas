@@ -69,7 +69,7 @@ export default function AdminDashboard() {
           <div>
             <h1 className="text-lg font-bold text-slate-800">Codeflame</h1>
             <p className="text-xs text-slate-500 font-medium tracking-wide">
-              TEACHER PANEL
+              TEACHE PANEL
             </p>
           </div>
         </div>

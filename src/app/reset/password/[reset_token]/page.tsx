@@ -37,7 +37,7 @@ export default function ResetPassword({ params }: any) {
 
     try {
       const res = await axios.put(
-        "http://localhost:4000/api/v1/admin/reset-password",
+        "https://student-backend-saas.vercel.app/api/v1/admin/reset-password",
         { resetToken:reset_token, newPassword:password }
       );
 

@@ -45,7 +45,7 @@ export default function BatchCard({ batch, class_id }: BatchCardProps) {
 
     try {
       const response = await axios.get(
-        `http://localhost:4000/api/v1/student/${class_id}/${batch._id}`,
+        `https://student-backend-saas.vercel.app/api/v1/student/${class_id}/${batch._id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -77,7 +77,7 @@ export default function BatchCard({ batch, class_id }: BatchCardProps) {
      setProcessing(true)
     try {
      const response = await axios.delete(
-        `http://localhost:4000/api/v1/batch/${class_id}/${batch._id}`,
+        `https://student-backend-saas.vercel.app/api/v1/batch/${class_id}/${batch._id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 

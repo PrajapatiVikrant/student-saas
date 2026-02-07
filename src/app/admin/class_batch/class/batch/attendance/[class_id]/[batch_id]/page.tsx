@@ -5,7 +5,7 @@ import CircularIndeterminate from "@/app/components/ui/CircularIndeterminate";
 import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FiSave, FiDownload, FiBell } from "react-icons/fi";
+import { FiSave, FiDownload } from "react-icons/fi";
 import { toast } from "react-toastify";
 import Link from "next/link";
 
@@ -75,7 +75,7 @@ export default function Attendance() {
     setLoading(true);
     try {
       const response = await axios.get<GetAllStudentResponse>(
-        `http://localhost:4000/api/v1/student/${class_id}/${batch_id}`,
+        `https://student-backend-saas.vercel.app/api/v1/student/${class_id}/${batch_id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -100,14 +100,19 @@ export default function Attendance() {
     setLoading(true);
     try {
       const res = await axios.get(
-        `http://localhost:4000/api/v1/attendance/${date}/${class_id}/${batch_id}`,
+        `https://student-backend-saas.vercel.app/api/v1/attendance/${date}/${class_id}/${batch_id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
       const initial: Record<string, AttendanceRecord> = {};
 
       if (res.data && res.data[0]?.attendance) {
-        res.data[0].attendance.forEach((a: any) => {
+        res.data[0].attendance.forEach((a:{
+          studentId:string;
+          studentName:string;
+          status:"Present" | "Absent" | "";
+          comment:string;
+        }) => {
           initial[a.studentId] = {
             studentId: a.studentId,
             studentName: a.studentName,
@@ -116,7 +121,7 @@ export default function Attendance() {
           };
         });
       } else {
-        students.forEach((s) => {
+        students.forEach((s:{_id:string,name:string}) => {
           initial[s._id] = { studentId: s._id, studentName: s.name, status: "", comment: "" };
         });
       }
@@ -167,7 +172,7 @@ export default function Attendance() {
       }));
 
       await axios.post(
-        `http://localhost:4000/api/v1/attendance/mark`,
+        `https://student-backend-saas.vercel.app/api/v1/attendance/mark`,
         { classId: class_id, batchId: batch_id, date, attendance: attendanceArray },
         { headers: { Authorization: `Bearer ${token}` } }
       );

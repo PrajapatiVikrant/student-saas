@@ -1,7 +1,9 @@
 "use client";
 import { FiEye } from "react-icons/fi";
-
-export default function StudentsTable({ students }) {
+type studentTableProps {
+  students:[]
+}
+export default function StudentsTable({ students }:studentTableProps) {
   return (
     <div className="overflow-hidden rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
       <div className="overflow-x-auto">

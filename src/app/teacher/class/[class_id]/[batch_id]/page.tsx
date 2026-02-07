@@ -29,7 +29,7 @@ export default function ClassPage() {
       }
 
       const response = await axios.get(
-        `http://localhost:4000/api/v1/teacher/classes/${class_id}/batches/${batch_id}`,
+        `https://student-backend-saas.vercel.app/api/v1/teacher/classes/${class_id}/batches/${batch_id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

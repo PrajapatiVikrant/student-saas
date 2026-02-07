@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import BatchCard from "@/app/components/ui/BatchCard";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import CircularIndeterminate from "@/app/components/ui/CircularIndeterminate";
 import BatchForm from "@/app/components/forms/BatchForm";
 
@@ -23,7 +23,7 @@ interface Subject {
 interface Batch {
     _id: string;
     batch_name: string;
-    [key: string]: any; // allow extra fields if needed
+    [key: string]: unknown; // allow extra fields if needed
 }
 
 // ✅ Type for API response
@@ -60,7 +60,7 @@ export default function Kaksha() {
         const token = localStorage.getItem("codeflam01_token");
         try {
             const response = await axios.get<ClassResponse>(
-                `http://localhost:4000/api/v1/kaksha/${class_id}`,
+                `https://student-backend-saas.vercel.app/api/v1/kaksha/${class_id}`,
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 }
@@ -71,8 +71,9 @@ export default function Kaksha() {
             setClass_name(response.data.class.name)
             setBatch(response.data.class.batches);
             setSubjects(response.data.class.subjects);
-        } catch (error: any) {
-            if (error.response?.status === 401 || error.response?.status === 403) {
+        } catch (error: unknown) {
+            const err = error as AxiosError
+            if (err.response?.status === 401 || err.response?.status === 403) {
                 toast.error("Session expired. Please log in again.");
                 localStorage.removeItem("codeflam01_token");
                 router.push("/login");
@@ -97,7 +98,7 @@ export default function Kaksha() {
         setProcessing(true);
         try {
             const response = await axios.post(
-                `http://localhost:4000/api/v1/kaksha/addSubject/${class_id}`,
+                `https://student-backend-saas.vercel.app/api/v1/kaksha/addSubject/${class_id}`,
                 { subject },
                 {
                     headers: { Authorization: `Bearer ${token}` },
@@ -110,8 +111,9 @@ export default function Kaksha() {
             // ✅ Refresh the subjects list after adding
             getClass();
             setSubject("");
-        } catch (error: any) {
-            if (error.response?.status === 401 || error.response?.status === 403) {
+        } catch (error: unknown) {
+            const err = error as AxiosError;
+            if (err.response?.status === 401 || err.response?.status === 403) {
                 toast.error("Session expired. Please log in again.");
                 localStorage.removeItem("codeflam01_token");
                 router.push("/login");
@@ -124,19 +126,20 @@ export default function Kaksha() {
         }
     }
 
-    async function removeSubject(id:String) {
+    async function removeSubject(id:string) {
     const token = localStorage.getItem("codeflam01_token")
     try {
       setLoading(true)
-      const response = await axios.delete(`http://localhost:4000/api/v1/kaksha/deleteSubject/${class_id}/${id}`,
+      const response = await axios.delete(`https://student-backend-saas.vercel.app/api/v1/kaksha/deleteSubject/${class_id}/${id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         })
    
       toast.success(response.data.message)
       getClass()
-    } catch (error: any) {
-      if (error.response?.status === 401 || error.response?.status === 403) {
+    } catch (error: unknown) {
+       const err = error as AxiosError;
+            if (err.response?.status === 401 || err.response?.status === 403) {
         toast.error("Session expired. Please log in again.");
         localStorage.removeItem("codeflam01_token");
         router.push("/login");

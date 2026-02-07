@@ -40,7 +40,7 @@ export default function Login() {
 
     try {
       const response = await axios.post(
-        "http://localhost:4000/api/v1/admin/login",
+        "https://student-backend-saas.vercel.app/api/v1/admin/login",
         { email, password }
       );
 
@@ -69,7 +69,7 @@ export default function Login() {
       }
 
       const response = await axios.get(
-        `http://localhost:4000/api/v1/admin/forgot/${email}`
+        `https://student-backend-saas.vercel.app/api/v1/admin/forgot/${email}`
       );
 
       toast.success(response.data.message);

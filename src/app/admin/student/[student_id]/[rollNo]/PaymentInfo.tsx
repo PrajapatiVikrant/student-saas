@@ -62,7 +62,7 @@ export default function PaymentInfo({ student }: PaymentInfoProps) {
     try {
       const token = localStorage.getItem("codeflam01_token");
       const { data } = await axios.get<FeeStatusResponse>(
-        `http://localhost:4000/api/v1/fee/status/${student.id}`,
+        `https://student-backend-saas.vercel.app/api/v1/fee/status/${student.id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
