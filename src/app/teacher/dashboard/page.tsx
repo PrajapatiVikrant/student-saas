@@ -174,7 +174,7 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="h-screen flex flex-col items-center justify-center">
+      <div className="h-screen flex dark:bg-slate-900 dark:text-white flex-col items-center justify-center">
         <CircularIndeterminate size={60} />
         <p>Loading...</p>
       </div>
@@ -184,13 +184,14 @@ export default function Dashboard() {
   return (
     <div className="bg-slate-50 dark:bg-slate-900 pb-20 font-sans">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
-        
+
         {/* Welcome Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white tracking-tight">
               {greeting}, {profile?.name?.split(" ")[0] || "Teacher"}
             </h1>
+
             <p className="text-slate-500 dark:text-slate-400 mt-1">
               Here's what's happening in your classes today.
             </p>

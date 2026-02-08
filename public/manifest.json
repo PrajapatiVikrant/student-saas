@@ -1,6 +1,6 @@
 {
   "name": "Codeflame EduCampus",
-  "short_name": "NextPWA",
+  "short_name": "Codeflame EduCampus",
   "description": "My Next.js Progressive Web App",
   "start_url": "/",
   "display": "standalone",

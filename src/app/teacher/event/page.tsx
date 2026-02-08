@@ -2,10 +2,9 @@
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Pencil, Trash2, PlusCircle, Loader2, X } from "lucide-react";
+import { Pencil, Trash2, PlusCircle, Loader2 } from "lucide-react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
-import CircularIndeterminate from "@/app/components/ui/CircularIndeterminate";
 import { GiTeacher } from "react-icons/gi";
 import { Button } from "@/app/components/ui/attendanceUi/Button";
 
@@ -27,14 +26,8 @@ interface ClassItem {
 
 interface Event {
   _id: string;
-  class: {
-    id: string;
-    class_name: string;
-  };
-  batch: {
-    id: string;
-    batch_name: string;
-  };
+  class: { id: string; class_name: string };
+  batch: { id: string; batch_name: string };
   title: string;
   date: string;
   description: string;
@@ -118,9 +111,7 @@ const EventPage: React.FC = () => {
 
   // ================= HANDLE CHANGE =================
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
 
@@ -258,85 +249,73 @@ const EventPage: React.FC = () => {
 
   // ================= UI =================
   return (
-    <div className="h-[100vh] bg-gradient-to-br from-slate-50 to-slate-100 ">
-        {/* HEADER */}
-        <div className="bg-white border-b mb-2.5 border-slate-200 sticky top-0 z-10">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                      <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-                        <GiTeacher className="w-6 h-6 text-indigo-600" />
-                        Event Management
-                      </h1>
-                      <p className="text-slate-500 text-sm mt-1">
-                        Manage your classes event
-                      </p>
-                    </div>
-        
-                  
-        
-                      <Button
-                        onClick={() => setShowModal(true)}
-                        className="bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm"
-                      >
-                        <PlusCircle size={18} className="mr-2" /> Add Event
-                      </Button>
-                    </div>
-                  </div>
-                  </div>
-      <div className="max-w-5xl mx-auto">
+    <div className="h-[100vh]    dark:bg-slate-900 text-slate-100">
+      {/* HEADER */}
+      <div className="bg-slate-800 border-b border-slate-700 sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold flex items-center gap-2">
+              <GiTeacher className="w-6 h-6 text-indigo-400" />
+              Event Management
+            </h1>
+            <p className="text-slate-400 text-sm mt-1">Manage your classes event</p>
+          </div>
 
+          <Button
+            onClick={() => setShowModal(true)}
+            className="bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm"
+          >
+            <PlusCircle size={18} className="mr-2" /> Add Event
+          </Button>
+        </div>
+      </div>
+
+      <div className="max-w-5xl mx-auto mt-5">
         {/* LOADING */}
         {loading ? (
           <div className="flex justify-center items-center py-20">
-            <Loader2 className="animate-spin text-blue-600" size={40} />
+            <Loader2 className="animate-spin text-indigo-400" size={40} />
           </div>
         ) : events.length === 0 ? (
-          <div className="bg-white rounded-2xl shadow p-10 text-center text-slate-500">
+          <div className="bg-slate-800 rounded-2xl shadow p-10 text-center text-slate-300">
             <p className="text-lg font-semibold">No events found 📌</p>
-            <p className="text-sm mt-1">
-              Add your first event using the button above.
-            </p>
+            <p className="text-sm mt-1">Add your first event using the button above.</p>
           </div>
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {events.map((event:any) => (
+          <div className="grid sm:grid-cols-2 p-4 lg:grid-cols-3 gap-5">
+            {events.map((event: any) => (
               <div
                 key={event._id}
-                className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-lg transition"
+                className="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow hover:shadow-lg transition"
               >
                 <div className="flex justify-between items-start gap-3">
                   <div>
-                    <h2 className="font-bold text-lg text-slate-800">
-                      {event.title}
-                    </h2>
-                    <p className="text-sm text-slate-500 mt-1">
-                      📅 {event.date.split("T")[0]}
-                    </p>
+                    <h2 className="font-bold text-lg text-slate-100">{event.title}</h2>
+                    <p className="text-sm text-slate-400 mt-1">📅 {event.date.split("T")[0]}</p>
                   </div>
 
-                  <div className="text-xs px-3 py-1 rounded-full bg-blue-50 text-blue-600 font-semibold">
+                  <div className="text-xs px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 font-semibold">
                     Event
                   </div>
                 </div>
 
-                <div className="mt-4 space-y-2 text-sm text-slate-700">
+                <div className="mt-4 space-y-2 text-sm text-slate-300">
                   <p>
-                    <span className="font-semibold text-slate-600">Class:</span>{" "}
+                    <span className="font-semibold text-slate-100">Class:</span>{" "}
                     {event.class.class_name}
                   </p>
                   <p>
-                    <span className="font-semibold text-slate-600">Batch:</span>{" "}
+                    <span className="font-semibold text-slate-100">Batch:</span>{" "}
                     {event.batch.batch_name}
                   </p>
                   <p>
-                    <span className="font-semibold text-slate-600">Added by:</span>{" "}
+                    <span className="font-semibold text-slate-100">Added by:</span>{" "}
                     {event.added_by._id === myId ? "You" : event.added_by.name}
                   </p>
                 </div>
 
                 {event.description && (
-                  <div className="mt-4 bg-slate-50 p-3 rounded-xl text-sm text-slate-600 border">
+                  <div className="mt-4 bg-slate-700 p-3 rounded-xl text-sm border border-slate-600 text-slate-300">
                     {event.description}
                   </div>
                 )}
@@ -345,14 +324,14 @@ const EventPage: React.FC = () => {
                   <div className="flex gap-3 mt-5 justify-end">
                     <button
                       onClick={() => handleEdit(event)}
-                      className="flex items-center gap-2 px-3 py-2 rounded-lg bg-yellow-50 hover:bg-yellow-100 text-yellow-700 text-sm font-semibold transition"
+                      className="flex items-center gap-2 px-3 py-2 rounded-lg bg-yellow-800 hover:bg-yellow-700 text-yellow-200 text-sm font-semibold transition"
                     >
                       <Pencil size={16} /> Edit
                     </button>
 
                     <button
                       onClick={() => handleDelete(event._id)}
-                      className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 text-sm font-semibold transition"
+                      className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-800 hover:bg-red-700 text-red-200 text-sm font-semibold transition"
                     >
                       <Trash2 size={16} /> Delete
                     </button>
@@ -364,12 +343,10 @@ const EventPage: React.FC = () => {
         )}
       </div>
 
+      {/* MODAL */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-
-          {/* ✅ Modal Container Scrollable */}
-          <div className="bg-white p-6 rounded-xl w-[400px] max-h-[80vh] overflow-y-auto">
-
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+          <div className="bg-slate-800 p-6 rounded-xl w-[400px] max-h-[80vh] overflow-y-auto text-slate-100">
             <h2 className="text-lg font-semibold mb-4">
               {editingEvent ? "Edit Event" : "Add Event"}
             </h2>
@@ -378,7 +355,7 @@ const EventPage: React.FC = () => {
               name="class_id"
               value={formData.class_id}
               onChange={handleChange}
-              className="w-full border p-2 mb-3"
+              className="w-full bg-slate-700 text-slate-100 border border-slate-600 p-2 mb-3 rounded"
             >
               <option value="">Select Class</option>
               {classList.map((cls) => (
@@ -392,7 +369,7 @@ const EventPage: React.FC = () => {
               name="batch_id"
               value={formData.batch_id}
               onChange={handleChange}
-              className="w-full border p-2 mb-3"
+              className="w-full bg-slate-700 text-slate-100 border border-slate-600 p-2 mb-3 rounded"
             >
               <option value="">Select Batch</option>
               {batches.map((b) => (
@@ -407,7 +384,7 @@ const EventPage: React.FC = () => {
               placeholder="Title"
               value={formData.title}
               onChange={handleChange}
-              className="w-full border p-2 mb-3"
+              className="w-full bg-slate-700 text-slate-100 border border-slate-600 p-2 mb-3 rounded"
             />
 
             <input
@@ -415,7 +392,7 @@ const EventPage: React.FC = () => {
               name="date"
               value={formData.date}
               onChange={handleChange}
-              className="w-full border p-2 mb-3"
+              className="w-full bg-slate-700 text-slate-100 border border-slate-600 p-2 mb-3 rounded"
             />
 
             <textarea
@@ -423,16 +400,21 @@ const EventPage: React.FC = () => {
               placeholder="Description"
               value={formData.description}
               onChange={handleChange}
-              className="w-full border p-2 mb-3"
+              className="w-full bg-slate-700 text-slate-100 border border-slate-600 p-2 mb-3 rounded"
             />
 
             <div className="flex justify-end gap-3">
-              <button onClick={resetForm}>Cancel</button>
+              <button
+                onClick={resetForm}
+                className="px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded"
+              >
+                Cancel
+              </button>
 
               <button
                 onClick={handleSubmit}
                 disabled={processing}
-                className="bg-blue-600 text-white px-4 py-2 rounded"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
               >
                 {processing ? "Saving..." : "Save"}
               </button>
@@ -440,7 +422,7 @@ const EventPage: React.FC = () => {
           </div>
         </div>
       )}
-
+      <br /><br />
     </div>
   );
 };

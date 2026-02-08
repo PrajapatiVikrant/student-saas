@@ -1,11 +1,12 @@
 "use client";
+
 import StudentAdmission from "@/app/components/forms/StudentAdmission";
 import CircularIndeterminate from "@/app/components/ui/CircularIndeterminate";
 import axios, { AxiosError } from "axios";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FiUserPlus, FiEye} from "react-icons/fi";
+import { FiUserPlus, FiEye } from "react-icons/fi";
 import { toast } from "react-toastify";
 
 interface Student {
@@ -19,12 +20,6 @@ interface GetAllStudentResponse {
   batch_name: string;
   students: Student[];
 }
-
-
-
-
-
-
 
 export default function Students() {
   const { class_id, batch_id } = useParams();
@@ -65,9 +60,10 @@ export default function Students() {
         batch_name: response.data.batch_name,
       });
       setStudents(response.data.students);
-    } catch (error:unknown) {
-      const err = error as AxiosError
+    } catch (error: unknown) {
+      const err = error as AxiosError;
       console.error("Error fetching students:", error);
+
       if (err.response?.status === 401 || err.response?.status === 403) {
         toast.error("Session expired. Please log in again.");
         localStorage.removeItem("codeflam01_token");
@@ -82,21 +78,24 @@ export default function Students() {
 
   if (loading) {
     return (
-      <main className="flex flex-col h-screen justify-center items-center">
+      <main className="flex flex-col h-screen justify-center items-center bg-slate-50 dark:bg-slate-950 text-black dark:text-white">
         <CircularIndeterminate size={80} />
-        <span>Loading...</span>
+        <span className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+          Loading...
+        </span>
       </main>
     );
   }
 
   return (
-    <main className="flex-1 px-4 py-8 sm:px-6 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 lg:px-10">
+    <main className="flex-1 px-4 py-8 sm:px-6 lg:px-10 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 text-black dark:text-white">
       <div className="mx-auto max-w-5xl">
         {/* Header */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-          <h1 className="text-3xl font-bold">
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
             {classData.class_name} - {classData.batch_name}
           </h1>
+
           <button
             onClick={() => setRegisterForm(true)}
             className="flex cursor-pointer items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-blue-700 transition"
@@ -111,17 +110,17 @@ export default function Students() {
           <div className="flex gap-8 px-4">
             <Link
               href={`/admin/class_batch/class/batch/students/${class_id}/${batch_id}`}
-              className="border-b-2 border-blue-600 py-3 text-sm font-semibold text-blue-600"
+              className="border-b-2 border-blue-600 py-3 text-sm font-semibold text-blue-600 dark:text-blue-400"
             >
               Students
             </Link>
+
             <Link
               href={`/admin/class_batch/class/batch/attendance/${class_id}/${batch_id}`}
-              className="border-b-2 border-transparent py-3 text-sm font-medium text-slate-500 dark:text-slate-400"
+              className="border-b-2 border-transparent py-3 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400"
             >
               Attendance
             </Link>
-            
           </div>
         </div>
 
@@ -142,43 +141,40 @@ export default function Students() {
                   </th>
                 </tr>
               </thead>
+
               <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
                 {students.length > 0 ? (
                   students.map((student, index) => (
-                    <tr key={student._id}>
+                    <tr
+                      key={student._id}
+                      className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition"
+                    >
                       <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">
                         {student.name}
                       </td>
+
                       <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">
                         {index + 1}
                       </td>
 
-
                       <td className="whitespace-nowrap px-6 py-4 text-sm">
                         <div className="flex items-center gap-4">
-                          {/* View Button */}
                           <Link
                             href={`/admin/student/${student._id}/${index + 1}`}
-                            className="text-blue-600 hover:text-blue-800 transition"
+                            className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition"
                             title="View Student"
                           >
                             <FiEye className="w-5 h-5" />
                           </Link>
-
-                        
-
-                         
                         </div>
                       </td>
-
-
                     </tr>
                   ))
                 ) : (
                   <tr>
                     <td
                       colSpan={3}
-                      className="text-center text-gray-400 py-4 text-sm"
+                      className="text-center py-6 text-slate-500 dark:text-slate-400 text-sm"
                     >
                       No students available
                     </td>
@@ -199,10 +195,10 @@ export default function Students() {
           batchId={String(batch_id)}
           setRegisterForm={setRegisterForm}
           getStudent={getBatchStudents}
-          admisson = {false}
+          admisson={false}
         />
-
       )}
+      <br /><br />
     </main>
   );
 }

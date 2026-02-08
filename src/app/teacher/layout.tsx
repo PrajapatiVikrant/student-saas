@@ -14,7 +14,7 @@ export default function TeacherLayout({ children }: Readonly<{
             <aside >
                <TeacherDashboard/>
             </aside>
-            <section className="bg-white h-[90vh] overflow-auto w-full">
+            <section className="bg-white h-[90vh] dark:bg-slate-900 overflow-auto w-full">
 
             {children}
           

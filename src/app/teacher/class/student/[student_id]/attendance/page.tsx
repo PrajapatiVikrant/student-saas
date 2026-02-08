@@ -20,7 +20,7 @@ import {
 export default function AttendancePage() {
     const { student_id } = useParams();
     const router = useRouter();
-    const [student,setStudent] = useState<any>({});
+    const [student, setStudent] = useState<any>({});
     const [attendanceData, setAttendanceData] = useState<any[]>([]);
     const [loadingAttendance, setLoadingAttendance] = useState(false);
 
@@ -42,7 +42,7 @@ export default function AttendancePage() {
             setAttendanceData(res.data || []);
         } catch (error: any) {
             console.log("Error fetching attendance data:", error);
-              handleAuthError(error);
+            handleAuthError(error);
         } finally {
             setLoadingAttendance(false);
         }
@@ -59,69 +59,86 @@ export default function AttendancePage() {
     }
 
     return (
-        <div className="px-6 min-h-screen">
+        <div className="px-4 sm:px-6 md:px-8 min-h-screen bg-gray-50 dark:bg-gray-900">
+            {/* Student Detail */}
             <StudentDetail id={student_id} student={student} setStudent={setStudent} />
 
             {/* Tabs */}
-            <div className="mt-6 border-b border-slate-200 dark:border-slate-800">
-                <div className="flex gap-8 px-4">
+            <div className="mt-6 border-b border-gray-200 dark:border-gray-700">
+                <div className="flex gap-4 sm:gap-8 px-2 sm:px-4 overflow-x-auto">
                     <Link
                         href={`/teacher/class/student/${student_id}/performance`}
-                        className="border-b-2 border-transparent py-3 text-sm font-medium text-slate-500"
+                        className="border-b-2 border-transparent py-3 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                     >
                         Performance
                     </Link>
 
                     <Link
                         href={`/teacher/class/student/${student_id}/reportForm`}
-                        className="border-b-2 border-transparent py-3 text-sm font-medium text-slate-500"
+                        className="border-b-2 border-transparent py-3 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                     >
                         Add Report
                     </Link>
 
                     <Link
                         href={`/teacher/class/student/${student_id}/attendance`}
-                        className="border-b-2 border-blue-600 py-3 text-sm font-semibold text-blue-600"
+                        className="border-b-2 border-blue-600 py-3 text-sm font-semibold text-blue-600 dark:text-blue-400"
                     >
                         Attendance
                     </Link>
                 </div>
             </div>
-
-            {/* Attendance Chart */}
             <div className="mt-6">
-                <h3 className="text-lg font-semibold text-blue-600 mb-3">
+                <h3 className="text-lg font-semibold text-blue-600 dark:text-blue-400 mb-3">
                     Monthly Attendance Report
                 </h3>
 
                 {loadingAttendance ? (
-                    <p className="text-center text-gray-500">Loading attendance...</p>
+                    <p className="text-center text-gray-500 dark:text-gray-400">
+                        Loading attendance...
+                    </p>
                 ) : attendanceData.length === 0 ? (
-                    <p className="text-center text-gray-500">
+                    <p className="text-center text-gray-500 dark:text-gray-400">
                         No attendance data available
                     </p>
                 ) : (
-                    <div className="bg-gray-50 p-4 rounded-xl shadow-md w-full">
-                        <div className="w-full h-[300px]">
+                    <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md w-full transition-colors overflow-x-auto">
+                        {/* Dynamically calculate width based on number of months */}
+                        <div
+                            className={`h-[300px]`}
+                            style={{
+                                width: `${Math.max(attendanceData.length * 80, 300)}px`,
+                            }}
+                        >
                             <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={attendanceData}>
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="month" />
-                                    <YAxis />
-                                    <Tooltip />
+                                <BarChart data={attendanceData} margin={{ right: 20 }}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                                    <XAxis
+                                        dataKey="month"
+                                        stroke="#374151"
+                                        tick={{ fill: "#374151" }}
+                                    />
+                                    <YAxis stroke="#374151" tick={{ fill: "#374151" }} />
+                                    <Tooltip
+                                        contentStyle={{
+                                            backgroundColor: "#f9fafb",
+                                            border: "1px solid #e5e7eb",
+                                            color: "#000",
+                                        }}
+                                        cursor={{ fill: "#e5e7eb" }}
+                                    />
                                     <Legend />
                                     <Bar dataKey="total" fill="#9ca3af" name="Total Classes" />
-                                    <Bar
-                                        dataKey="attended"
-                                        fill="#3b82f6"
-                                        name="Attended Classes"
-                                    />
+                                    <Bar dataKey="attended" fill="#3b82f6" name="Attended Classes" />
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>
                     </div>
                 )}
             </div>
+
+            <br /><br />
         </div>
+
     );
 }

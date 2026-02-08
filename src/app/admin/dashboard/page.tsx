@@ -244,181 +244,188 @@ export default function Dashboard() {
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
       .slice(0, 6);
   }, [events]);
+return (
+  <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 ">
+    {/* Header */}
+    <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <School className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+              Dashboard
+            </h1>
 
-      {/* Header */}
-      <div className="bg-white border-b border-slate-200 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-                <School className="w-6 h-6 text-indigo-600" />
-                Dashboard
-              </h1>
-              <p className="text-slate-500 text-sm mt-1">
-                Overview of students, teachers, fees and events.
-              </p>
-            </div>
-
-
+            <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
+              Overview of students, teachers, fees and events.
+            </p>
           </div>
         </div>
       </div>
+    </div>
 
-      <main className="max-w-6xl mx-auto p-6">
-        {/* Dashboard Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {dashboardCards.map((card, index) => (
-            <div key={index}>
-              {loading ? (
-                <Variants layout={dashboardSkeleton} />
-              ) : (
-                <div
-                  className={`flex items-center justify-between gap-4 rounded-2xl bg-gradient-to-r ${card.bg} p-5 shadow-md border border-slate-200 hover:shadow-lg transition`}
-                >
-                  <div>
-                    <p className="text-sm font-medium text-slate-600">
-                      {card.title}
-                    </p>
-                    <p className="text-3xl font-bold text-slate-900 mt-1">
-                      {card.data}
-                    </p>
-                  </div>
+    <main className="max-w-6xl mx-auto p-6">
 
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white shadow-sm border">
-                    {card.icon}
-                  </div>
+      {/* Dashboard Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {dashboardCards.map((card, index) => (
+          <div key={index}>
+            {loading ? (
+              <Variants layout={dashboardSkeleton} />
+            ) : (
+              <div
+                className={`flex items-center justify-between gap-4 rounded-2xl bg-gradient-to-r ${card.bg} dark:from-slate-800 dark:to-slate-700 p-5 shadow-md border border-slate-200 dark:border-slate-700 hover:shadow-lg transition`}
+              >
+                <div>
+                  <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
+                    {card.title}
+                  </p>
+
+                  <p className="text-3xl font-bold text-slate-900 dark:text-white mt-1">
+                    {card.data}
+                  </p>
                 </div>
-              )}
-            </div>
-          ))}
-        </div>
 
-        {/* Quick Stats */}
-        <h2 className="mt-10 mb-4 text-xl font-bold text-slate-800">
-          Quick Stats
-        </h2>
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white dark:bg-slate-900 shadow-sm border border-slate-200 dark:border-slate-700">
+                  {card.icon}
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Quick Stats */}
+      <h2 className="mt-10 mb-4 text-xl font-bold text-slate-800 dark:text-white">
+        Quick Stats
+      </h2>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {loading ? (
+          <>
+            <Variants layout={quickStsSkeleton} />
+            <Variants layout={quickStsSkeleton} />
+          </>
+        ) : (
+          quickSts.map((stat, i) => (
+            <Quickstatus
+              key={i}
+              icon={stat.icon}
+              title={stat.title}
+              desc={stat.desc}
+              value={stat.value}
+            />
+          ))
+        )}
+      </div>
+
+      {/* EVENTS SECTION */}
+      <div className="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        {/* TODAY EVENTS */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <CalendarDays className="text-blue-600 dark:text-blue-400" size={20} />
+            <h2 className="text-lg font-bold text-slate-800 dark:text-white">
+              Today Events (Added By You)
+            </h2>
+          </div>
+
           {loading ? (
-            <>
-              <Variants layout={quickStsSkeleton} />
-              <Variants layout={quickStsSkeleton} />
-            </>
+            <Variants layout={eventSkeleton} />
+          ) : todayEvents.length === 0 ? (
+            <p className="text-slate-500 dark:text-slate-400 text-sm">
+              No events added by you for today.
+            </p>
           ) : (
-            quickSts.map((stat, i) => (
-              <Quickstatus
-                key={i}
-                icon={stat.icon}
-                title={stat.title}
-                desc={stat.desc}
-                value={stat.value}
-              />
-            ))
+            <div className="space-y-4">
+              {todayEvents.map((event) => (
+                <div
+                  key={event._id}
+                  className="border border-slate-200 dark:border-slate-700 rounded-xl p-4 bg-slate-50 dark:bg-slate-800"
+                >
+                  <h3 className="font-bold text-slate-800 dark:text-white">
+                    {event.title}
+                  </h3>
+
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    📅 {formatDate(event.date)}
+                  </p>
+
+                  <p className="text-sm text-slate-700 dark:text-slate-300 mt-2">
+                    <span className="font-semibold">Class:</span>{" "}
+                    {event.class.class_name} |{" "}
+                    <span className="font-semibold">Batch:</span>{" "}
+                    {event.batch.batch_name}
+                  </p>
+
+                  {event.description && (
+                    <p className="text-sm text-slate-600 dark:text-slate-300 mt-2">
+                      {event.description}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
           )}
         </div>
 
-        {/* EVENTS SECTION */}
-        <div className="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* TODAY EVENTS */}
-          <div className="bg-white border border-slate-200 rounded-2xl shadow p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <CalendarDays className="text-blue-600" size={20} />
-              <h2 className="text-lg font-bold text-slate-800">
-                Today Events (Added By You)
-              </h2>
-            </div>
-
-            {loading ? (
-              <Variants layout={eventSkeleton} />
-            ) : todayEvents.length === 0 ? (
-              <p className="text-slate-500 text-sm">
-                No events added by you for today.
-              </p>
-            ) : (
-              <div className="space-y-4">
-                {todayEvents.map((event) => (
-                  <div
-                    key={event._id}
-                    className="border border-slate-200 rounded-xl p-4 bg-slate-50"
-                  >
-                    <h3 className="font-bold text-slate-800">{event.title}</h3>
-
-                    <p className="text-xs text-slate-500 mt-1">
-                      📅 {formatDate(event.date)}
-                    </p>
-
-                    <p className="text-sm text-slate-700 mt-2">
-                      <span className="font-semibold">Class:</span>{" "}
-                      {event.class.class_name} |{" "}
-                      <span className="font-semibold">Batch:</span>{" "}
-                      {event.batch.batch_name}
-                    </p>
-
-                    {event.description && (
-                      <p className="text-sm text-slate-600 mt-2">
-                        {event.description}
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
+        {/* UPCOMING EVENTS */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <CalendarDays className="text-emerald-600 dark:text-emerald-400" size={20} />
+            <h2 className="text-lg font-bold text-slate-800 dark:text-white">
+              Upcoming Events
+            </h2>
           </div>
 
-          {/* UPCOMING EVENTS */}
-          <div className="bg-white border border-slate-200 rounded-2xl shadow p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <CalendarDays className="text-emerald-600" size={20} />
-              <h2 className="text-lg font-bold text-slate-800">
-                Upcoming Events
-              </h2>
-            </div>
+          {loading ? (
+            <Variants layout={eventSkeleton} />
+          ) : upcomingEvents.length === 0 ? (
+            <p className="text-slate-500 dark:text-slate-400 text-sm">
+              No upcoming events available.
+            </p>
+          ) : (
+            <div className="space-y-4">
+              {upcomingEvents.map((event) => (
+                <div
+                  key={event._id}
+                  className="border border-slate-200 dark:border-slate-700 rounded-xl p-4 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+                >
+                  <div className="flex justify-between items-start gap-2">
+                    <h3 className="font-bold text-slate-800 dark:text-white">
+                      {event.title}
+                    </h3>
 
-            {loading ? (
-              <Variants layout={eventSkeleton} />
-            ) : upcomingEvents.length === 0 ? (
-              <p className="text-slate-500 text-sm">
-                No upcoming events available.
-              </p>
-            ) : (
-              <div className="space-y-4">
-                {upcomingEvents.map((event) => (
-                  <div
-                    key={event._id}
-                    className="border border-slate-200 rounded-xl p-4 hover:bg-slate-50 transition"
-                  >
-                    <div className="flex justify-between items-start gap-2">
-                      <h3 className="font-bold text-slate-800">
-                        {event.title}
-                      </h3>
-
-                      <span className="text-xs px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 font-semibold">
-                        {formatDate(event.date)}
-                      </span>
-                    </div>
-
-                    <p className="text-sm text-slate-700 mt-2">
-                      <span className="font-semibold">Class:</span>{" "}
-                      {event.class.class_name} |{" "}
-                      <span className="font-semibold">Batch:</span>{" "}
-                      {event.batch.batch_name}
-                    </p>
-
-                    {event.description && (
-                      <p className="text-sm text-slate-600 mt-2">
-                        {event.description}
-                      </p>
-                    )}
+                    <span className="text-xs px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-200 font-semibold">
+                      {formatDate(event.date)}
+                    </span>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
+
+                  <p className="text-sm text-slate-700 dark:text-slate-300 mt-2">
+                    <span className="font-semibold">Class:</span>{" "}
+                    {event.class.class_name} |{" "}
+                    <span className="font-semibold">Batch:</span>{" "}
+                    {event.batch.batch_name}
+                  </p>
+
+                  {event.description && (
+                    <p className="text-sm text-slate-600 dark:text-slate-300 mt-2">
+                      {event.description}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-      </main>
-    </div>
-  );
+
+      </div>
+    </main>
+
+    <br /><br />
+  </div>
+);
+
 }

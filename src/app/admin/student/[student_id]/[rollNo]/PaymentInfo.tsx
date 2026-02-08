@@ -4,8 +4,6 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
 
 type PaymentInfoProps = {
   student: {
@@ -51,13 +49,11 @@ export default function PaymentInfo({ student }: PaymentInfoProps) {
   const [instituteName, setInstituteName] = useState("Your Institute Name");
 
   useEffect(() => {
-    // You can later replace this with dynamic admin/institute name from API or settings
     const savedInstitute = localStorage.getItem("instituteName");
     if (savedInstitute) setInstituteName(savedInstitute);
     getFeeStatus();
   }, []);
 
-  // 🧾 Fetch Fee Data
   async function getFeeStatus() {
     try {
       const token = localStorage.getItem("codeflam01_token");
@@ -82,14 +78,12 @@ export default function PaymentInfo({ student }: PaymentInfoProps) {
     }
   }
 
- 
-
   if (loading)
-    return <p className="text-center text-gray-500">Loading payment info...</p>;
+    return <p className="text-center text-gray-500 dark:text-gray-300">Loading payment info...</p>;
 
   if (!feeData)
     return (
-      <p className="text-center text-red-500">
+      <p className="text-center text-red-500 dark:text-red-400">
         No payment data available for this student.
       </p>
     );
@@ -97,56 +91,53 @@ export default function PaymentInfo({ student }: PaymentInfoProps) {
   const { student: s, receipts } = feeData;
 
   return (
-    <div className="space-y-6 text-gray-700">
-      <h2 className="text-xl font-semibold border-b pb-2">
+    <div className="space-y-6 text-gray-700 dark:text-gray-200">
+      <h2 className="text-xl font-semibold border-b pb-2 border-gray-300 dark:border-gray-600">
         Payment Information
       </h2>
 
-      {/* 🟢 Summary Cards */}
+      {/* --- Summary Cards --- */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-green-50 p-4 rounded-lg">
+        <div className="bg-green-50 dark:bg-green-900/30 dark:border dark:border-green-700 p-4 rounded-lg shadow-sm">
           <p className="font-semibold">Total Fee</p>
-          <p className="text-lg font-bold text-green-700">₹{s.totalAmount}</p>
+          <p className="text-lg font-bold text-green-700 dark:text-green-300">₹{s.totalAmount}</p>
         </div>
-        <div className="bg-blue-50 p-4 rounded-lg">
+        <div className="bg-blue-50 dark:bg-blue-900/30 dark:border dark:border-blue-700 p-4 rounded-lg shadow-sm">
           <p className="font-semibold">Paid</p>
-          <p className="text-lg font-bold text-blue-700">₹{s.totalPaid}</p>
+          <p className="text-lg font-bold text-blue-700 dark:text-blue-300">₹{s.totalPaid}</p>
         </div>
-        <div className="bg-red-50 p-4 rounded-lg">
+        <div className="bg-red-50 dark:bg-red-900/30 dark:border dark:border-red-700 p-4 rounded-lg shadow-sm">
           <p className="font-semibold">Remaining</p>
-          <p className="text-lg font-bold text-red-700">
-            ₹{s.remainingAmount}
-          </p>
+          <p className="text-lg font-bold text-red-700 dark:text-red-300">₹{s.remainingAmount}</p>
         </div>
       </div>
 
-      {/* 🧾 Payment History */}
+      {/* --- Payment History --- */}
       <div>
         <h3 className="text-lg font-semibold mb-2">Payment History</h3>
         {receipts.length === 0 ? (
-          <p className="text-gray-500">No payments made yet.</p>
+          <p className="text-gray-500 dark:text-gray-300">No payments made yet.</p>
         ) : (
-          <table className="w-full border text-sm">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="border px-3 py-2 text-left">Date</th>
-                <th className="border px-3 py-2 text-left">Amount (₹)</th>
-                <th className="border px-3 py-2 text-left">Payment Method</th>
-              </tr>
-            </thead>
-            <tbody>
-              {receipts.map((r) => (
-                <tr key={r._id}>
-                  <td className="border px-3 py-2">
-                    {new Date(r.paymentDate).toLocaleDateString()}
-                  </td>
-                  <td className="border px-3 py-2">{r.amountPaid}</td>
-                  <td className="border px-3 py-2">{r.paymentMethod}</td>
-                  
+          <div className="overflow-x-auto">
+            <table className="w-full border text-sm border-gray-300 dark:border-gray-600">
+              <thead className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
+                <tr>
+                  <th className="border px-3 py-2 text-left">Date</th>
+                  <th className="border px-3 py-2 text-left">Amount (₹)</th>
+                  <th className="border px-3 py-2 text-left">Payment Method</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {receipts.map((r) => (
+                  <tr key={r._id} className="odd:bg-white even:bg-gray-50 dark:odd:bg-slate-800 dark:even:bg-slate-700">
+                    <td className="border px-3 py-2">{new Date(r.paymentDate).toLocaleDateString()}</td>
+                    <td className="border px-3 py-2">{r.amountPaid}</td>
+                    <td className="border px-3 py-2">{r.paymentMethod}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>

@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CodeFlame School Management",
+  title: "CodeFlame EduCampus",
   description: "School Management System",
   manifest: "/manifest.json",
   icons: {
@@ -37,7 +37,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <head>
         {/* ✅ Apple PWA Support */}
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />

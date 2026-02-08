@@ -293,8 +293,8 @@ export default function TeachersPage() {
         statusFilter === "all"
           ? true
           : statusFilter === "active"
-          ? t.is_active === true
-          : t.is_active === false;
+            ? t.is_active === true
+            : t.is_active === false;
 
       const matchSalary =
         salaryFilter === "all" ? true : t.salary_type === salaryFilter;
@@ -304,14 +304,14 @@ export default function TeachersPage() {
   }, [teachers, searchTerm, statusFilter, salaryFilter]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 text-gray-900 dark:text-white  p-6">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold text-slate-800 mb-6">
+        <h1 className="text-3xl font-bold text-slate-800 dark:text-white mb-6">
           Teacher Management
         </h1>
 
         {/* Top Controls */}
-        <div className="bg-white rounded-xl shadow-md p-4 flex flex-col md:flex-row md:items-center gap-4 justify-between">
+        <div className="bg-white dark:bg-slate-800 dark:border-slate-700 border-b rounded-xl shadow-md p-4 flex flex-col md:flex-row md:items-center gap-4 justify-between">
           <button
             className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2 rounded-lg cursor-pointer font-semibold"
             onClick={() => {
@@ -369,95 +369,90 @@ export default function TeachersPage() {
             {filteredTeachers.map((t: any) => (
               <div
                 key={t._id}
-                className="bg-white rounded-2xl shadow-md p-5 hover:shadow-lg transition"
+                className="bg-white dark:bg-slate-800 dark:border dark:border-slate-700 rounded-2xl shadow-md p-5 hover:shadow-lg transition-colors"
               >
                 <div className="flex justify-between items-start">
                   <div>
-                    <h2 className="text-lg font-bold text-slate-800">
+                    <h2 className="text-lg font-bold text-slate-800 dark:text-gray-200">
                       {t.name}
                     </h2>
-                    <p className="text-sm text-slate-500">{t.phone}</p>
+                    <p className="text-sm text-slate-500 dark:text-gray-400">{t.phone}</p>
                   </div>
 
                   <span
-                    className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      t.is_active
-                        ? "bg-green-100 text-green-700"
-                        : "bg-red-100 text-red-700"
-                    }`}
+                    className={`px-3 py-1 rounded-full text-xs font-semibold ${t.is_active
+                        ? "bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-300"
+                        : "bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-300"
+                      }`}
                   >
                     {t.is_active ? "Active" : "Inactive"}
                   </span>
                 </div>
 
-                <div className="mt-4 text-sm text-slate-700 space-y-2">
-                  <p>
+                <div className="mt-4 text-sm space-y-2">
+                  <p className="text-slate-700 dark:text-gray-200">
                     <span className="font-semibold">Class Teacher:</span>{" "}
-                    {classList.find((c) => c.id === t.class_teacher.class_id)
-                      ?.name || "N/A"}
+                    {classList.find((c) => c.id === t.class_teacher.class_id)?.name || "N/A"}
                   </p>
 
-                  <p>
-                    <span className="font-semibold">Salary:</span>{" "}
-                    {t.salary_type} - ₹{t.salary_amount}
+                  <p className="text-slate-700 dark:text-gray-200">
+                    <span className="font-semibold">Salary:</span> {t.salary_type} - ₹{t.salary_amount}
                   </p>
 
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-slate-500 dark:text-gray-400">
                     Joined: {t.date_joined?.split("T")[0]}
                   </p>
 
                   {/* Subjects */}
                   <div>
-                    <p className="font-semibold text-slate-700">Subjects:</p>
+                    <p className="font-semibold text-slate-700 dark:text-gray-200">Subjects:</p>
                     <div className="flex flex-wrap gap-2 mt-2">
                       {t.subject?.length > 0 ? (
                         t.subject.map((s: any) => (
                           <span
                             key={s.name}
-                            className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full"
+                            className="px-2 py-1 bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-300 text-xs rounded-full"
                           >
                             {s.name}
                           </span>
                         ))
                       ) : (
-                        <span className="text-gray-400 text-xs">No Subjects</span>
+                        <span className="text-gray-400 dark:text-gray-400 text-xs">No Subjects</span>
                       )}
                     </div>
                   </div>
                 </div>
 
                 {/* Assigned Classes */}
-<div className="mt-3">
-  <p className="font-semibold text-slate-700">Assigned Classes:</p>
-
-  <div className="flex flex-wrap gap-2 mt-2">
-    {t.classes?.length > 0 ? (
-      t.classes.map((cls: any, index: number) => (
-        <span
-          key={index}
-          className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full"
-        >
-          {cls.class_name || cls.name}
-        </span>
-      ))
-    ) : (
-      <span className="text-gray-400 text-xs">No Classes Assigned</span>
-    )}
-  </div>
-</div>
-
+                <div className="mt-3">
+                  <p className="font-semibold text-slate-700 dark:text-gray-200">Assigned Classes:</p>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {t.classes?.length > 0 ? (
+                      t.classes.map((cls: any, index: number) => (
+                        <span
+                          key={index}
+                          className="px-2 py-1 bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-300 text-xs rounded-full"
+                        >
+                          {cls.class_name || cls.name}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-gray-400 dark:text-gray-400 text-xs">No Classes Assigned</span>
+                    )}
+                  </div>
+                </div>
 
                 {/* Buttons */}
                 <div className="flex gap-3 mt-5">
                   <button
-                    className="w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg cursor-pointer font-semibold"
+                    className="w-full bg-blue-600 hover:bg-blue-500 dark:bg-blue-700 dark:hover:bg-blue-600 text-white py-2 rounded-lg cursor-pointer font-semibold"
                     onClick={() => editTeacher(t)}
                   >
                     Edit
                   </button>
 
                   <button
-                    className="w-full bg-red-600 hover:bg-red-500 text-white py-2 rounded-lg cursor-pointer font-semibold"
+                    className="w-full bg-red-600 hover:bg-red-500 dark:bg-red-700 dark:hover:bg-red-600 text-white py-2 rounded-lg cursor-pointer font-semibold"
                     disabled={processing}
                     onClick={() => handleDelete(t._id)}
                   >
@@ -465,6 +460,7 @@ export default function TeachersPage() {
                   </button>
                 </div>
               </div>
+
             ))}
 
             {filteredTeachers.length === 0 && (
@@ -728,9 +724,8 @@ export default function TeachersPage() {
                   <button
                     disabled={processing}
                     type="submit"
-                    className={`w-full flex gap-3 justify-center items-center py-2 ${
-                      processing ? "bg-blue-300 cursor-progress" : "bg-blue-700"
-                    } cursor-pointer text-white rounded`}
+                    className={`w-full flex gap-3 justify-center items-center py-2 ${processing ? "bg-blue-300 cursor-progress" : "bg-blue-700"
+                      } cursor-pointer text-white rounded`}
                   >
                     {processing && <CircularIndeterminate size={15} />}
                     {editMode ? "Update Teacher" : "Save Teacher"}
@@ -752,6 +747,7 @@ export default function TeachersPage() {
           processing={processing}
         />
       )}
+      <br /><br />
     </div>
   );
 }

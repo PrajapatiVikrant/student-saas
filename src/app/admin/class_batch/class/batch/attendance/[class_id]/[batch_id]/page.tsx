@@ -35,7 +35,9 @@ export default function Attendance() {
 
   const [classData, setClassData] = useState({ class_name: "", batch_name: "" });
   const [students, setStudents] = useState<Student[]>([]);
-  const [attendance, setAttendance] = useState<Record<string, AttendanceRecord>>({});
+  const [attendance, setAttendance] = useState<Record<string, AttendanceRecord>>(
+    {}
+  );
   const [date, setDate] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
@@ -64,7 +66,6 @@ export default function Attendance() {
   }, [students, date]);
 
   async function getBatchStudents() {
-   
     const token = localStorage.getItem("codeflam01_token");
     if (!token) {
       toast.error("Session expired. Please log in again.");
@@ -107,22 +108,29 @@ export default function Attendance() {
       const initial: Record<string, AttendanceRecord> = {};
 
       if (res.data && res.data[0]?.attendance) {
-        res.data[0].attendance.forEach((a:{
-          studentId:string;
-          studentName:string;
-          status:"Present" | "Absent" | "";
-          comment:string;
-        }) => {
-          initial[a.studentId] = {
-            studentId: a.studentId,
-            studentName: a.studentName,
-            status: a.status,
-            comment: a.comment,
-          };
-        });
+        res.data[0].attendance.forEach(
+          (a: {
+            studentId: string;
+            studentName: string;
+            status: "Present" | "Absent" | "";
+            comment: string;
+          }) => {
+            initial[a.studentId] = {
+              studentId: a.studentId,
+              studentName: a.studentName,
+              status: a.status,
+              comment: a.comment,
+            };
+          }
+        );
       } else {
-        students.forEach((s:{_id:string,name:string}) => {
-          initial[s._id] = { studentId: s._id, studentName: s.name, status: "", comment: "" };
+        students.forEach((s: { _id: string; name: string }) => {
+          initial[s._id] = {
+            studentId: s._id,
+            studentName: s.name,
+            status: "",
+            comment: "",
+          };
         });
       }
 
@@ -131,7 +139,12 @@ export default function Attendance() {
       if (err.response?.status === 404) {
         const initial: Record<string, AttendanceRecord> = {};
         students.forEach((s) => {
-          initial[s._id] = { studentId: s._id, studentName: s.name, status: "", comment: "" };
+          initial[s._id] = {
+            studentId: s._id,
+            studentName: s.name,
+            status: "",
+            comment: "",
+          };
         });
         setAttendance(initial);
       } else {
@@ -145,12 +158,18 @@ export default function Attendance() {
 
   const handleStatusChange = (studentId: string, status: "Present" | "Absent") => {
     if (!isEditable) return;
-    setAttendance((prev) => ({ ...prev, [studentId]: { ...prev[studentId], status } }));
+    setAttendance((prev) => ({
+      ...prev,
+      [studentId]: { ...prev[studentId], status },
+    }));
   };
 
   const handleCommentChange = (studentId: string, comment: string) => {
     if (!isEditable) return;
-    setAttendance((prev) => ({ ...prev, [studentId]: { ...prev[studentId], comment } }));
+    setAttendance((prev) => ({
+      ...prev,
+      [studentId]: { ...prev[studentId], comment },
+    }));
   };
 
   async function saveAttendance() {
@@ -163,7 +182,6 @@ export default function Attendance() {
     try {
       setProcessing(true);
 
-      // Always include studentName from students array
       const attendanceArray: AttendanceRecord[] = students.map((s) => ({
         studentId: s._id,
         studentName: s.name,
@@ -184,8 +202,6 @@ export default function Attendance() {
       setProcessing(false);
     }
   }
-
-
 
   async function exportAttendanceCSV() {
     if (!date) return toast.error("Please select a date.");
@@ -223,16 +239,18 @@ export default function Attendance() {
 
   if (loading)
     return (
-      <main className="flex flex-col h-screen justify-center items-center">
+      <main className="flex flex-col h-screen justify-center items-center bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
         <CircularIndeterminate size={80} />
-        <span>Loading...</span>
+        <span className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+          Loading...
+        </span>
       </main>
     );
 
   return (
-    <main className="flex-1 px-4 py-8 sm:px-6 lg:px-10">
+    <main className="flex-1 px-4 py-8 sm:px-6 lg:px-10 bg-slate-50 dark:bg-slate-950 text-black dark:text-white">
       <div className="mx-auto max-w-5xl">
-        <h1 className="text-3xl font-bold mb-6">
+        <h1 className="text-3xl font-bold mb-6 text-slate-900 dark:text-white">
           {classData.class_name} - {classData.batch_name}
         </h1>
 
@@ -241,32 +259,37 @@ export default function Attendance() {
           <div className="flex gap-8 px-4">
             <Link
               href={`/admin/class_batch/class/batch/students/${class_id}/${batch_id}`}
-              className="border-b-2 border-transparent py-3 text-sm font-medium text-slate-500 dark:text-slate-400"
-              >
+              className="border-b-2 border-transparent py-3 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400"
+            >
               Students
             </Link>
+
             <Link
               href={`/admin/class_batch/class/batch/attendance/${class_id}/${batch_id}`}
-              className="border-b-2 border-blue-600 py-3 text-sm font-semibold text-blue-600"
+              className="border-b-2 border-blue-600 py-3 text-sm font-semibold text-blue-600 dark:text-blue-400"
             >
               Attendance
             </Link>
-            
           </div>
           <br />
         </div>
+
         {/* Controls */}
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-lg border border-slate-200 bg-white p-4">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
           <div className="flex items-center gap-3">
-            <label htmlFor="attendance-date" className="text-sm font-medium">
+            <label
+              htmlFor="attendance-date"
+              className="text-sm font-medium text-slate-700 dark:text-slate-200"
+            >
               Select Date:
             </label>
+
             <input
               type="date"
               id="attendance-date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="rounded border px-2 py-1"
+              className="rounded border border-slate-300 dark:border-slate-700 px-2 py-1 bg-white dark:bg-slate-950 text-black dark:text-white"
             />
           </div>
 
@@ -274,23 +297,18 @@ export default function Attendance() {
             <button
               onClick={exportAttendanceCSV}
               disabled={processing}
-              className="bg-indigo-600 cursor-pointer text-white px-4 py-2 rounded flex items-center gap-2 disabled:opacity-50"
+              className="bg-indigo-600 hover:bg-indigo-700 cursor-pointer text-white px-4 py-2 rounded flex items-center gap-2 disabled:opacity-50"
             >
               {processing ? <CircularIndeterminate size={20} /> : <FiDownload />}
               <span>Export CSV</span>
             </button>
 
-           
-
             <button
               onClick={saveAttendance}
               disabled={!isEditable || processing}
-              className={`px-4 py-1 flex items-center cursor-pointer gap-1.5 rounded text-white ${
-                isEditable ? "bg-blue-600" : "bg-gray-400"
+              className={`px-4 py-2 flex items-center cursor-pointer gap-2 rounded text-white ${
+                isEditable ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-500"
               } disabled:opacity-50`}
-
-
-              
             >
               {processing ? <CircularIndeterminate size={20} /> : <FiSave />}
               <span>Save</span>
@@ -299,62 +317,93 @@ export default function Attendance() {
         </div>
 
         {/* Attendance Table */}
-        <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white shadow p-4">
-          <h2 className="text-xl font-semibold mb-4">
-            Attendance Report - {date || "Select a Date"}
+        <div className="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow p-4">
+          <h2 className="text-xl font-semibold mb-4 text-slate-800 dark:text-white">
+            Attendance Report -{" "}
+            <span className="text-blue-600 dark:text-blue-400">
+              {date || "Select a Date"}
+            </span>
           </h2>
+
           <table className="w-full table-auto min-w-max">
-            <thead className="bg-slate-100">
+            <thead className="bg-slate-100 dark:bg-slate-800">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase">Student Name</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase">Roll</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase">Comments</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase text-slate-700 dark:text-slate-200">
+                  Student Name
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase text-slate-700 dark:text-slate-200">
+                  Roll
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase text-slate-700 dark:text-slate-200">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase text-slate-700 dark:text-slate-200">
+                  Comments
+                </th>
               </tr>
             </thead>
+
             <tbody>
               {students.length ? (
                 students.map((s, i) => (
-                  <tr key={s._id}>
-                    <td className="px-6 py-2">{s.name}</td>
-                    <td className="px-6 py-2">{i + 1}</td>
-                    <td className="px-6 py-2">
-                      <label>
+                  <tr
+                    key={s._id}
+                    className="border-b border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/60"
+                  >
+                    <td className="px-6 py-3 text-slate-800 dark:text-white">
+                      {s.name}
+                    </td>
+
+                    <td className="px-6 py-3 text-slate-600 dark:text-slate-300">
+                      {i + 1}
+                    </td>
+
+                    <td className="px-6 py-3 text-slate-700 dark:text-slate-200">
+                      <label className="mr-4 cursor-pointer">
                         <input
                           type="radio"
                           name={`status-${s._id}`}
                           checked={attendance[s._id]?.status === "Present"}
                           onChange={() => handleStatusChange(s._id, "Present")}
                           disabled={!isEditable || processing}
-                        />{" "}
+                          className="mr-1"
+                        />
                         Present
                       </label>
-                      <label className="ml-2">
+
+                      <label className="cursor-pointer">
                         <input
                           type="radio"
                           name={`status-${s._id}`}
                           checked={attendance[s._id]?.status === "Absent"}
                           onChange={() => handleStatusChange(s._id, "Absent")}
                           disabled={!isEditable || processing}
-                        />{" "}
+                          className="mr-1"
+                        />
                         Absent
                       </label>
                     </td>
-                    <td className="px-6 py-2">
+
+                    <td className="px-6 py-3">
                       <input
                         type="text"
                         placeholder="Comment..."
                         value={attendance[s._id]?.comment || ""}
-                        onChange={(e) => handleCommentChange(s._id, e.target.value)}
+                        onChange={(e) =>
+                          handleCommentChange(s._id, e.target.value)
+                        }
                         disabled={!isEditable || processing}
-                        className="w-full border px-2 py-1 rounded"
+                        className="w-full border border-slate-300 dark:border-slate-700 px-2 py-1 rounded bg-white dark:bg-slate-950 text-black dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                       />
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={4} className="text-center py-4">
+                  <td
+                    colSpan={4}
+                    className="text-center py-6 text-slate-500 dark:text-slate-400"
+                  >
                     No students found
                   </td>
                 </tr>
@@ -363,6 +412,7 @@ export default function Attendance() {
           </table>
         </div>
       </div>
+      <br /><br />
     </main>
   );
 }
