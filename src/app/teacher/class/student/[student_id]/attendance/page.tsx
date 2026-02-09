@@ -42,6 +42,13 @@ export default function AttendancePage() {
             setAttendanceData(res.data || []);
         } catch (error: any) {
             console.log("Error fetching attendance data:", error);
+            const status = error?.response?.status;
+
+            if (status === 401 || status === 403) {
+                toast.error("Session expired. Please login again ❌");
+                router.push("/teacher/login");
+                return;
+            }
             handleAuthError(error);
         } finally {
             setLoadingAttendance(false);

@@ -52,7 +52,7 @@ export default function VerifyEmailPage() {
     }
   };
 
-  const handleVerify = async(e: React.FormEvent) => {
+  const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
     const enteredOtp = otp.join("");
     if (enteredOtp.length !== 6) {
@@ -62,25 +62,25 @@ export default function VerifyEmailPage() {
 
     setProcessing(true);
     try {
-      const response =  await axios.post("https://student-backend-saas.vercel.app/api/v1/teacher/verify-otp", {
-      email,
-      otp: enteredOtp,
-    });
-    if(response.status === 200){
-      console.log(response);
-       toast.success(response.data.message || "OTP verified successfully 🎉"); 
-       localStorage.setItem("codeflam01_token", response.data.token); 
-       enableNotification();
-      window.location.href = '/teacher/dashboard'
-     
+      const response = await axios.post("https://student-backend-saas.vercel.app/api/v1/teacher/verify-otp", {
+        email,
+        otp: enteredOtp,
+      });
+      if (response.status === 200) {
+        console.log(response);
+        toast.success(response.data.message || "OTP verified successfully 🎉");
+        localStorage.setItem("codeflam01_token", response.data.token);
+        enableNotification();
+        window.location.href = '/teacher/dashboard'
 
+
+      }
     }
-  }
     catch (error) {
-        console.log(error);
+      console.log(error);
       toast.error("OTP verification failed ❌");
-       setProcessing(false);
-      
+      setProcessing(false);
+
     }
   };
 
@@ -107,7 +107,7 @@ export default function VerifyEmailPage() {
 
           {/* OTP Inputs */}
           <form className="mt-8" >
-            <div className="flex justify-center gap-2">
+            <div className="grid grid-cols-6 gap-2 w-full max-w-sm mx-auto">
               {otp.map((digit, i) => (
                 <input
                   key={i}
@@ -121,11 +121,20 @@ export default function VerifyEmailPage() {
                   value={digit}
                   onChange={(e) => handleChange(e.target.value, i)}
                   onKeyDown={(e) => handleKeyDown(e, i)}
-                  className="w-12 h-12 text-center text-lg font-semibold border rounded-lg border-gray-300 dark:border-gray-600 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary outline-none"
+                  className="
+        w-full aspect-square
+        text-center text-base sm:text-lg font-semibold
+        border rounded-lg
+        border-gray-300 dark:border-gray-600
+        dark:text-white
+        focus:border-primary focus:ring-2 focus:ring-primary
+        outline-none
+      "
                 />
               ))}
             </div>
-          
+
+
 
             {/* Verify Button */}
             <div className="mt-8">
@@ -133,7 +142,7 @@ export default function VerifyEmailPage() {
                 type="submit"
                 onClick={handleVerify}
                 disabled={processing}
-                className={`w-full flex  justify-center gap-1.5 items-center ${processing?"bg-blue-300":"bg-blue-700"}  cursor-pointer text-white font-semibold py-3 rounded-lg hover:bg-blue-300 transition-all duration-300`}
+                className={`w-full flex  justify-center gap-1.5 items-center ${processing ? "bg-blue-300" : "bg-blue-700"}  cursor-pointer text-white font-semibold py-3 rounded-lg hover:bg-blue-300 transition-all duration-300`}
               >
                 {processing ? <CircularIndeterminate size={20} /> : ""} <span>Verify Account</span>
               </button>

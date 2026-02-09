@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { MdEmail } from "react-icons/md";
 import { toast } from "react-toastify";
-import {enableNotification} from "@/app/utils/useNotificaiton"
+import { enableNotification } from "@/app/utils/useNotificaiton"
 
 export default function VerifyEmailPage() {
   const [processing, setProcessing] = useState(false);
@@ -53,7 +53,7 @@ export default function VerifyEmailPage() {
     }
   };
 
-  const handleVerify = async(e: React.FormEvent) => {
+  const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
     const enteredOtp = otp.join("");
     if (enteredOtp.length !== 6) {
@@ -63,26 +63,26 @@ export default function VerifyEmailPage() {
 
     setProcessing(true);
     try {
-      const response =  await axios.post("https://student-backend-saas.vercel.app/api/v1/admin/verify-otp", {
-      email,
-      otp: enteredOtp,
-    });
-    if(response.status === 200){
-      console.log(response);
-      toast.success(response.data.message || "OTP verified successfully 🎉"); 
-      enableNotification();
+      const response = await axios.post("https://student-backend-saas.vercel.app/api/v1/admin/verify-otp", {
+        email,
+        otp: enteredOtp,
+      });
+      if (response.status === 200) {
+        console.log(response);
+        toast.success(response.data.message || "OTP verified successfully 🎉");
+        enableNotification();
 
-      localStorage.setItem("codeflam01_token", response.data.token); 
-       toast.success("Welcome to EduConnect Admin Portal 🚀");
-     router.push("/admin/dashboard")
-     
+        localStorage.setItem("codeflam01_token", response.data.token);
+        toast.success("Welcome to EduConnect Admin Portal 🚀");
+        router.push("/admin/dashboard")
 
+
+      }
     }
-  }
     catch (error) {
       toast.error("OTP verification failed ❌");
-       setProcessing(false);
-      
+      setProcessing(false);
+
     }
   };
 
@@ -109,7 +109,7 @@ export default function VerifyEmailPage() {
 
           {/* OTP Inputs */}
           <form className="mt-8" >
-            <div className="flex justify-center gap-2">
+            <div className="grid grid-cols-6 gap-2 w-full max-w-sm mx-auto">
               {otp.map((digit, i) => (
                 <input
                   key={i}
@@ -123,31 +123,28 @@ export default function VerifyEmailPage() {
                   value={digit}
                   onChange={(e) => handleChange(e.target.value, i)}
                   onKeyDown={(e) => handleKeyDown(e, i)}
-                  className="w-12 h-12 text-center text-lg font-semibold border rounded-lg border-gray-300 dark:border-gray-600 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary outline-none"
+                  className="
+        w-full aspect-square
+        text-center text-base sm:text-lg font-semibold
+        border rounded-lg
+        border-gray-300 dark:border-gray-600
+        dark:text-white
+        focus:border-primary focus:ring-2 focus:ring-primary
+        outline-none
+      "
                 />
               ))}
             </div>
 
-            {/* Resend */}
-            <div className="mt-6 text-center">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Didn’t receive the code?
-              </p>
-              <button
-                type="button"
-                className="mt-1 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
-              >
-                Resend Code
-              </button>
-            </div>
 
+         
             {/* Verify Button */}
             <div className="mt-8">
               <button
                 type="submit"
                 onClick={handleVerify}
                 disabled={processing}
-                className={`w-full flex  justify-center gap-1.5 items-center ${processing?"bg-blue-300":"bg-blue-700"}  cursor-pointer text-white font-semibold py-3 rounded-lg hover:bg-blue-300 transition-all duration-300`}
+                className={`w-full flex  justify-center gap-1.5 items-center ${processing ? "bg-blue-300" : "bg-blue-700"}  cursor-pointer text-white font-semibold py-3 rounded-lg hover:bg-blue-300 transition-all duration-300`}
               >
                 {processing ? <CircularIndeterminate size={20} /> : ""} <span>Verify Account</span>
               </button>

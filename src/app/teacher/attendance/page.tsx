@@ -1,9 +1,13 @@
 "use client";
 
+
+
+"use client";
+
 import * as React from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FiSave, FiDownload } from "react-icons/fi";
 import { toast } from "react-toastify";
 import CircularIndeterminate from "@/app/components/ui/CircularIndeterminate";
@@ -40,6 +44,7 @@ import {
   AvatarImage,
 } from "@/app/components/ui/attendanceUi/Avatar";
 import { Badge } from "@/app/components/ui/attendanceUi/Badge";
+import { Progress } from "@/app/components/ui/attendanceUi/Progress";
 
 interface Student {
   _id: string;
@@ -73,14 +78,18 @@ export default function Attendance() {
   const [isEditable, setIsEditable] = useState(false);
   const [search, setSearch] = useState("");
 
-  // Set today's date
+  /* ---------- DATE ---------- */
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0];
     setDate(today);
-    setIsEditable(true); // Only today is editable
   }, []);
 
-  // Fetch teacher profile
+  useEffect(() => {
+    const today = new Date().toISOString().split("T")[0];
+    setIsEditable(date === today);
+  }, [date]);
+
+  /* ---------- TEACHER ---------- */
   useEffect(() => {
     fetchTeacherProfile();
   }, []);
@@ -113,14 +122,16 @@ export default function Attendance() {
     }
   }
 
-  // Fetch students
+  /* ---------- STUDENTS ---------- */
   async function fetchStudents(class_id: string, batch_id: string) {
     const token = localStorage.getItem("codeflam01_token");
+
     try {
       const res = await axios.get(
         `https://student-backend-saas.vercel.app/api/v1/student/${class_id}/${batch_id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
+
       setClassData({
         class_name: res.data.class_name,
         batch_name: res.data.batch_name,
@@ -139,7 +150,7 @@ export default function Attendance() {
     }
   }
 
-  // Fetch attendance
+  /* ---------- ATTENDANCE ---------- */
   useEffect(() => {
     if (students.length && date) fetchAttendance();
   }, [students, date]);
@@ -181,10 +192,16 @@ export default function Attendance() {
         };
       });
       setAttendance(initial);
+      const status = error?.response?.status;
+      if (status === 401 || status === 403) {
+        toast.error("Session expired. Please login again ❌");
+        router.push("/teacher/login");
+        return;
+      }
     }
   }
 
-  // Handlers
+  /* ---------- HANDLERS ---------- */
   const handleStatusChange = (id: string, status: "Present" | "Absent") => {
     if (!isEditable) return;
     setAttendance((prev) => ({
@@ -201,7 +218,7 @@ export default function Attendance() {
     }));
   };
 
-  // Save attendance
+  /* ---------- SAVE ---------- */
   async function saveAttendance() {
     if (!isEditable) return toast.error("Cannot edit past attendance");
 
@@ -233,12 +250,18 @@ export default function Attendance() {
       toast.success("Attendance saved");
     } catch (error: any) {
       toast.error("Save failed");
+      const status = error?.response?.status;
+      if (status === 401 || status === 403) {
+        toast.error("Session expired. Please login again ❌");
+        router.push("/teacher/login");
+        return;
+      }
     } finally {
       setProcessing(false);
     }
   }
 
-  // Export CSV
+  /* ---------- CSV ---------- */
   function exportCSV() {
     const rows = students.map((s, i) => [
       s.name,
@@ -259,7 +282,7 @@ export default function Attendance() {
     a.click();
   }
 
-  // Stats
+  /* ---------- STATS ---------- */
   const total = students.length;
   const present = students.filter(
     (s) => attendance[s._id]?.status === "Present"
@@ -267,27 +290,25 @@ export default function Attendance() {
   const absent = students.filter(
     (s) => attendance[s._id]?.status === "Absent"
   ).length;
+
   const marked = present + absent;
   const progressValue = total ? Math.round((marked / total) * 100) : 0;
 
   const stats = { total, present, absent, marked };
 
+  /* ---------- LOADING ---------- */
   if (loading) {
     return (
-      <div className="h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-900">
+      <div className="h-screen flex flex-col items-center justify-center">
         <CircularIndeterminate size={60} />
-        <p className="text-slate-700 dark:text-slate-200">Loading...</p>
+        <p>Loading...</p>
       </div>
     );
   }
 
-  // Filter students for search
-  const filteredStudents = students.filter((s) =>
-    s.name.toLowerCase().includes(search.toLowerCase())
-  );
-
+  /* ---------- UI (UNCHANGED) ---------- */
   return (
-    <main className="max-w-6xl bg-slate-50 dark:bg-slate-900 mx-auto pb-10">
+    <main className="max-w-6xl bg-slate-50 dark:bg-slate-900   mx-auto  pb-10">
       {/* Header */}
       <header className="bg-white dark:bg-slate-800 border-b dark:border-slate-700 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -323,6 +344,7 @@ export default function Attendance() {
           </div>
         </div>
       </header>
+      <br />
 
       <Card className="lg:col-span-2 mx-4 shadow-sm border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 mt-4">
         <CardHeader className="pb-3 border-b border-slate-50 dark:border-slate-700">
@@ -349,7 +371,7 @@ export default function Attendance() {
           </div>
         </CardContent>
       </Card>
-
+      <br />
       {/* Summary Card */}
       <Card className="shadow-sm mx-4 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 mt-4">
         <CardHeader className="pb-3 border-b border-slate-50 dark:border-slate-700">
@@ -385,26 +407,163 @@ export default function Attendance() {
         </CardContent>
       </Card>
 
-      {/* Table view */}
-      <div className="hidden md:block mx-4 mt-4 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-x-auto">
-        <Table className="min-w-full">
-          <TableHeader className="bg-slate-50 dark:bg-slate-700 border-b border-slate-200 dark:border-slate-700">
-            <TableRow className="hover:bg-slate-50/80 dark:hover:bg-slate-700">
-              <TableHead className="w-[80px] font-semibold text-slate-600 dark:text-slate-200">Roll</TableHead>
-              <TableHead className="font-semibold text-slate-600 dark:text-slate-200">Student</TableHead>
-              <TableHead className="w-[300px] font-semibold text-slate-600 dark:text-slate-200">Status</TableHead>
-              <TableHead className="font-semibold text-slate-600 dark:text-slate-200">Comment</TableHead>
+      <div className="sticky mx-4 top-16 z-20 my-2 bg-white dark:bg-slate-700 backdrop-blur pb-4 border-b ">
+        <div className="px-1 space-y-2">
+
+          {/* Top labels */}
+          <div className="flex justify-between items-center text-[11px]  text-slate-600 dark:text-slate-400 font-semibold tracking-wide">
+            <span>
+              Progress <span className="text-slate-400">({progressValue}%)</span>
+            </span>
+            <span className="text-slate-500">
+              {stats.marked} / {stats.total}
+            </span>
+          </div>
+
+          {/* Progress bar */}
+          <div className="relative h-2.5 rounded-full bg-slate-200 overflow-hidden">
+            <div
+              className="
+          absolute left-0 top-0 h-full rounded-full
+          bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600
+          transition-all duration-500 ease-out
+        "
+              style={{ width: `${progressValue}%` }}
+            />
+
+            {/* subtle glow */}
+            {progressValue > 0 && (
+              <div
+                className="absolute top-0 h-full rounded-full bg-green-400/30 blur-sm"
+                style={{ width: `${progressValue}%` }}
+              />
+            )}
+          </div>
+
+        </div>
+      </div>
+
+
+
+      {/* Desktop Table View */}
+      <div
+        className="hidden mx-4 md:block bg-white dark:bg-slate-900 
+  rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden"
+      >
+        <Table>
+          <TableHeader className="bg-slate-50/80 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
+            <TableRow className="hover:bg-slate-50/80 dark:hover:bg-slate-800">
+              <TableHead className="w-[80px] font-semibold text-slate-600 dark:text-slate-200">
+                Roll
+              </TableHead>
+              <TableHead className="font-semibold text-slate-600 dark:text-slate-200">
+                Student
+              </TableHead>
+              <TableHead className="w-[300px] font-semibold text-slate-600 dark:text-slate-200">
+                Status
+              </TableHead>
+              <TableHead className="font-semibold text-slate-600 dark:text-slate-200">
+                Comment
+              </TableHead>
             </TableRow>
           </TableHeader>
+
           <TableBody>
-            {filteredStudents.map((student) => {
+            {students.map((student) => {
               const status = attendance[student._id]?.status;
+
               return (
-                <TableRow key={student._id} className="hover:bg-slate-50/50 dark:hover:bg-slate-700 transition-colors">
-                  <TableCell className="dark:text-slate-100">{filteredStudents.indexOf(student) + 1}</TableCell>
-                  <TableCell className="dark:text-slate-100">{student.name}</TableCell>
-                  <TableCell>{/* Status buttons here (same as original) */}</TableCell>
-                  <TableCell>{/* Comment input here (same as original) */}</TableCell>
+                <TableRow
+                  key={student._id}
+                  className="hover:bg-slate-50/50 dark:hover:bg-slate-800 transition-colors border-b border-slate-100 dark:border-slate-800"
+                >
+                  <TableCell className="text-slate-700 dark:text-slate-200 font-medium">
+                    {students.indexOf(student) + 1}
+                  </TableCell>
+
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-9 w-9 border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+                        <AvatarImage
+                          src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${students.indexOf(
+                            student
+                          )}`}
+                        />
+                        <AvatarFallback className="text-slate-400 dark:text-slate-300">
+                          <User className="w-4 h-4" />
+                        </AvatarFallback>
+                      </Avatar>
+
+                      <div>
+                        <p className="font-medium text-slate-900 dark:text-white">
+                          {student.name}
+                        </p>
+                      </div>
+                    </div>
+                  </TableCell>
+
+                  <TableCell>
+                    <div
+                      className="flex gap-1 p-1 bg-slate-100/80 dark:bg-slate-800 
+                rounded-lg w-fit border border-slate-200/50 dark:border-slate-700"
+                    >
+                      <button
+                        onClick={() => handleStatusChange(student._id, "Present")}
+                        className={`
+                    flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium 
+                    transition-all duration-200
+                    ${status === "Present"
+                            ? "bg-white dark:bg-slate-900 text-green-700 dark:text-green-300 shadow-sm ring-1 ring-green-200/50 dark:ring-green-700"
+                            : "text-slate-500 dark:text-slate-300 hover:text-slate-700 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-700"
+                          }
+                  `}
+                      >
+                        <CheckCircle2
+                          className={`w-4 h-4 ${status === "Present"
+                              ? "fill-green-100 dark:fill-green-900/40"
+                              : ""
+                            }`}
+                        />
+                        Present
+                      </button>
+
+                      <button
+                        onClick={() => handleStatusChange(student._id, "Absent")}
+                        className={`
+                    flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium 
+                    transition-all duration-200
+                    ${status === "Absent"
+                            ? "bg-white dark:bg-slate-900 text-red-700 dark:text-red-300 shadow-sm ring-1 ring-red-200/50 dark:ring-red-700"
+                            : "text-slate-500 dark:text-slate-300 hover:text-slate-700 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-700"
+                          }
+                  `}
+                      >
+                        <XCircle
+                          className={`w-4 h-4 ${status === "Absent"
+                              ? "fill-red-100 dark:fill-red-900/40"
+                              : ""
+                            }`}
+                        />
+                        Absent
+                      </button>
+                    </div>
+                  </TableCell>
+
+                  <TableCell>
+                    <Input
+                      placeholder="Add note..."
+                      value={attendance[student._id]?.comment || ""}
+                      onChange={(e) =>
+                        handleCommentChange(student._id, e.target.value)
+                      }
+                      className="h-9 bg-transparent dark:bg-transparent 
+                border-transparent hover:border-slate-200 dark:hover:border-slate-600 
+                focus:border-indigo-500 dark:focus:border-indigo-400 
+                focus:bg-white dark:focus:bg-slate-900 
+                transition-all text-slate-600 dark:text-slate-200 
+                placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                    />
+                  </TableCell>
                 </TableRow>
               );
             })}
@@ -413,34 +572,55 @@ export default function Attendance() {
       </div>
 
       {/* Mobile Card View */}
-      <div className="md:hidden mx-4 mt-4 space-y-4">
-        {filteredStudents.map((student) => {
+      <div className="md:hidden mx-4 space-y-4">
+        {students.map((student) => {
           const status = attendance[student._id]?.status;
+
           return (
             <Card
               key={student._id}
-              className={`overflow-hidden shadow-sm border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 ${status === "Absent"
+              className={`overflow-hidden transition-all shadow-sm 
+        border border-slate-200 dark:border-slate-700 
+        bg-white dark:bg-slate-900
+        ${status === "Absent"
                   ? "border-l-4 border-l-red-500"
                   : status === "Present"
                     ? "border-l-4 border-l-green-500"
                     : ""
                 }`}
             >
-
               <CardContent className="p-4">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <Avatar className="h-10 w-10 border border-slate-100 bg-slate-50">
-                      <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${students.indexOf(student)}`} />
-                      <AvatarFallback><User className="w-5 h-5 text-slate-400" /></AvatarFallback>
+                    <Avatar className="h-10 w-10 border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+                      <AvatarImage
+                        src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${students.indexOf(
+                          student
+                        )}`}
+                      />
+                      <AvatarFallback>
+                        <User className="w-5 h-5 text-slate-400 dark:text-slate-300" />
+                      </AvatarFallback>
                     </Avatar>
+
                     <div>
-                      <h3 className="font-semibold text-slate-900 dark:text-white">{student.name}</h3>
-                      <p className="text-xs font-medium text-slate-500 dark:text-white uppercase tracking-wide">Roll No. {students.indexOf(student) + 1}</p>
+                      <h3 className="font-semibold text-slate-900 dark:text-white">
+                        {student.name}
+                      </h3>
+                      <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+                        Roll No. {students.indexOf(student) + 1}
+                      </p>
                     </div>
                   </div>
+
                   {status && (
-                    <Badge variant="outline" className={`${status === "Present" ? "bg-green-50 text-green-700 border-green-200" : "bg-red-50 text-red-700 border-red-200"}`}>
+                    <Badge
+                      variant="outline"
+                      className={`${status === "Present"
+                          ? "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-700"
+                          : "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-700"
+                        }`}
+                    >
                       {status}
                     </Badge>
                   )}
@@ -450,16 +630,23 @@ export default function Attendance() {
                   <Button
                     variant={status === "Present" ? "default" : "outline"}
                     size="sm"
-                    className={`w-full justify-center ${status === "Present" ? "bg-green-600 hover:bg-green-700 border-green-600 shadow-sm" : "hover:bg-green-50 hover:text-green-700 hover:border-green-200 border-slate-200"}`}
+                    className={`w-full justify-center ${status === "Present"
+                        ? "bg-green-600 hover:bg-green-700 border-green-600 shadow-sm text-white"
+                        : "hover:bg-green-50 hover:text-green-700 hover:border-green-200 border-slate-200 text-slate-700 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-green-900/20 dark:hover:text-green-300 dark:hover:border-green-700"
+                      }`}
                     onClick={() => handleStatusChange(student._id, "Present")}
                   >
                     <CheckCircle2 className="w-4 h-4 mr-2" />
                     Present
                   </Button>
+
                   <Button
                     variant={status === "Absent" ? "destructive" : "outline"}
                     size="sm"
-                    className={`w-full justify-center ${status === "Absent" ? "bg-red-600 hover:bg-red-700 shadow-sm" : "hover:bg-red-50 hover:text-red-700 hover:border-red-200 border-slate-200"}`}
+                    className={`w-full justify-center ${status === "Absent"
+                        ? "bg-red-600 hover:bg-red-700 shadow-sm text-white"
+                        : "hover:bg-red-50 hover:text-red-700 hover:border-red-200 border-slate-200 text-slate-700 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-red-900/20 dark:hover:text-red-300 dark:hover:border-red-700"
+                      }`}
                     onClick={() => handleStatusChange(student._id, "Absent")}
                   >
                     <XCircle className="w-4 h-4 mr-2" />
@@ -470,25 +657,21 @@ export default function Attendance() {
                 <Input
                   placeholder="Add a comment..."
                   value={attendance[student._id]?.comment || ""}
-                  onChange={(e) => handleCommentChange(student._id, e.target.value)}
-                  className="bg-slate-50 dark:bg-slate-600 border-slate-200 focus:bg-white text-sm"
+                  onChange={(e) =>
+                    handleCommentChange(student._id, e.target.value)
+                  }
+                  className="bg-slate-50 dark:bg-slate-800 
+            border-slate-200 dark:border-slate-700 
+            focus:bg-white dark:focus:bg-slate-900 
+            text-sm text-slate-900 dark:text-white 
+            placeholder:text-slate-400 dark:placeholder:text-slate-500"
                 />
-
-
               </CardContent>
             </Card>
           );
         })}
       </div>
+
     </main>
   );
 }
-
-
-
-
-
-
-
-
-

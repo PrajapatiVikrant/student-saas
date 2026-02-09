@@ -43,7 +43,7 @@ export default function AdminDashboard() {
       <aside className="hidden md:flex w-80 flex-col border-r border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
         {/* Logo */}
         <div className="flex items-center px-6 py-5 border-b border-slate-100 dark:border-slate-700">
-          <div className="flex border items-center justify-center rounded-xl text-white font-bold">
+          <div className="flex border items-center bg-white justify-center rounded-xl text-white font-bold">
             <Image
               src="/plateform_logo.png"
               width={100}
