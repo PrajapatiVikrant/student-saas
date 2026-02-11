@@ -49,7 +49,7 @@ export default function FinanceManagement() {
     setLoading(true);
     try {
       const token = getToken();
-      const response = await axios.get("http://13.53.160.202/api/v1/kaksha", {
+      const response = await axios.get("/api/v1/kaksha", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setClassList(response.data);
@@ -70,7 +70,7 @@ export default function FinanceManagement() {
     setLoading(true);
     try {
       const token = getToken();
-      const response = await axios.get("http://13.53.160.202/api/v1/fee/status", {
+      const response = await axios.get("/api/v1/fee/status", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setStudents(response.data);
@@ -123,7 +123,7 @@ export default function FinanceManagement() {
       setProcessing(true);
       const token = getToken();
       const response = await axios.post(
-        `http://13.53.160.202/api/v1/fee/record`,
+        `/api/v1/fee/record`,
         {
           studentId: selectedStudent._id,
           recordAmount: Number(amount),

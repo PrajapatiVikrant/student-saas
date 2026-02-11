@@ -37,7 +37,7 @@ export default function ResetPassword({ params }: any) {
 
     try {
       const res = await axios.put(
-        "http://13.53.160.202/api/v1/admin/reset-password",
+        "/api/v1/admin/reset-password",
         { resetToken:reset_token, newPassword:password }
       );
 

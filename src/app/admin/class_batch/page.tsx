@@ -171,7 +171,7 @@ export default function ClassBatch() {
       }
 
       const response = await axios.get(
-        "http://13.53.160.202/api/v1/kaksha",
+        "/api/v1/kaksha",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -210,7 +210,7 @@ export default function ClassBatch() {
       }
 
       const response = await axios.post(
-        "http://13.53.160.202/api/v1/kaksha",
+        "/api/v1/kaksha",
         { name: newClassName.trim() },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -260,7 +260,7 @@ export default function ClassBatch() {
       }
 
       const response = await axios.put(
-        `http://13.53.160.202/api/v1/kaksha/${editClassId}`,
+        `/api/v1/kaksha/${editClassId}`,
         { class_name: editClassName.trim() },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -305,7 +305,7 @@ export default function ClassBatch() {
       }
 
       await axios.delete(
-        `http://13.53.160.202/api/v1/kaksha/${deleteClassId}`,
+        `/api/v1/kaksha/${deleteClassId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

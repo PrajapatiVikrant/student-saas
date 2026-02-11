@@ -62,7 +62,7 @@ export default function VerifyEmailPage() {
 
     setProcessing(true);
     try {
-      const response = await axios.post("http://13.53.160.202/api/v1/teacher/verify-otp", {
+      const response = await axios.post("/api/v1/teacher/verify-otp", {
         email,
         otp: enteredOtp,
       });

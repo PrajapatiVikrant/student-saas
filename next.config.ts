@@ -7,6 +7,14 @@ const withPWA = require("next-pwa")({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+   async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: "http://13.53.160.202/api/:path*", 
+      },
+    ];
+  },
   reactStrictMode: true,
   turbopack: {},
   typescript: {

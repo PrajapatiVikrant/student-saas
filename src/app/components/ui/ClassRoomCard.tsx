@@ -42,7 +42,7 @@ export default function ClassRoomCard({
         return;
       }
         const response = await axios.delete(
-        `http://13.53.160.202/api/v1/kaksha/${id}` ,
+        `/api/v1/kaksha/${id}` ,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

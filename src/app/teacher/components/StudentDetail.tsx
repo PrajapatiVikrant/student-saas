@@ -18,7 +18,7 @@ export default function StudentDetail({id,student,setStudent}:{id:string,student
         const token = localStorage.getItem("codeflam01_token");
         try {
           const response = await axios.get(
-            `http://13.53.160.202/api/v1/student/student/${id}`,
+            `/api/v1/student/student/${id}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,

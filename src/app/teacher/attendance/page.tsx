@@ -100,7 +100,7 @@ export default function Attendance() {
 
     try {
       const res = await axios.get(
-        "http://13.53.160.202/api/v1/teacher/profile",
+        "/api/v1/teacher/profile",
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -128,7 +128,7 @@ export default function Attendance() {
 
     try {
       const res = await axios.get(
-        `http://13.53.160.202/api/v1/student/${class_id}/${batch_id}`,
+        `/api/v1/student/${class_id}/${batch_id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -161,7 +161,7 @@ export default function Attendance() {
 
     try {
       const res = await axios.get(
-        `http://13.53.160.202/api/v1/attendance/${date}/${classId}/${batchId}`,
+        `/api/v1/attendance/${date}/${classId}/${batchId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -234,7 +234,7 @@ export default function Attendance() {
       }));
 
       await axios.post(
-        "http://13.53.160.202/api/v1/attendance/mark",
+        "/api/v1/attendance/mark",
         {
           classId,
           batchId,

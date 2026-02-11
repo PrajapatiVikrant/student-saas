@@ -77,7 +77,7 @@ const EventPage: React.FC = () => {
     description: "",
   });
 
-  const API_URL = "http://13.53.160.202/api/v1/event";
+  const API_URL = "/api/v1/event";
 
   // ================= FETCH EVENTS =================
   const fetchEvents = async () => {
@@ -125,7 +125,7 @@ const EventPage: React.FC = () => {
         return;
       }
 
-      const res = await axios.get<ClassItem[]>("http://13.53.160.202/api/v1/kaksha", {
+      const res = await axios.get<ClassItem[]>("/api/v1/kaksha", {
         headers: { Authorization: `Bearer ${token}` },
       });
 

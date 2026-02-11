@@ -62,7 +62,7 @@ export default function AcademicInfo({ student }: AcademicProps) {
     try {
       setLoadingAttendance(true);
       const res = await axios.get(
-        `http://13.53.160.202/api/v1/attendance/student/${student.id}`,
+        `/api/v1/attendance/student/${student.id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setAttendanceData(res.data || []);
@@ -77,7 +77,7 @@ export default function AcademicInfo({ student }: AcademicProps) {
     try {
       setLoadingExam(true);
       const res = await axios.get(
-        `http://13.53.160.202/api/v1/test/${student.id}`,
+        `/api/v1/test/${student.id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 

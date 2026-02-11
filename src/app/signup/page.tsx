@@ -53,7 +53,7 @@ export default function Signup() {
 
     try {
       const response = await axios.post(
-        "http://13.53.160.202/api/v1/admin/signup",
+        "/api/v1/admin/signup",
         {
           instituteName,
           adminName,

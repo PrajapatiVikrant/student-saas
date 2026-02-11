@@ -9,7 +9,7 @@ type subjectCareProps = {
  
   removeSubject:(id: string) => void;
 }
-export default function SubjectCard({ id, subject, class_id,removeSubject }: subjectCareProps) {
+export default function SubjectCard({ id, subject,removeSubject }: subjectCareProps) {
   const router = useRouter();
   
  

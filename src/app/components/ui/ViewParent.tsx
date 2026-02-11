@@ -30,7 +30,7 @@ export default function ViewParent({ parent, getParents, setViewParent }: ViewPa
     try {
      
       const res = await axios.delete(
-        `http://13.53.160.202/api/v1/parent/${parent._id}`,
+        `/api/v1/parent/${parent._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

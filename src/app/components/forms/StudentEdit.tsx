@@ -63,7 +63,7 @@ export default function EditStudent({
       try {
         const token = localStorage.getItem("codeflam01_token");
         const response = await axios.get(
-          `http://13.53.160.202/api/v1/student/student/${studentId}`,
+          `/api/v1/student/student/${studentId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -141,7 +141,7 @@ export default function EditStudent({
       };
 
       const response = await axios.put(
-        `http://13.53.160.202/api/v1/student/${studentId}`,
+        `/api/v1/student/${studentId}`,
         updatedData,
         { headers: { Authorization: `Bearer ${token}` } }
       );

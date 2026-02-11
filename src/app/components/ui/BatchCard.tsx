@@ -45,7 +45,7 @@ export default function BatchCard({ batch, class_id }: BatchCardProps) {
 
     try {
       const response = await axios.get(
-        `http://13.53.160.202/api/v1/student/${class_id}/${batch._id}`,
+        `/api/v1/student/${class_id}/${batch._id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -77,7 +77,7 @@ export default function BatchCard({ batch, class_id }: BatchCardProps) {
      setProcessing(true)
     try {
      const response = await axios.delete(
-        `http://13.53.160.202/api/v1/batch/${class_id}/${batch._id}`,
+        `/api/v1/batch/${class_id}/${batch._id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 

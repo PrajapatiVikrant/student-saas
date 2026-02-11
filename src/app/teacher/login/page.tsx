@@ -30,7 +30,7 @@ export default function Login() {
     setProcessing(true);
     try {
       const response = await axios.post(
-        "http://13.53.160.202/api/v1/teacher/login",
+        "/api/v1/teacher/login",
         { email }
       );
       console.log(response);

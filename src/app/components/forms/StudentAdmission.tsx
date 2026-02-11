@@ -145,7 +145,7 @@ export default function StudentAdmission({
       setProcessing(true);
 
       const response = await axios.post(
-        "http://13.53.160.202/api/v1/student",
+        "/api/v1/student",
         submittedData,
         {
           headers: {

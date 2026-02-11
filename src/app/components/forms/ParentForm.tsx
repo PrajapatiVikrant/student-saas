@@ -41,7 +41,7 @@ export default function ParentPortalAccessForm({ parent, setRegisterForm, setVie
     useEffect(() => {
         async function fetchClasses() {
             try {
-                const res = await axios.get("http://13.53.160.202/api/v1/kaksha", {
+                const res = await axios.get("/api/v1/kaksha", {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setClasses(res.data);
@@ -74,7 +74,7 @@ export default function ParentPortalAccessForm({ parent, setRegisterForm, setVie
 
             try {
                 const response = await axios.get(
-                    `http://13.53.160.202/api/v1/student/${selectedClass}/${selectedBatch}`,
+                    `/api/v1/student/${selectedClass}/${selectedBatch}`,
                     {
                         headers: { Authorization: `Bearer ${token}` },
                     }
@@ -147,7 +147,7 @@ export default function ParentPortalAccessForm({ parent, setRegisterForm, setVie
         try {
 
             await axios.post(
-                "http://13.53.160.202/api/v1/parent",
+                "/api/v1/parent",
                 {
                     name,
                     email,
@@ -182,7 +182,7 @@ export default function ParentPortalAccessForm({ parent, setRegisterForm, setVie
         try {
 
             await axios.put(
-                `http://13.53.160.202/api/v1/parent/${parent._id}`,
+                `/api/v1/parent/${parent._id}`,
                 {
                     name,
                     email,
