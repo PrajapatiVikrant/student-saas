@@ -35,7 +35,7 @@ export default function ParentPage() {
   const getAllPortalParent = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`https://student-backend-saas.vercel.app/api/v1/parent`, {
+      const res = await axios.get(`http://13.53.160.202/api/v1/parent`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setParents(res.data || []);

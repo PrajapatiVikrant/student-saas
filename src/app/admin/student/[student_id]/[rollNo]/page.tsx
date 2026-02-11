@@ -32,7 +32,7 @@ export default function StudentDetailsPage() {
     const token = localStorage.getItem("codeflam01_token");
     try {
       const response = await axios.get(
-        `https://student-backend-saas.vercel.app/api/v1/student/student/${student_id}`,
+        `http://13.53.160.202/api/v1/student/student/${student_id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -77,7 +77,7 @@ export default function StudentDetailsPage() {
     const token = localStorage.getItem("codeflam01_token");
     try {
       const response = await axios.delete(
-        `https://student-backend-saas.vercel.app/api/v1/student/student/${student_id}`,
+        `http://13.53.160.202/api/v1/student/student/${student_id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       router.push(

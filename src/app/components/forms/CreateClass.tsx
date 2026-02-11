@@ -45,7 +45,7 @@ export default function CreateClass({ id, class_name, setForm }: ClassCreationPr
 
     try {
       const response = await axios.post(
-        "https://student-backend-saas.vercel.app/api/v1/kaksha",
+        "http://13.53.160.202/api/v1/kaksha",
         { name },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -86,7 +86,7 @@ export default function CreateClass({ id, class_name, setForm }: ClassCreationPr
 
     try {
       const response = await axios.put(
-        `https://student-backend-saas.vercel.app/api/v1/kaksha/${id}` ,
+        `http://13.53.160.202/api/v1/kaksha/${id}` ,
         { class_name:name },
         {
           headers: { Authorization: `Bearer ${token}` },

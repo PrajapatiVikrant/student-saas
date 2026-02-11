@@ -41,7 +41,7 @@ export default function ParentPortalAccessForm({ parent, setRegisterForm, setVie
     useEffect(() => {
         async function fetchClasses() {
             try {
-                const res = await axios.get("https://student-backend-saas.vercel.app/api/v1/kaksha", {
+                const res = await axios.get("http://13.53.160.202/api/v1/kaksha", {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setClasses(res.data);
@@ -74,7 +74,7 @@ export default function ParentPortalAccessForm({ parent, setRegisterForm, setVie
 
             try {
                 const response = await axios.get(
-                    `https://student-backend-saas.vercel.app/api/v1/student/${selectedClass}/${selectedBatch}`,
+                    `http://13.53.160.202/api/v1/student/${selectedClass}/${selectedBatch}`,
                     {
                         headers: { Authorization: `Bearer ${token}` },
                     }
@@ -147,7 +147,7 @@ export default function ParentPortalAccessForm({ parent, setRegisterForm, setVie
         try {
 
             await axios.post(
-                "https://student-backend-saas.vercel.app/api/v1/parent",
+                "http://13.53.160.202/api/v1/parent",
                 {
                     name,
                     email,
@@ -182,7 +182,7 @@ export default function ParentPortalAccessForm({ parent, setRegisterForm, setVie
         try {
 
             await axios.put(
-                `https://student-backend-saas.vercel.app/api/v1/parent/${parent._id}`,
+                `http://13.53.160.202/api/v1/parent/${parent._id}`,
                 {
                     name,
                     email,

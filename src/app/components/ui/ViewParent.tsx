@@ -30,7 +30,7 @@ export default function ViewParent({ parent, getParents, setViewParent }: ViewPa
     try {
      
       const res = await axios.delete(
-        `https://student-backend-saas.vercel.app/api/v1/parent/${parent._id}`,
+        `http://13.53.160.202/api/v1/parent/${parent._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

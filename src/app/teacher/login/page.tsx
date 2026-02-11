@@ -30,7 +30,7 @@ export default function Login() {
     setProcessing(true);
     try {
       const response = await axios.post(
-        "https://student-backend-saas.vercel.app/api/v1/teacher/login",
+        "http://13.53.160.202/api/v1/teacher/login",
         { email }
       );
       console.log(response);

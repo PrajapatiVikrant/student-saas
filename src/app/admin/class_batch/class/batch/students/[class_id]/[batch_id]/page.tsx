@@ -49,7 +49,7 @@ export default function Students() {
     setLoading(true);
     try {
       const response = await axios.get<GetAllStudentResponse>(
-        `https://student-backend-saas.vercel.app/api/v1/student/${class_id}/${batch_id}`,
+        `http://13.53.160.202/api/v1/student/${class_id}/${batch_id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

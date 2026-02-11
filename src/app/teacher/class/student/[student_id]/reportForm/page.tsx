@@ -58,7 +58,7 @@ export default function ReportForm() {
 
       
       const res = await axios.get(
-        `https://student-backend-saas.vercel.app/api/v1/test/${student_id}`,
+        `http://13.53.160.202/api/v1/test/${student_id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
      
@@ -119,7 +119,7 @@ console.log("Grouped Data:", groupedData);
 
     try {
       const res = await axios.get(
-        "https://student-backend-saas.vercel.app/api/v1/teacher/profile",
+        "http://13.53.160.202/api/v1/teacher/profile",
         { headers: { Authorization: `Bearer ${token}` } }
       );
       
@@ -175,14 +175,14 @@ console.log("Grouped Data:", groupedData);
 
       if (editId) {
         await axios.put(
-          `https://student-backend-saas.vercel.app/api/v1/test/${editId}`,
+          `http://13.53.160.202/api/v1/test/${editId}`,
           payload,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         toast.success("Report updated");
       } else {
         await axios.post(
-          "https://student-backend-saas.vercel.app/api/v1/test",
+          "http://13.53.160.202/api/v1/test",
           payload,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -223,7 +223,7 @@ console.log("Grouped Data:", groupedData);
 
     try {
       await axios.delete(
-        `https://student-backend-saas.vercel.app/api/v1/test/${id}`,
+        `http://13.53.160.202/api/v1/test/${id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       toast.success("Report deleted");

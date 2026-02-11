@@ -100,7 +100,7 @@ export default function Attendance() {
 
     try {
       const res = await axios.get(
-        "https://student-backend-saas.vercel.app/api/v1/teacher/profile",
+        "http://13.53.160.202/api/v1/teacher/profile",
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -128,7 +128,7 @@ export default function Attendance() {
 
     try {
       const res = await axios.get(
-        `https://student-backend-saas.vercel.app/api/v1/student/${class_id}/${batch_id}`,
+        `http://13.53.160.202/api/v1/student/${class_id}/${batch_id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -161,7 +161,7 @@ export default function Attendance() {
 
     try {
       const res = await axios.get(
-        `https://student-backend-saas.vercel.app/api/v1/attendance/${date}/${classId}/${batchId}`,
+        `http://13.53.160.202/api/v1/attendance/${date}/${classId}/${batchId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -234,7 +234,7 @@ export default function Attendance() {
       }));
 
       await axios.post(
-        "https://student-backend-saas.vercel.app/api/v1/attendance/mark",
+        "http://13.53.160.202/api/v1/attendance/mark",
         {
           classId,
           batchId,

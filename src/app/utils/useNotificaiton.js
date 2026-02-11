@@ -14,7 +14,7 @@ export const enableNotification = async () => {
       vapidKey: "BOvn9PI5E7TjXhGcqD6weOmti9J3nLHRb8Kzjbzs9-13y9lSj5F35vhV2e64EDKUf_q_fJ15lH_pJ2kYPMboU6Y"
     });
 
-  const response =  await axios.post("https://student-backend-saas.vercel.app/api/v1/notification/save-token", {
+  const response =  await axios.post("http://13.53.160.202/api/v1/notification/save-token", {
       fcmToken: fcmtoken,
       device: "WEB"
     },

@@ -1,5 +1,5 @@
 import AdminDashboard from "../components/dashboard/AdminDashboard";
-import Navbar from "../components/layout/Navbar";
+
 
 export default function AdminLayout({ children }: Readonly<{
     children: React.ReactNode;
@@ -7,9 +7,7 @@ export default function AdminLayout({ children }: Readonly<{
 
     return (
         <>
-            {/* <header>
-                <Navbar />
-            </header> */}
+           
             <section className="flex">
             <aside  className="overflow-auto h-[100vh]">
                 <AdminDashboard />

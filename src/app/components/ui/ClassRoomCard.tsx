@@ -42,7 +42,7 @@ export default function ClassRoomCard({
         return;
       }
         const response = await axios.delete(
-        `https://student-backend-saas.vercel.app/api/v1/kaksha/${id}` ,
+        `http://13.53.160.202/api/v1/kaksha/${id}` ,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

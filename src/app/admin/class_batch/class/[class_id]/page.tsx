@@ -62,7 +62,7 @@ export default function Kaksha() {
 
     try {
       const response = await axios.get<ClassResponse>(
-        `https://student-backend-saas.vercel.app/api/v1/kaksha/${class_id}`,
+        `http://13.53.160.202/api/v1/kaksha/${class_id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -99,7 +99,7 @@ export default function Kaksha() {
 
     try {
       await axios.post(
-        `https://student-backend-saas.vercel.app/api/v1/kaksha/addSubject/${class_id}`,
+        `http://13.53.160.202/api/v1/kaksha/addSubject/${class_id}`,
         { subject },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -131,7 +131,7 @@ export default function Kaksha() {
       setLoading(true);
 
       const response = await axios.delete(
-        `https://student-backend-saas.vercel.app/api/v1/kaksha/deleteSubject/${class_id}/${id}`,
+        `http://13.53.160.202/api/v1/kaksha/deleteSubject/${class_id}/${id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

@@ -35,7 +35,7 @@ export default function AttendancePage() {
         try {
             setLoadingAttendance(true);
             const res = await axios.get(
-                `https://student-backend-saas.vercel.app/api/v1/attendance/student/${student_id}`,
+                `http://13.53.160.202/api/v1/attendance/student/${student_id}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 

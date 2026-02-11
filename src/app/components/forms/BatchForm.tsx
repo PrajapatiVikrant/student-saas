@@ -84,7 +84,7 @@ export default function BatchForm({ setBatchForm, batch,class_id }: BatchFormPro
     setProcessing(true);
     try {
       await axios.post(
-        `https://student-backend-saas.vercel.app/api/v1/batch/${class_id}`,
+        `http://13.53.160.202/api/v1/batch/${class_id}`,
         data,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -132,7 +132,7 @@ export default function BatchForm({ setBatchForm, batch,class_id }: BatchFormPro
     setProcessing(true);
     try {
       await axios.put(
-        `https://student-backend-saas.vercel.app/api/v1/batch/${class_id}/${batch._id}`,
+        `http://13.53.160.202/api/v1/batch/${class_id}/${batch._id}`,
         data,
         {
           headers: { Authorization: `Bearer ${token}` },

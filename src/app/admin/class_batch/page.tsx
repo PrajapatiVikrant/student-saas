@@ -171,7 +171,7 @@ export default function ClassBatch() {
       }
 
       const response = await axios.get(
-        "https://student-backend-saas.vercel.app/api/v1/kaksha",
+        "http://13.53.160.202/api/v1/kaksha",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -210,7 +210,7 @@ export default function ClassBatch() {
       }
 
       const response = await axios.post(
-        "https://student-backend-saas.vercel.app/api/v1/kaksha",
+        "http://13.53.160.202/api/v1/kaksha",
         { name: newClassName.trim() },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -260,7 +260,7 @@ export default function ClassBatch() {
       }
 
       const response = await axios.put(
-        `https://student-backend-saas.vercel.app/api/v1/kaksha/${editClassId}`,
+        `http://13.53.160.202/api/v1/kaksha/${editClassId}`,
         { class_name: editClassName.trim() },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -305,7 +305,7 @@ export default function ClassBatch() {
       }
 
       await axios.delete(
-        `https://student-backend-saas.vercel.app/api/v1/kaksha/${deleteClassId}`,
+        `http://13.53.160.202/api/v1/kaksha/${deleteClassId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

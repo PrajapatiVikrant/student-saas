@@ -143,7 +143,7 @@ export default function Dashboard() {
       const token = localStorage.getItem("codeflam01_token");
 
       const response = await axios.get(
-        "https://student-backend-saas.vercel.app/api/v1/admin/dashboard/stats",
+        "http://13.53.160.202/api/v1/admin/dashboard/stats",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -219,7 +219,7 @@ export default function Dashboard() {
       const token = localStorage.getItem("codeflam01_token");
       if (!token) return;
 
-      const res = await axios.get("https://student-backend-saas.vercel.app/api/v1/event", {
+      const res = await axios.get("http://13.53.160.202/api/v1/event", {
         headers: { Authorization: `Bearer ${token}` },
       });
 

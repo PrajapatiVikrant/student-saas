@@ -90,7 +90,7 @@ export default function TeachersPage() {
       const token = localStorage.getItem("codeflam01_token");
       if (!token) throw new Error("No token found. Please login again.");
 
-      const response = await axios.get("https://student-backend-saas.vercel.app/api/v1/kaksha", {
+      const response = await axios.get("http://13.53.160.202/api/v1/kaksha", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -115,7 +115,7 @@ export default function TeachersPage() {
       const token = localStorage.getItem("codeflam01_token");
       if (!token) throw new Error("No token found. Please login again.");
 
-      const teachers = await axios.get("https://student-backend-saas.vercel.app/api/v1/teacher", {
+      const teachers = await axios.get("http://13.53.160.202/api/v1/teacher", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -189,7 +189,7 @@ export default function TeachersPage() {
 
       if (editMode) {
         response = await axios.put(
-          `https://student-backend-saas.vercel.app/api/v1/teacher/${teacherId}`,
+          `http://13.53.160.202/api/v1/teacher/${teacherId}`,
           form,
           {
             headers: { Authorization: `Bearer ${token}` },
@@ -197,7 +197,7 @@ export default function TeachersPage() {
         );
       } else {
         response = await axios.post(
-          "https://student-backend-saas.vercel.app/api/v1/teacher",
+          "http://13.53.160.202/api/v1/teacher",
           form,
           {
             headers: { Authorization: `Bearer ${token}` },
@@ -257,7 +257,7 @@ export default function TeachersPage() {
     setProcessing(true);
     try {
       const token = localStorage.getItem("codeflam01_token");
-      await axios.delete(`https://student-backend-saas.vercel.app/api/v1/teacher/${teacherId}`, {
+      await axios.delete(`http://13.53.160.202/api/v1/teacher/${teacherId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
