@@ -7,11 +7,11 @@ const withPWA = require("next-pwa")({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-   async rewrites() {
+  async rewrites() {
     return [
       {
         source: "/api/:path*",
-        destination: "http://13.53.160.202/api/:path*", 
+        destination: "https://codeflame-edu-backend.xyz/api/:path*",
       },
     ];
   },
@@ -20,9 +20,15 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  images:{
-    remotePatterns:[new URL('https://images.pexels.com/photos/6345317/pexels-photo-6345317.jpeg')]
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.pexels.com",
+      },
+    ],
   },
+
   eslint: {
     ignoreDuringBuilds: true,
   },
