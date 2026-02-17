@@ -191,7 +191,7 @@ export default function Attendance() {
 
       await axios.post(
         `/api/v1/attendance/mark`,
-        { classId: class_id, batchId: batch_id, date, attendance: attendanceArray },
+        { classId: class_id,class_name:classData.class_name, batchId: batch_id, batch_name:classData.batch_name ,date, attendance: attendanceArray },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       toast.success("Attendance saved successfully!");
