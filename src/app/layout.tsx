@@ -19,8 +19,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CodeFlame EduCampus",
-  description: "School Management System",
+  title: "Institute ERP",
+  description: "Provide all erp related to school",
   manifest: "/manifest.json",
   icons: {
     apple: "/icons/icon-192x192.png",

@@ -96,7 +96,7 @@ export default function Attendance() {
 
   async function fetchTeacherProfile() {
     const token = localStorage.getItem("codeflam01_token");
-    if (!token) return router.push("/login");
+    if (!token) return router.push("/teacher/login");
 
     try {
       const res = await axios.get(

@@ -33,13 +33,13 @@ export function Hero() {
 
             <div className="flex flex-col sm:flex-row gap-4">
               <button className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 group">
-                Start Free Trial
+                Get Started
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
 
               <button className="px-8 py-4 bg-white text-gray-900 rounded-lg border-2 border-gray-200 hover:border-gray-300 transition-all flex items-center justify-center gap-2">
                 <Play className="w-5 h-5" />
-                Watch Demo
+                See How It Works
               </button>
             </div>
           </motion.div>
