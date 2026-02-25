@@ -117,7 +117,7 @@ export function Footer() {
               <li className="flex items-center gap-2">
                 <Globe className="w-4 h-4 text-gray-300" />
                 <a
-                  href="https://codeflametechnology.com"
+                  href="https://www.codeflametechnology.com"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-white transition-colors"
