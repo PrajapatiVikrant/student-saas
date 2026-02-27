@@ -230,76 +230,84 @@ export default function ParentPortalAccessForm({ parent, setRegisterForm, setVie
     };
 
     return (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-3 overflow-y-auto z-50">
+        <div className="fixed inset-0 bg-black/40 dark:bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 overflow-y-auto z-50">
 
-            <div className="bg-white w-full max-w-[550px] rounded-xl p-5 shadow-lg">
+            <div className="bg-white dark:bg-gray-900 w-full max-w-[550px] rounded-xl p-5 shadow-lg border border-gray-200 dark:border-gray-700">
 
                 {/* CLOSE BUTTON + HEADING FIXED TO TOP */}
-                <div className="sticky top-0 bg-white z-50 pb-2 mb-3 flex justify-between items-center border-b">
-                    <h2 className="text-lg sm:text-2xl font-bold text-gray-800">
+                <div className="sticky top-0 bg-white dark:bg-gray-900 z-50 pb-2 mb-3 flex justify-between items-center border-b border-gray-200 dark:border-gray-700">
+                    <h2 className="text-lg sm:text-2xl font-bold text-gray-800 dark:text-gray-100">
                         Parent Portal Admission
                     </h2>
 
                     <button
-                        className="text-xl p-2 hover:bg-gray-200 rounded-full"
+                        className="text-xl p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition"
                         onClick={() => setRegisterForm(false)}
                     >
-                        <RxCross2 />
+                        <RxCross2 className="text-gray-700 dark:text-gray-200" />
                     </button>
                 </div>
 
 
                 <form className="space-y-4" onSubmit={parent ? updateHandler : submitHandler}>
 
-                    {/* GRID IMPROVED FOR RESPONSIVENESS */}
+                    {/* GRID */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                         {/* NAME */}
                         <div className="col-span-1">
-                            <label className="text-sm font-medium">Full Name</label>
+                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Full Name
+                            </label>
                             <input
                                 type="text"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                className="mt-1 w-full border rounded-md p-2 text-sm sm:text-base"
+                                className="mt-1 w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-md p-2 text-sm sm:text-base focus:ring-2 focus:ring-blue-500 outline-none"
                                 placeholder="Enter full name"
                             />
                         </div>
 
                         {/* EMAIL */}
                         <div className="col-span-1">
-                            <label className="text-sm font-medium">Email</label>
+                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Email
+                            </label>
                             <input
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="mt-1 w-full border rounded-md p-2 text-sm sm:text-base"
+                                className="mt-1 w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-md p-2 text-sm sm:text-base focus:ring-2 focus:ring-blue-500 outline-none"
                                 placeholder="Enter email"
                             />
                         </div>
 
                         {/* PHONE */}
                         <div className="col-span-1">
-                            <label className="text-sm font-medium">Phone</label>
+                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Phone
+                            </label>
                             <input
                                 type="tel"
                                 value={phone}
                                 onChange={(e) => setPhone(e.target.value)}
-                                className="mt-1 w-full border rounded-md p-2 text-sm sm:text-base"
+                                className="mt-1 w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-md p-2 text-sm sm:text-base focus:ring-2 focus:ring-blue-500 outline-none"
                                 placeholder="10 digit phone"
                             />
                         </div>
 
                         {/* CLASS DROPDOWN */}
                         <div className="col-span-1">
-                            <label className="text-sm font-medium">Class</label>
+                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Class
+                            </label>
                             <select
                                 value={selectedClass}
                                 onChange={(e) => {
                                     setSelectedClass(e.target.value)
                                     setSelectedClassName(classes.find(c => c._id === e.target.value)?.class.name || "")
                                 }}
-                                className="mt-1 w-full border rounded-md p-2 text-sm sm:text-base"
+                                className="mt-1 w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-md p-2 text-sm sm:text-base focus:ring-2 focus:ring-blue-500 outline-none"
                             >
                                 <option value="">Select Class</option>
                                 {classes.map((cls) => (
@@ -312,14 +320,16 @@ export default function ParentPortalAccessForm({ parent, setRegisterForm, setVie
 
                         {/* BATCH DROPDOWN */}
                         <div className="col-span-1">
-                            <label className="text-sm font-medium">Batch</label>
+                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Batch
+                            </label>
                             <select
                                 value={selectedBatch}
                                 onChange={(e) => {
                                     setSelectedBatch(e.target.value)
                                     setSelectedBatchName(batches.find(b => b._id === e.target.value)?.batch_name || "")
                                 }}
-                                className="mt-1 w-full border rounded-md p-2 text-sm sm:text-base"
+                                className="mt-1 w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-md p-2 text-sm sm:text-base focus:ring-2 focus:ring-blue-500 outline-none"
                             >
                                 <option value="">Select Batch</option>
                                 {batches.map((batch) => (
@@ -332,22 +342,24 @@ export default function ParentPortalAccessForm({ parent, setRegisterForm, setVie
 
                     </div>
 
-                    {/* STUDENTS SECTION RESPONSIVE */}
+                    {/* STUDENTS SECTION */}
                     <div>
-                        <label className="text-sm font-medium">Students</label>
+                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Students
+                        </label>
 
                         {/* Selected Badges */}
-                        <div className="flex flex-wrap gap-2 bg-gray-50 rounded-md p-2 mt-2 max-h-36 overflow-y-auto">
+                        <div className="flex flex-wrap gap-2 bg-gray-50 dark:bg-gray-800 rounded-md p-2 mt-2 max-h-36 overflow-y-auto">
                             {selectedStudents.map((s) => (
                                 <span
                                     key={s._id}
-                                    className="text-xs sm:text-sm bg-green-100 text-green-700 px-2 py-1 rounded-md flex items-center gap-1"
+                                    className="text-xs sm:text-sm bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 px-2 py-1 rounded-md flex items-center gap-1"
                                 >
                                     {s.class}-{s.batch}-{s.id}: {s.name}
                                     <button
                                         type="button"
                                         onClick={() => handleRemoveStudent(s._id)}
-                                        className="text-red-600 font-bold text-base leading-none"
+                                        className="text-red-600 dark:text-red-400 font-bold text-base leading-none"
                                     >
                                         ×
                                     </button>
@@ -360,7 +372,7 @@ export default function ParentPortalAccessForm({ parent, setRegisterForm, setVie
                             <select
                                 value={newStudentId}
                                 onChange={(e) => setNewStudentId(e.target.value)}
-                                className="border rounded p-2 text-sm sm:text-base w-full"
+                                className="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded p-2 text-sm sm:text-base w-full focus:ring-2 focus:ring-blue-500 outline-none"
                             >
                                 <option value="">Select Student</option>
                                 {students.map((s) => (
@@ -373,7 +385,7 @@ export default function ParentPortalAccessForm({ parent, setRegisterForm, setVie
                             <button
                                 type="button"
                                 onClick={handleAddStudent}
-                                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm sm:text-base"
+                                className="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-600 text-white px-4 py-2 rounded text-sm sm:text-base transition"
                             >
                                 Add
                             </button>
@@ -385,7 +397,7 @@ export default function ParentPortalAccessForm({ parent, setRegisterForm, setVie
                         <button
                             type="submit"
                             disabled={processing}
-                            className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 w-full sm:w-auto"
+                            className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 text-white px-6 py-2 rounded-md w-full sm:w-auto transition"
                         >
                             {processing
                                 ? <CircularIndeterminate size={22} />

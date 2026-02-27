@@ -74,7 +74,8 @@ export default function TeachersPage() {
   const [isActive, setIsActive] = useState(true);
 
   const [confirmationForm, setConfirmationForm] = useState(false);
-
+  const [subjectDeleteConfirm, setSubjectDeleteConfirm] = useState(false);
+  const [subjectToDelete, setSubjectToDelete] = useState<string | null>(null);
   const [newSubject, setNewSubject] = useState("");
   const [newClass, setNewClass] = useState("");
 
@@ -273,8 +274,26 @@ export default function TeachersPage() {
     }
   };
 
-  const deleteSubject = (name: string) =>
-    setSubjects(subjects.filter((s) => s.name !== name));
+  const confirmSubjectDelete = () => {
+  if (!subjectToDelete) return;
+
+  setSubjects(subjects.filter((s) => s.name !== subjectToDelete));
+  setSubjectToDelete(null);
+  setSubjectDeleteConfirm(false);
+   toast.success("Teacher deleted successfully");
+};
+
+  const deleteSubject = (name: string) => {
+    // Create mode → direct delete
+    if (!editMode) {
+      setSubjects(subjects.filter((s) => s.name !== name));
+      return;
+    }
+
+    // Edit mode → show confirmation first
+    setSubjectToDelete(name);
+    setSubjectDeleteConfirm(true);
+  };
 
   const deleteClass = (id: string) =>
     setClasses(classes.filter((c) => c.id !== id));
@@ -377,12 +396,13 @@ export default function TeachersPage() {
                       {t.name}
                     </h2>
                     <p className="text-sm text-slate-500 dark:text-gray-400">{t.phone}</p>
+                    <p className="text-sm text-slate-500 dark:text-gray-400">{t.email}</p>
                   </div>
 
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-semibold ${t.is_active
-                        ? "bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-300"
-                        : "bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-300"
+                      ? "bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-300"
+                      : "bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-300"
                       }`}
                   >
                     {t.is_active ? "Active" : "Inactive"}
@@ -474,17 +494,19 @@ export default function TeachersPage() {
 
       {/* ===================== FORM POPUP DIALOG ===================== */}
       {formVisible && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-3">
-          <div className="bg-white w-full max-w-4xl rounded-xl shadow-lg relative overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 dark:bg-black/70 px-3">
+
+          <div className="bg-white dark:bg-gray-900 w-full max-w-4xl rounded-xl shadow-lg relative overflow-hidden border border-gray-200 dark:border-gray-700">
+
             {/* Header */}
-            <div className="flex justify-between items-center px-6 py-4 border-b bg-gray-50">
-              <h2 className="text-xl font-bold text-gray-800">
+            <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">
                 {editMode ? "Update Teacher" : "Create Teacher"}
               </h2>
               <button
                 type="button"
                 onClick={resetForm}
-                className="text-gray-500 hover:text-red-600 text-2xl font-bold cursor-pointer"
+                className="text-gray-500 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 text-2xl font-bold cursor-pointer transition"
               >
                 ×
               </button>
@@ -494,15 +516,16 @@ export default function TeachersPage() {
             <div className="max-h-[80vh] overflow-y-auto p-6">
               <form
                 onSubmit={handleSubmit}
-                className="grid grid-cols-1 md:grid-cols-2 gap-5"
+                className="grid grid-cols-1 md:grid-cols-2 gap-5 text-gray-700 dark:text-gray-300"
               >
+
                 <div className="md:col-span-2">
                   <label className="font-medium">Full Name</label>
                   <input
                     name="name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full p-2 border rounded mt-1"
+                    className="w-full p-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded mt-1 outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Enter full name"
                     required
                   />
@@ -515,7 +538,7 @@ export default function TeachersPage() {
                     name="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full p-2 border rounded mt-1"
+                    className="w-full p-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded mt-1 outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Enter email"
                   />
                 </div>
@@ -527,7 +550,7 @@ export default function TeachersPage() {
                     name="phone"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full p-2 border rounded mt-1"
+                    className="w-full p-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded mt-1 outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Enter phone number"
                   />
                 </div>
@@ -537,7 +560,7 @@ export default function TeachersPage() {
                   <select
                     value={classTeacherClassId}
                     onChange={(e) => handleSelectClassChange(e.target.value)}
-                    className="w-full p-2 border rounded mt-1 cursor-pointer"
+                    className="w-full p-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded mt-1 cursor-pointer outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="">Select Class</option>
                     {classList.map((c) => (
@@ -553,7 +576,7 @@ export default function TeachersPage() {
                   <select
                     value={classTeacherBatchId}
                     onChange={(e) => setClassTeacherBatchId(e.target.value)}
-                    className="w-full p-2 border rounded mt-1 cursor-pointer"
+                    className="w-full p-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded mt-1 cursor-pointer outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="">Select Batch</option>
                     {batchList.map((b) => (
@@ -564,6 +587,7 @@ export default function TeachersPage() {
                   </select>
                 </div>
 
+                {/* Subjects */}
                 <div className="md:col-span-2">
                   <label className="font-medium">Subjects</label>
 
@@ -571,13 +595,13 @@ export default function TeachersPage() {
                     {subjects.map((s) => (
                       <span
                         key={s.name}
-                        className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full flex items-center gap-2"
+                        className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full flex items-center gap-2"
                       >
                         {s.name}
                         <button
                           type="button"
                           onClick={() => deleteSubject(s.name)}
-                          className="text-red-600 font-bold cursor-pointer hover:text-red-800"
+                          className="text-red-600 dark:text-red-400 font-bold cursor-pointer hover:text-red-800"
                         >
                           ×
                         </button>
@@ -590,12 +614,12 @@ export default function TeachersPage() {
                       type="text"
                       value={newSubject}
                       onChange={(e) => setNewSubject(e.target.value)}
-                      className="w-full p-2 border rounded"
+                      className="w-full p-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="Enter subject"
                     />
                     <button
                       type="button"
-                      className="bg-blue-600 cursor-pointer hover:bg-blue-400 text-white px-6 rounded"
+                      className="bg-blue-600 hover:bg-blue-500 dark:bg-blue-700 dark:hover:bg-blue-600 text-white px-6 rounded transition"
                       onClick={() => {
                         if (!newSubject.trim()) return;
                         if (subjects.some((s) => s.name === newSubject))
@@ -610,20 +634,24 @@ export default function TeachersPage() {
                   </div>
                 </div>
 
-                <div className="md:col-span-2">
-                  <label className="font-medium">Classes</label>
 
+
+                {/* Assigned Classes */}
+                <div className="md:col-span-2">
+                  <label className="font-medium">Assigned Classes</label>
+
+                  {/* Selected Classes */}
                   <div className="flex gap-2 mt-2 flex-wrap">
-                    {classes.map((c: any) => (
+                    {classes.map((cls) => (
                       <span
-                        key={c.id}
-                        className="px-3 py-1 bg-green-100 text-green-700 rounded-full flex items-center gap-2"
+                        key={cls.id}
+                        className="px-3 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded-full flex items-center gap-2"
                       >
-                        {c.name}
+                        {cls.name}
                         <button
                           type="button"
-                          onClick={() => deleteClass(c.id)}
-                          className="text-red-600 font-bold cursor-pointer hover:text-red-800"
+                          onClick={() => deleteClass(cls.id)}
+                          className="text-red-600 dark:text-red-400 font-bold cursor-pointer hover:text-red-800"
                         >
                           ×
                         </button>
@@ -631,15 +659,16 @@ export default function TeachersPage() {
                     ))}
                   </div>
 
+                  {/* Add Class */}
                   <div className="flex mt-3 gap-3">
                     <select
                       value={newClass}
                       onChange={(e) => setNewClass(e.target.value)}
-                      className="p-2 border rounded w-full cursor-pointer"
+                      className="w-full p-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       <option value="">Select Class</option>
                       {classList.map((c) => (
-                        <option value={c.id} key={c.id}>
+                        <option key={c.id} value={c.id}>
                           {c.name}
                         </option>
                       ))}
@@ -647,21 +676,19 @@ export default function TeachersPage() {
 
                     <button
                       type="button"
-                      className="bg-green-600 cursor-pointer hover:bg-green-400 text-white px-6 rounded"
+                      className="bg-green-600 hover:bg-green-500 dark:bg-green-700 dark:hover:bg-green-600 text-white px-6 rounded transition"
                       onClick={() => {
                         if (!newClass) return;
-                        if (classes.some((c) => c.id === newClass))
-                          return alert("Class already added");
 
-                        const selectedClass = classList.find(
-                          (c) => c.id === newClass
-                        );
-                        if (!selectedClass) return;
+                        const selected = classList.find((c) => c.id === newClass);
+                        if (!selected) return;
 
-                        setClasses([
-                          ...classes,
-                          { id: selectedClass.id, name: selectedClass.name },
-                        ]);
+                        if (classes.some((c) => c.id === selected.id)) {
+                          alert("Class already added");
+                          return;
+                        }
+
+                        setClasses([...classes, selected]);
                         setNewClass("");
                       }}
                     >
@@ -670,13 +697,14 @@ export default function TeachersPage() {
                   </div>
                 </div>
 
+                {/* Salary */}
                 <div>
                   <label className="font-medium">Salary Type</label>
                   <select
                     name="salary_type"
                     value={salaryType}
                     onChange={(e) => setSalaryType(e.target.value as any)}
-                    className="w-full p-2 border rounded cursor-pointer"
+                    className="w-full p-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded cursor-pointer"
                   >
                     <option value="fixed">Fixed</option>
                     <option value="per_student">Per Student</option>
@@ -687,11 +715,10 @@ export default function TeachersPage() {
                 <div>
                   <label className="font-medium">Salary Amount</label>
                   <input
-                    name="salary_amount"
                     type="number"
                     value={salaryAmount}
                     onChange={(e) => setSalaryAmount(Number(e.target.value))}
-                    className="w-full p-2 border rounded"
+                    className="w-full p-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded"
                     placeholder="Enter amount"
                   />
                 </div>
@@ -699,21 +726,19 @@ export default function TeachersPage() {
                 <div>
                   <label className="font-medium">Date Joined</label>
                   <input
-                    name="date_joined"
                     type="date"
                     value={dateJoined}
                     onChange={(e) => setDateJoined(e.target.value)}
-                    className="w-full p-2 border rounded"
+                    className="w-full p-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded"
                   />
                 </div>
 
                 <div>
                   <label className="font-medium">Status</label>
                   <select
-                    name="is_active"
                     value={String(isActive)}
                     onChange={(e) => setIsActive(e.target.value === "true")}
-                    className="w-full p-2 border rounded cursor-pointer"
+                    className="w-full p-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded cursor-pointer"
                   >
                     <option value="true">Active</option>
                     <option value="false">Inactive</option>
@@ -724,13 +749,16 @@ export default function TeachersPage() {
                   <button
                     disabled={processing}
                     type="submit"
-                    className={`w-full flex gap-3 justify-center items-center py-2 ${processing ? "bg-blue-300 cursor-progress" : "bg-blue-700"
-                      } cursor-pointer text-white rounded`}
+                    className={`w-full flex gap-3 justify-center items-center py-2 ${processing
+                      ? "bg-blue-300 cursor-progress"
+                      : "bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700"
+                      } text-white rounded transition`}
                   >
                     {processing && <CircularIndeterminate size={15} />}
                     {editMode ? "Update Teacher" : "Save Teacher"}
                   </button>
                 </div>
+
               </form>
             </div>
           </div>
@@ -745,6 +773,18 @@ export default function TeachersPage() {
           name={name}
           info="This action cannot be undone and will permanently remove all related records including academic, attendance, and payment data associated with this teacher."
           processing={processing}
+        />
+      )}
+      {subjectDeleteConfirm && (
+        <Confirmation
+          onClose={() => {
+            setSubjectDeleteConfirm(false);
+            setSubjectToDelete(null);
+          }}
+          onConfirm={confirmSubjectDelete}
+          name={subjectToDelete || ""}
+          info="This action cannot be undone and will permanently remove all related test/exam records associated with this subject."
+          processing={false}
         />
       )}
       <br /><br />

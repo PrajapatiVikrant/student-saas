@@ -170,258 +170,295 @@ export default function StudentAdmission({
     }
   };
 
- return (
-  <div className="fixed inset-0 bg-black/50 z-50 flex justify-center items-start overflow-y-auto px-3 py-8">
-    
-    <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col max-h-[90vh]">
-      
-      {/* Header */}
-      <div className="flex justify-between items-center px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 flex-shrink-0">
-        <h2 className="text-lg font-bold text-white">Student Admission</h2>
+  return (
+    <div className="fixed inset-0 bg-black/50 dark:bg-black/70 z-50 flex justify-center items-start overflow-y-auto px-3 py-8">
 
-        <button
-          className="text-white hover:bg-white/20 p-2 rounded-lg transition"
-          onClick={() => setRegisterForm(false)}
-        >
-          <RxCross2 size={22} />
-        </button>
-      </div>
+      <div className="bg-white dark:bg-gray-900 w-full max-w-2xl rounded-2xl shadow-2xl 
+  border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col max-h-[90vh]">
 
-      {/* Scrollable Body */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-6">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          
-          {/* Student Info */}
-          <div>
-            <h3 className="text-sm font-bold text-gray-700 mb-3">
-              Student Information
-            </h3>
+        {/* Header */}
+        <div className="flex justify-between items-center px-6 py-4 
+    bg-gradient-to-r from-blue-600 to-indigo-600 
+    dark:from-blue-700 dark:to-indigo-800 flex-shrink-0">
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Name */}
-              <div>
-                <label className="text-sm font-medium text-gray-700">
-                  Full Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Enter student name"
-                  className={`mt-1 w-full border px-3 py-2.5 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition ${
-                    nameError ? "border-red-500" : "border-gray-300"
-                  }`}
-                />
-                {nameError && (
-                  <p className="text-red-500 text-xs mt-1">{nameError}</p>
-                )}
-              </div>
+          <h2 className="text-lg font-bold text-white">Student Admission</h2>
 
-              {/* Gender */}
-              <div>
-                <label className="text-sm font-medium text-gray-700">
-                  Gender <span className="text-red-500">*</span>
-                </label>
-                <select
-                  value={gender}
-                  onChange={(e) => setGender(e.target.value)}
-                  className={`mt-1 w-full border px-3 py-2.5 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition ${
-                    genderError ? "border-red-500" : "border-gray-300"
-                  }`}
-                >
-                  <option value="">Select</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
-                </select>
-                {genderError && (
-                  <p className="text-red-500 text-xs mt-1">{genderError}</p>
-                )}
-              </div>
+          <button
+            className="text-white hover:bg-white/20 p-2 rounded-lg transition"
+            onClick={() => setRegisterForm(false)}
+          >
+            <RxCross2 size={22} />
+          </button>
+        </div>
 
-              {/* Address */}
-              <div className="md:col-span-2">
-                <label className="text-sm font-medium text-gray-700">
-                  Address <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  placeholder="Enter student address"
-                  className={`mt-1 w-full border px-3 py-2.5 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition ${
-                    addressError ? "border-red-500" : "border-gray-300"
-                  }`}
-                />
-                {addressError && (
-                  <p className="text-red-500 text-xs mt-1">{addressError}</p>
-                )}
-              </div>
+        {/* Scrollable Body */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
 
-              {/* Admission Date */}
-              <div>
-                <label className="text-sm font-medium text-gray-700">
-                  Admission Date <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="date"
-                  value={admissionDate}
-                  onChange={(e) => setAdmissionDate(e.target.value)}
-                  className={`mt-1 w-full border px-3 py-2.5 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition ${
-                    admissionDateError ? "border-red-500" : "border-gray-300"
-                  }`}
-                />
-                {admissionDateError && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {admissionDateError}
-                  </p>
-                )}
-              </div>
+            {/* Student Info */}
+            <div>
+              <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">
+                Student Information
+              </h3>
 
-              {/* Student Fee */}
-              <div>
-                <label className="text-sm font-medium text-gray-700">
-                  Student Fee <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  value={studentFee}
-                  onChange={(e) => setStudentFee(Number(e.target.value))}
-                  placeholder="Enter fee amount"
-                  className={`mt-1 w-full border px-3 py-2.5 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition ${
-                    studentFeeError ? "border-red-500" : "border-gray-300"
-                  }`}
-                />
-                {studentFeeError && (
-                  <p className="text-red-500 text-xs mt-1">{studentFeeError}</p>
-                )}
-              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-              {/* Payment Date */}
-              <div>
-                <label className="text-sm font-medium text-gray-700">
-                  Payment Date (1–31) <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  value={paymentDate}
-                  onChange={(e) => setPaymentDate(Number(e.target.value))}
-                  placeholder="Ex: 10"
-                  className={`mt-1 w-full border px-3 py-2.5 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition ${
-                    paymentDateError ? "border-red-500" : "border-gray-300"
-                  }`}
-                />
-                {paymentDateError && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {paymentDateError}
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
+                {/* Name */}
+                <div>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Full Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Enter student name"
+                    className={`mt-1 w-full border px-3 py-2.5 rounded-xl outline-none 
+                bg-white dark:bg-gray-800 
+                text-gray-900 dark:text-white 
+                placeholder-gray-400 dark:placeholder-gray-500
+                focus:ring-2 focus:ring-blue-500 transition ${nameError ? "border-red-500" : "border-gray-300 dark:border-gray-600"
+                      }`}
+                  />
+                  {nameError && (
+                    <p className="text-red-500 text-xs mt-1">{nameError}</p>
+                  )}
+                </div>
 
-          {/* Parent Info */}
-          <div>
-            <h3 className="text-sm font-bold text-gray-700 mb-3">
-              Parent Information (Optional)
-            </h3>
+                {/* Gender */}
+                <div>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Gender <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={gender}
+                    onChange={(e) => setGender(e.target.value)}
+                    className={`mt-1 w-full border px-3 py-2.5 rounded-xl outline-none
+                bg-white dark:bg-gray-800 
+                text-gray-900 dark:text-white
+                focus:ring-2 focus:ring-blue-500 transition ${genderError ? "border-red-500" : "border-gray-300 dark:border-gray-600"
+                      }`}
+                  >
+                    <option value="">Select</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                  {genderError && (
+                    <p className="text-red-500 text-xs mt-1">{genderError}</p>
+                  )}
+                </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium text-gray-700">
-                  Father Name
-                </label>
-                <input
-                  type="text"
-                  value={fatherName}
-                  onChange={(e) => setFatherName(e.target.value)}
-                  placeholder="Enter father name"
-                  className="mt-1 w-full border border-gray-300 px-3 py-2.5 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition"
-                />
-              </div>
+                {/* Address */}
+                <div className="md:col-span-2">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Address <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    placeholder="Enter student address"
+                    className={`mt-1 w-full border px-3 py-2.5 rounded-xl outline-none
+                bg-white dark:bg-gray-800 
+                text-gray-900 dark:text-white
+                placeholder-gray-400 dark:placeholder-gray-500
+                focus:ring-2 focus:ring-blue-500 transition ${addressError ? "border-red-500" : "border-gray-300 dark:border-gray-600"
+                      }`}
+                  />
+                  {addressError && (
+                    <p className="text-red-500 text-xs mt-1">{addressError}</p>
+                  )}
+                </div>
 
-              <div>
-                <label className="text-sm font-medium text-gray-700">
-                  Mother Name
-                </label>
-                <input
-                  type="text"
-                  value={motherName}
-                  onChange={(e) => setMotherName(e.target.value)}
-                  placeholder="Enter mother name"
-                  className="mt-1 w-full border border-gray-300 px-3 py-2.5 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition"
-                />
-              </div>
+                {/* Admission Date */}
+                <div>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Admission Date <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    value={admissionDate}
+                    onChange={(e) => setAdmissionDate(e.target.value)}
+                    className={`mt-1 w-full border px-3 py-2.5 rounded-xl outline-none
+                bg-white dark:bg-gray-800 
+                text-gray-900 dark:text-white
+                focus:ring-2 focus:ring-blue-500 transition ${admissionDateError ? "border-red-500" : "border-gray-300 dark:border-gray-600"
+                      }`}
+                  />
+                  {admissionDateError && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {admissionDateError}
+                    </p>
+                  )}
+                </div>
 
-              <div>
-                <label className="text-sm font-medium text-gray-700">
-                  Parent Phone
-                </label>
-                <input
-                  type="text"
-                  value={parentPhone}
-                  onChange={(e) => setParentPhone(e.target.value)}
-                  placeholder="Enter phone number"
-                  className={`mt-1 w-full border px-3 py-2.5 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition ${
-                    parentPhoneError ? "border-red-500" : "border-gray-300"
-                  }`}
-                />
-                {parentPhoneError && (
-                  <p className="text-red-500 text-xs mt-1">{parentPhoneError}</p>
-                )}
-              </div>
+                {/* Student Fee */}
+                <div>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Student Fee <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    value={studentFee}
+                    onChange={(e) => setStudentFee(Number(e.target.value))}
+                    placeholder="Enter fee amount"
+                    className={`mt-1 w-full border px-3 py-2.5 rounded-xl outline-none
+                bg-white dark:bg-gray-800 
+                text-gray-900 dark:text-white
+                focus:ring-2 focus:ring-blue-500 transition ${studentFeeError ? "border-red-500" : "border-gray-300 dark:border-gray-600"
+                      }`}
+                  />
+                  {studentFeeError && (
+                    <p className="text-red-500 text-xs mt-1">{studentFeeError}</p>
+                  )}
+                </div>
 
-              <div>
-                <label className="text-sm font-medium text-gray-700">
-                  Parent Email
-                </label>
-                <input
-                  type="email"
-                  value={parentEmail}
-                  onChange={(e) => setParentEmail(e.target.value)}
-                  placeholder="Enter email"
-                  className={`mt-1 w-full border px-3 py-2.5 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition ${
-                    parentEmailError ? "border-red-500" : "border-gray-300"
-                  }`}
-                />
-                {parentEmailError && (
-                  <p className="text-red-500 text-xs mt-1">{parentEmailError}</p>
-                )}
+                {/* Payment Date */}
+                <div>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Payment Date (1–31) <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    value={paymentDate}
+                    onChange={(e) => setPaymentDate(Number(e.target.value))}
+                    placeholder="Ex: 10"
+                    className={`mt-1 w-full border px-3 py-2.5 rounded-xl outline-none
+                bg-white dark:bg-gray-800 
+                text-gray-900 dark:text-white
+                focus:ring-2 focus:ring-blue-500 transition ${paymentDateError ? "border-red-500" : "border-gray-300 dark:border-gray-600"
+                      }`}
+                  />
+                  {paymentDateError && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {paymentDateError}
+                    </p>
+                  )}
+                </div>
+
               </div>
             </div>
-          </div>
 
-          {/* Footer Buttons */}
-          <div className="flex justify-end gap-3 pt-4 border-t sticky bottom-0 bg-white pb-2">
-            <button
-              type="button"
-              onClick={() => setRegisterForm(false)}
-              className="px-4 py-2 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-100 transition"
-            >
-              Cancel
-            </button>
+            {/* Parent Info */}
+            <div>
+              <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">
+                Parent Information (Optional)
+              </h3>
 
-            <button
-              type="submit"
-              disabled={processing}
-              className={`px-5 py-2 rounded-xl text-white font-semibold shadow-md transition flex items-center gap-2
-                ${
-                  processing
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                <div>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Father Name
+                  </label>
+                  <input
+                    type="text"
+                    value={fatherName}
+                    onChange={(e) => setFatherName(e.target.value)}
+                    placeholder="Enter father name"
+                    className="mt-1 w-full border border-gray-300 dark:border-gray-600 px-3 py-2.5 rounded-xl outline-none 
+                bg-white dark:bg-gray-800 
+                text-gray-900 dark:text-white
+                focus:ring-2 focus:ring-blue-500 transition"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Mother Name
+                  </label>
+                  <input
+                    type="text"
+                    value={motherName}
+                    onChange={(e) => setMotherName(e.target.value)}
+                    placeholder="Enter mother name"
+                    className="mt-1 w-full border border-gray-300 dark:border-gray-600 px-3 py-2.5 rounded-xl outline-none 
+                bg-white dark:bg-gray-800 
+                text-gray-900 dark:text-white
+                focus:ring-2 focus:ring-blue-500 transition"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Parent Phone
+                  </label>
+                  <input
+                    type="text"
+                    value={parentPhone}
+                    onChange={(e) => setParentPhone(e.target.value)}
+                    placeholder="Enter phone number"
+                    className={`mt-1 w-full border px-3 py-2.5 rounded-xl outline-none
+                bg-white dark:bg-gray-800 
+                text-gray-900 dark:text-white
+                focus:ring-2 focus:ring-blue-500 transition ${parentPhoneError ? "border-red-500" : "border-gray-300 dark:border-gray-600"
+                      }`}
+                  />
+                  {parentPhoneError && (
+                    <p className="text-red-500 text-xs mt-1">{parentPhoneError}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Parent Email
+                  </label>
+                  <input
+                    type="email"
+                    value={parentEmail}
+                    onChange={(e) => setParentEmail(e.target.value)}
+                    placeholder="Enter email"
+                    className={`mt-1 w-full border px-3 py-2.5 rounded-xl outline-none
+                bg-white dark:bg-gray-800 
+                text-gray-900 dark:text-white
+                focus:ring-2 focus:ring-blue-500 transition ${parentEmailError ? "border-red-500" : "border-gray-300 dark:border-gray-600"
+                      }`}
+                  />
+                  {parentEmailError && (
+                    <p className="text-red-500 text-xs mt-1">{parentEmailError}</p>
+                  )}
+                </div>
+
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="flex justify-end gap-3 pt-4 border-t 
+        border-gray-200 dark:border-gray-700 
+        sticky bottom-0 bg-white dark:bg-gray-900 pb-2">
+
+              <button
+                type="button"
+                onClick={() => setRegisterForm(false)}
+                className="px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-600 
+            text-gray-700 dark:text-gray-300 
+            hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+              >
+                Cancel
+              </button>
+
+              <button
+                type="submit"
+                disabled={processing}
+                className={`px-5 py-2 rounded-xl text-white font-semibold shadow-md transition flex items-center gap-2
+              ${processing
                     ? "bg-blue-400 cursor-not-allowed"
-                    : "bg-blue-600 hover:bg-blue-700"
-                }`}
-            >
-              {processing && (
-                <span className="h-4 w-4 rounded-full border-2 border-white border-t-transparent animate-spin"></span>
-              )}
-              {processing ? "Submitting..." : "Submit"}
-            </button>
-          </div>
+                    : "bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+                  }`}
+              >
+                {processing && (
+                  <span className="h-4 w-4 rounded-full border-2 border-white border-t-transparent animate-spin"></span>
+                )}
+                {processing ? "Submitting..." : "Submit"}
+              </button>
 
-        </form>
+            </div>
+
+          </form>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
 
 }
