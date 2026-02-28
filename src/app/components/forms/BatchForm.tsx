@@ -11,9 +11,10 @@ interface BatchFormProps {
   setBatchForm: (value: boolean) => void;
   batch:any;
   class_id: string;
+  refresh: () => void;
 }
 
-export default function BatchForm({ setBatchForm, batch,class_id }: BatchFormProps) {
+export default function BatchForm({ setBatchForm, batch,class_id,refresh }: BatchFormProps) {
   // ✅ Batch fields
   const [batchName, setBatchName] = useState(batch?batch.batch_name:"");
   const [batchFee, setBatchFee] = useState(batch?batch.batch_fee:"");
@@ -99,6 +100,7 @@ export default function BatchForm({ setBatchForm, batch,class_id }: BatchFormPro
       setBatchDays("");
       setFeeMethod("Per Month");
       setBatchForm(false);
+      refresh(); // Refresh the batch list after creation
     } catch (error:any) {
        if (error.response?.status === 401 || error.response?.status === 403) {
         toast.error("Session expired. Please log in again.");
@@ -108,7 +110,7 @@ export default function BatchForm({ setBatchForm, batch,class_id }: BatchFormPro
         toast.error("Failed to create batch ❌");
       }
     } finally{
-      window.location.reload()
+      
       setProcessing(false)
     }
   };
@@ -147,9 +149,9 @@ export default function BatchForm({ setBatchForm, batch,class_id }: BatchFormPro
       setBatchDays("");
       setFeeMethod("Per Month");
       setBatchForm(false);
-      window.location.reload()
+      refresh(); // Refresh the batch list after editing
     } catch (error:any) {
-       
+       console.log(error)
        if (error.response?.status === 401 || error.response?.status === 403) {
         toast.error("Session expired. Please log in again.");
         localStorage.removeItem("codeflam01_token");

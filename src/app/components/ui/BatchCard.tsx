@@ -22,9 +22,10 @@ type BatchCardProps = {
     batch_timing: string;
     batch_days: string;
   };
+  refresh: () => void; // Add getClass as a prop
 };
 
-export default function BatchCard({ batch, class_id }: BatchCardProps) {
+export default function BatchCard({ batch, class_id, refresh }: BatchCardProps) {
   const [students, setStudents] = useState([]);
   const [batchForm, setBatchForm] = useState(false);
   const [processing, setProcessing] = useState(false);
@@ -74,15 +75,16 @@ export default function BatchCard({ batch, class_id }: BatchCardProps) {
       router.push("/login");
       return;
     }
-     setProcessing(true)
+    setProcessing(true)
     try {
-     const response = await axios.delete(
+      const response = await axios.delete(
         `/api/v1/batch/${class_id}/${batch._id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
+      
       toast.success(response.data.message);
-      router.refresh();
+      setConfirmationForm(false);
+      refresh(); // Refresh the batch list after deletion
     } catch (error: any) {
       console.error("Delete error:", error);
       toast.error("Failed to delete batch.");
@@ -170,7 +172,7 @@ export default function BatchCard({ batch, class_id }: BatchCardProps) {
       </article>
       {/* --- Edit Class Modal --- */}
       {batchForm && (
-        <BatchForm class_id={class_id} batch={batch} setBatchForm={setBatchForm} />
+        <BatchForm class_id={class_id} batch={batch} setBatchForm={setBatchForm} refresh={refresh} />
       )}
 
       {confirmationForm && (

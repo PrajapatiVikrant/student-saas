@@ -6,6 +6,7 @@ import { Pencil, Trash2, PlusCircle, Loader2, School } from "lucide-react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { Button } from "@/app/components/ui/attendanceUi/Button";
+import Confirmation from "@/app/components/forms/Confirmation";
 
 // ================= TYPES =================
 interface Batch {
@@ -65,6 +66,7 @@ const EventPage: React.FC = () => {
 
   const [loading, setLoading] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
+  const [confirmation, setConfirmation] = useState(false);
   const [processing, setProcessing] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -76,7 +78,7 @@ const EventPage: React.FC = () => {
     date: "",
     description: "",
   });
-
+  const [deleteId, setDeleteId] = useState<string | null>(null);
   const API_URL = "/api/v1/event";
 
   // ================= FETCH EVENTS =================
@@ -266,7 +268,7 @@ const EventPage: React.FC = () => {
 
   // ================= DELETE =================
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this event?")) return;
+
 
     try {
       setProcessing(true);
@@ -414,7 +416,10 @@ const EventPage: React.FC = () => {
                     </button>
 
                     <button
-                      onClick={() => handleDelete(event._id)}
+                      onClick={() => {
+                        setDeleteId(event._id);
+                        setConfirmation(true);
+                      }}
                       className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-50 dark:bg-red-900 hover:bg-red-100 dark:hover:bg-red-800 text-red-600 dark:text-red-200 text-sm font-semibold transition"
                     >
                       <Trash2 size={16} /> Delete
@@ -515,7 +520,24 @@ const EventPage: React.FC = () => {
           </div>
         </div>
       )}
-
+      {confirmation && deleteId && (
+  <Confirmation
+    onClose={() => {
+      setConfirmation(false);
+      setDeleteId(null);
+    }}
+    onConfirm={() => {
+      if (deleteId) {
+        handleDelete(deleteId);
+        setDeleteId(null);
+        setConfirmation(false);
+      }
+    }}
+    name="Event"
+    info="This action cannot be undone and will permanently delete this event."
+    processing={processing}
+  />
+)}
       <br /><br /><br />
     </div>
   );

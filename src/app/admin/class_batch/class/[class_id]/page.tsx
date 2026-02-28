@@ -143,7 +143,7 @@ export default function Kaksha() {
               </p>
             ) : (
               batch.map((b) => (
-                <BatchCard key={b._id} class_id={class_id} batch={b} />
+                <BatchCard key={b._id} class_id={class_id} batch={b} refresh={getClass} />
               ))
             )}
           </div>
@@ -151,7 +151,7 @@ export default function Kaksha() {
 
         {/* BATCH FORM MODAL */}
         {batchForm && (
-          <BatchForm class_id={class_id} batch="" setBatchForm={setBatchForm} />
+          <BatchForm class_id={class_id} batch="" setBatchForm={setBatchForm} refresh={getClass} />
         )}
       </main>
       <br /><br />

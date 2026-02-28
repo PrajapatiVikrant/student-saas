@@ -45,7 +45,7 @@ export default function AdminDashboard() {
         <div className="flex items-center px-6 py-5 border-b border-slate-100 dark:border-slate-700">
           <div className="flex border items-center bg-white justify-center rounded-xl text-white font-bold">
             <Image
-              src="/plateform_logo.png"
+              src="/plateform_logo.webp"
               width={100}
               height={100}
               alt="platform_logo"
