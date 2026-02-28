@@ -466,14 +466,14 @@ export default function ClassBatch() {
 
                   <CardContent className="py-2 flex-grow">
                     <div className="grid grid-cols-2 gap-3 mt-2">
-                      <div className="bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border border-slate-100 dark:border-slate-700 flex flex-col items-center justify-center text-center">
+                      {/* <div className="bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border border-slate-100 dark:border-slate-700 flex flex-col items-center justify-center text-center">
                         <span className="text-2xl font-bold text-slate-700 dark:text-white">
                           {item.class.subjects.length}
                         </span>
                         <span className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">
                           Subjects
                         </span>
-                      </div>
+                      </div> */}
                       <div className="bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border border-slate-100 dark:border-slate-700 flex flex-col items-center justify-center text-center">
                         <span className="text-2xl font-bold text-slate-700 dark:text-white">
                           {item.class.batches.length}

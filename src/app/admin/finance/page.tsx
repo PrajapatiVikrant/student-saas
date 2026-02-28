@@ -158,7 +158,8 @@ export default function FinanceManagement() {
       return toast.error("Please fill all fields (amount and payment method)");
 
     if (Number(amount) <= 0) return toast.error("Amount must be greater than 0");
-
+    if (Number(amount) + selectedStudent.payment_status.pay_amount > selectedStudent.payment_status.total_amount  )
+      return toast.error("Payment amount exceeds total fee amount");
     try {
       setProcessing(true);
       const token = getToken();
