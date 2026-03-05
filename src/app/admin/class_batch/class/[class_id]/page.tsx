@@ -14,11 +14,7 @@ import axios, { AxiosError } from "axios";
 import CircularIndeterminate from "@/app/components/ui/CircularIndeterminate";
 import BatchForm from "@/app/components/forms/BatchForm";
 
-// ✅ Type for Subject and Batch
-interface Subject {
-  _id: string;
-  subject_name: string;
-}
+
 
 interface Batch {
   _id: string;
@@ -32,7 +28,6 @@ interface ClassResponse {
   class: {
     _id: string;
     name: string;
-    subjects: Subject[];
     batches: Batch[];
   };
 }
@@ -42,10 +37,10 @@ export default function Kaksha() {
   const router = useRouter();
   const class_id = params.class_id as string;
 
-  const [subject, setSubject] = useState<string>("");
+
   const [class_name, setClass_name] = useState<string>("");
 
-  const [processing, setProcessing] = useState<boolean>(false);
+
   const [batch, setBatch] = useState<Batch[]>([]);
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -56,12 +51,37 @@ export default function Kaksha() {
     getClass();
   }, []);
 
+  useEffect(() => {
+    getSubjects();
+  }, [])
+
+
+  function getSubjects() {
+    const token = localStorage.getItem("codeflam01_token");
+    axios.get(`/api/v1/kaksha/subjectlist/${class_id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((response) => {
+        setSubjects(response.data[0].subjects);
+      }
+      )
+      .catch((error: unknown) => {
+        const err = error as AxiosError;
+        if (err.response?.status === 401 || err.response?.status === 403) {
+          toast.error("Session expired. Please log in again.");
+          localStorage.removeItem("codeflam01_token");
+          router.push("/login");
+        } else {
+          toast.error("Failed to load subjects ❌");
+        }
+      });
+  }
   // ✅ Get class data
   async function getClass() {
     const token = localStorage.getItem("codeflam01_token");
 
     try {
-      const response = await axios.get<ClassResponse>(
+      const response = await axios.get(
         `/api/v1/kaksha/${class_id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -70,8 +90,9 @@ export default function Kaksha() {
 
       setClass_name(response.data.class.name);
       setBatch(response.data.class.batches);
-      setSubjects(response.data.class.subjects);
+
     } catch (error: unknown) {
+      console.log("error:", error);
       const err = error as AxiosError;
 
       if (err.response?.status === 401 || err.response?.status === 403) {
@@ -86,7 +107,7 @@ export default function Kaksha() {
     }
   }
 
- 
+
 
   if (loading) {
     return (
@@ -101,7 +122,7 @@ export default function Kaksha() {
 
   return (
     <div className="min-h-screen overflow-auto bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 text-slate-900 dark:text-white">
-      
+
       {/* HEADER */}
       <header className="p-4 sm:p-6 border-b border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-950/60 backdrop-blur sticky top-0 z-20">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -122,8 +143,41 @@ export default function Kaksha() {
       </header>
 
       <main className="px-4 sm:px-6 lg:px-8 py-6 space-y-10 max-w-7xl mx-auto">
-        
-       
+        {/* SUBJECT SECTION */}
+        <section className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+            <h2 className="flex items-center text-xl sm:text-2xl font-bold gap-2">
+              <FiBookOpen /> <span>Subjects</span>
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {subjects.map((subject, index) => (
+              <div
+                key={index}
+                className="group relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+              >
+                {/* Accent Top Bar */}
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-t-2xl"></div>
+
+                {/* Icon */}
+                <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300 mb-4 text-xl font-semibold">
+                  {subject.charAt(0)}
+                </div>
+
+                {/* Subject Name */}
+                <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 group-hover:text-indigo-600 transition-colors">
+                  {subject}
+                </h3>
+
+                {/* Small Subtitle */}
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                  Subject assigned for this class
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
 
         {/* BATCHES SECTION */}
         <section className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6">
@@ -132,7 +186,7 @@ export default function Kaksha() {
               <FiLayers /> <span>Batches</span>
             </h2>
 
-           
+
           </div>
 
           {/* Batch Cards */}

@@ -21,6 +21,7 @@ export default function ReportForm() {
   const [loading, setLoading] = useState(true);
 
   const [subject, setSubject] = useState<SubjectType | null>(null);
+  const [subjectList, setsubjectList] = useState([]);
   const [testName, setTestName] = useState("");
   const [score, setScore] = useState("");
   const [feedback, setFeedback] = useState("");
@@ -35,6 +36,8 @@ export default function ReportForm() {
     teacherProfile();
     getExamData();
   }, []);
+
+
 
   /* ------------------ AUTH ERROR ------------------ */
   function handleAuthError(error: any) {
@@ -54,15 +57,15 @@ export default function ReportForm() {
 
     try {
       setLoadingExam(true);
-      
 
-      
+
+
       const res = await axios.get(
         `/api/v1/test/${student_id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-     
-    
+
+
       const fetched =
         res.data.data?.map((test: any) => ({
           id: test._id,
@@ -86,31 +89,31 @@ export default function ReportForm() {
 
   /* 📊 Group data subject-wise (SAFE) */
   const groupedData = useMemo(() => Object.values(
-  examData.reduce((acc, item) => {
-    const subjectId = item.subject._id;
+    examData.reduce((acc, item) => {
+      const subjectId = item.subject._id;
 
-    if (!acc[subjectId]) {
-      acc[subjectId] = {
-        subject: {
-          _id: item.subject._id,
-          name: item.subject.name,
-        },
-        exams: [],
-      };
-    }
+      if (!acc[subjectId]) {
+        acc[subjectId] = {
+          subject: {
+            _id: item.subject._id,
+            name: item.subject.name,
+          },
+          exams: [],
+        };
+      }
 
-    acc[subjectId].exams.push({
-      id: item.id,
-      exam: item.exam,
-      score: item.score,
-      feedback: item.feedback,
-      added_by: item.added_by,
-    });
+      acc[subjectId].exams.push({
+        id: item.id,
+        exam: item.exam,
+        score: item.score,
+        feedback: item.feedback,
+        added_by: item.added_by,
+      });
 
-    return acc;
-  }, {})
-), [examData]);
-console.log("Grouped Data:", groupedData);
+      return acc;
+    }, {})
+  ), [examData]);
+  console.log("Grouped Data:", groupedData);
 
   /* ------------------ TEACHER PROFILE ------------------ */
   async function teacherProfile() {
@@ -122,7 +125,7 @@ console.log("Grouped Data:", groupedData);
         "/api/v1/teacher/profile",
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      
+
       setTeacher(res.data);
     } catch (error: any) {
       handleAuthError(error);
@@ -158,8 +161,8 @@ console.log("Grouped Data:", groupedData);
         class_id: student.classId,
         batch_id: student.batchId,
         subject: {
-          id:subject?._id,
-          name:subject?.name,
+          id: subject?._id,
+          name: subject?.name,
         },
         test_name: testName,
         score: {
@@ -175,14 +178,14 @@ console.log("Grouped Data:", groupedData);
 
       if (editId) {
         await axios.put(
-          `/api/v1/test/${editId}`,
+          `http://localhost:4000/api/v1/test/${editId}`,
           payload,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         toast.success("Report updated");
       } else {
         await axios.post(
-          "/api/v1/test",
+          "http://localhost:4000/api/v1/test",
           payload,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -235,153 +238,156 @@ console.log("Grouped Data:", groupedData);
 
   /* ------------------ UI ------------------ */
   return (
-   <div className="px-6 min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-  <StudentDetail id={student_id} student={student} setStudent={setStudent} />
+    <div className="px-6 min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+      <StudentDetail id={student_id} student={student} setStudent={setStudent} />
 
-  {/* Tabs */}
-  <div className="border-b border-gray-200 dark:border-gray-700 mt-6">
-    <div className="flex gap-8 px-4 overflow-x-auto">
-      <Link
-        href={`/teacher/class/student/${student_id}/performance`}
-        className="py-3 text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
-      >
-        Performance
-      </Link>
-      <span className="border-b-2 border-blue-600 py-3 text-sm font-semibold text-blue-600 dark:text-blue-400">
-        Add Report
-      </span>
-      <Link
-        href={`/teacher/class/student/${student_id}/attendance`}
-        className="py-3 text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
-      >
-        Attendance
-      </Link>
-    </div>
-  </div>
-
-  {/* FORM */}
-  <div className="mt-6 w-full sm:w-[90%] rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow transition-colors">
-    <h2 className="mb-4 text-lg font-semibold text-gray-800 dark:text-gray-100">
-      {editId ? "Edit Report" : "Add Student Report"}
-    </h2>
-
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <select
-        value={subject ? JSON.stringify(subject) : ""}
-        onChange={(e) =>
-          setSubject(e.target.value ? JSON.parse(e.target.value) : null)
-        }
-        className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-      >
-        <option value="">Select Subject</option>
-        {teacher?.subject?.map((s: any) => (
-          <option
-            key={s._id}
-            value={JSON.stringify({ _id: s._id, name: s.name })}
+      {/* Tabs */}
+      <div className="border-b border-gray-200 dark:border-gray-700 mt-6">
+        <div className="flex gap-8 px-4 overflow-x-auto">
+          <Link
+            href={`/teacher/class/student/${student_id}/performance`}
+            className="py-3 text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
           >
-            {s.name}
-          </option>
+            Performance
+          </Link>
+          <span className="border-b-2 border-blue-600 py-3 text-sm font-semibold text-blue-600 dark:text-blue-400">
+            Add Report
+          </span>
+          <Link
+            href={`/teacher/class/student/${student_id}/attendance`}
+            className="py-3 text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
+          >
+            Attendance
+          </Link>
+        </div>
+      </div>
+
+      {/* FORM */}
+      <div className="mt-6 w-full sm:w-[90%] rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow transition-colors">
+        <h2 className="mb-4 text-lg font-semibold text-gray-800 dark:text-gray-100">
+          {editId ? "Edit Report" : "Add Student Report"}
+        </h2>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <select
+            value={subject ? JSON.stringify(subject) : ""}
+            onChange={(e) =>
+              setSubject(e.target.value ? JSON.parse(e.target.value) : null)
+            }
+            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+          >
+            <option value="">Select Subject</option>
+
+            {teacher?.classes
+              ?.filter((s: any) => s.class_id === student.classId)
+              .map((s: any) => (
+                <option
+                  key={s._id}
+                  value={JSON.stringify({ _id: s._id, name: s.subject })}
+                >
+                  {s.subject}
+                </option>
+              ))}
+          </select>
+
+          <input
+            value={testName}
+            onChange={(e) => setTestName(e.target.value)}
+            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            placeholder="Test Name"
+          />
+
+          <input
+            type="number"
+            value={score}
+            onChange={(e) => setScore(e.target.value)}
+            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            placeholder="Score"
+          />
+
+          <textarea
+            rows={3}
+            value={feedback}
+            onChange={(e) => setFeedback(e.target.value)}
+            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            placeholder="Feedback"
+          />
+
+          <div className="flex justify-end gap-3">
+            {editId && (
+              <button
+                type="button"
+                onClick={resetForm}
+                className="rounded-lg bg-gray-400 px-4 py-2 text-white hover:bg-gray-500 transition"
+              >
+                Cancel
+              </button>
+            )}
+            <button
+              disabled={processing}
+              className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition"
+            >
+              {processing ? "Saving..." : editId ? "Update Report" : "Add Report"}
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {/* EXAM LIST */}
+      <div className="mt-10 w-full sm:w-[90%]">
+        <h2 className="mb-4 text-lg font-semibold text-gray-800 dark:text-gray-100">
+          Added Exam Reports
+        </h2>
+
+        {groupedData.map((group: any) => (
+          <div
+            key={group.subject._id}
+            className="mb-6 border border-gray-300 dark:border-gray-700 rounded-xl p-5 overflow-x-auto w-full bg-white dark:bg-gray-800 shadow transition-colors"
+          >
+            <h3 className="mb-3 font-semibold text-blue-600 dark:text-blue-400">
+              Subject: {group.subject.name}
+            </h3>
+
+            <table className="min-w-[800px] w-full border border-gray-300 dark:border-gray-700 text-sm table-auto whitespace-nowrap">
+              <thead className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
+                <tr>
+                  <th className="border p-2">Test</th>
+                  <th className="border p-2">Score</th>
+                  <th className="border p-2">Feedback</th>
+                  <th className="border p-2">Added By</th>
+                  <th className="border p-2">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {group.exams.map((exam: any) => (
+                  <tr key={exam.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    <td className="border p-2">{exam.exam}</td>
+                    <td className="border p-2 font-semibold">{exam.score}/100</td>
+                    <td className="border p-2">{exam.feedback}</td>
+                    <td className="border p-2">{exam.added_by?.name}</td>
+                    <td className="border p-2 space-x-2">
+                      <button
+                        onClick={() => handleEdit(exam, group.subject)}
+                        className="bg-yellow-500 px-2 py-1 text-white rounded hover:bg-yellow-600 transition"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(exam.id)}
+                        className="bg-red-600 px-2 py-1 text-white rounded hover:bg-red-700 transition"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         ))}
-      </select>
-
-      <input
-        value={testName}
-        onChange={(e) => setTestName(e.target.value)}
-        className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-        placeholder="Test Name"
-      />
-
-      <input
-        type="number"
-        value={score}
-        onChange={(e) => setScore(e.target.value)}
-        className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-        placeholder="Score"
-      />
-
-      <textarea
-        rows={3}
-        value={feedback}
-        onChange={(e) => setFeedback(e.target.value)}
-        className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-        placeholder="Feedback"
-      />
-
-      <div className="flex justify-end gap-3">
-        {editId && (
-          <button
-            type="button"
-            onClick={resetForm}
-            className="rounded-lg bg-gray-400 px-4 py-2 text-white hover:bg-gray-500 transition"
-          >
-            Cancel
-          </button>
-        )}
-        <button
-          disabled={processing}
-          className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition"
-        >
-          {processing ? "Saving..." : editId ? "Update Report" : "Add Report"}
-        </button>
       </div>
-    </form>
-  </div>
-
-  {/* EXAM LIST */}
-  <div className="mt-10 w-full sm:w-[90%]">
-    <h2 className="mb-4 text-lg font-semibold text-gray-800 dark:text-gray-100">
-      Added Exam Reports
-    </h2>
-
-    {groupedData.map((group: any) => (
-      <div
-        key={group.subject._id}
-        className="mb-6 border border-gray-300 dark:border-gray-700 rounded-xl p-5 overflow-x-auto w-full bg-white dark:bg-gray-800 shadow transition-colors"
-      >
-        <h3 className="mb-3 font-semibold text-blue-600 dark:text-blue-400">
-          Subject: {group.subject.name}
-        </h3>
-
-        <table className="min-w-[800px] w-full border border-gray-300 dark:border-gray-700 text-sm table-auto whitespace-nowrap">
-          <thead className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
-            <tr>
-              <th className="border p-2">Test</th>
-              <th className="border p-2">Score</th>
-              <th className="border p-2">Feedback</th>
-              <th className="border p-2">Added By</th>
-              <th className="border p-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {group.exams.map((exam: any) => (
-              <tr key={exam.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                <td className="border p-2">{exam.exam}</td>
-                <td className="border p-2 font-semibold">{exam.score}/100</td>
-                <td className="border p-2">{exam.feedback}</td>
-                <td className="border p-2">{exam.added_by?.name}</td>
-                <td className="border p-2 space-x-2">
-                  <button
-                    onClick={() => handleEdit(exam, group.subject)}
-                    className="bg-yellow-500 px-2 py-1 text-white rounded hover:bg-yellow-600 transition"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(exam.id)}
-                    className="bg-red-600 px-2 py-1 text-white rounded hover:bg-red-700 transition"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    ))}
-  </div>
-  <br /><br />
-</div>
+      <br /><br />
+    </div>
 
   );
 }

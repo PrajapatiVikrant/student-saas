@@ -5,7 +5,7 @@ import { FaUsers } from "react-icons/fa";
 import { IoTimeOutline } from "react-icons/io5";
 import { PiCalendarCheckLight } from "react-icons/pi";
 import { RiDeleteBin6Line } from "react-icons/ri";   // DELETE ICON
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import axios from "axios";
@@ -21,48 +21,18 @@ type BatchCardProps = {
     fee_method: string;
     batch_timing: string;
     batch_days: string;
+    total_students: number;
   };
   refresh: () => void; // Add getClass as a prop
 };
 
 export default function BatchCard({ batch, class_id, refresh }: BatchCardProps) {
-  const [students, setStudents] = useState([]);
   const [batchForm, setBatchForm] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [confirmationForm, setConfirmationForm] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    getBatchStudents();
-  }, []);
-
-  async function getBatchStudents() {
-    const token = localStorage.getItem("codeflam01_token");
-    if (!token) {
-      toast.error("Session expired. Please log in again.");
-      router.push("/login");
-      return;
-    }
-
-    try {
-      const response = await axios.get(
-        `/api/v1/student/${class_id}/${batch._id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setStudents(response.data.students);
-    } catch (error: any) {
-      console.error("Error fetching students:", error);
-      if (error.response?.status === 401 || error.response?.status === 403) {
-        toast.error("Session expired. Please log in again.");
-        localStorage.removeItem("codeflam01_token");
-        router.push("/login");
-      } else {
-        toast.error("Failed to fetch students.");
-      }
-    }
-  }
+  
 
   // -------------------------
   // DELETE BATCH FUNCTION
@@ -135,7 +105,7 @@ export default function BatchCard({ batch, class_id, refresh }: BatchCardProps) 
         <section className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
           <div className="flex items-center gap-2">
             <FaUsers className="text-blue-600 dark:text-blue-400" size={14} />
-            <span>{students.length} Students</span>
+            <span>{batch.total_students} Students</span>
           </div>
 
           <div className="flex items-center gap-2">

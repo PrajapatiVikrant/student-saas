@@ -8,12 +8,11 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { Search } from "lucide-react";
 
-interface Subject {
-  name: string;
-}
 interface ClassType {
-  id: string;
-  name: string;
+  id:number;
+  class_id: string;
+  class_name: string;
+  subject: string;
 }
 interface BatchType {
   _id: string;
@@ -28,7 +27,6 @@ interface Teacher {
   email: string;
   phone: string;
   class_teacher: ClassTeacher;
-  subject: Subject[];
   classes: ClassType[];
   salary_type: "fixed" | "per_student" | "per_subject";
   salary_amount: number;
@@ -62,7 +60,7 @@ export default function TeachersPage() {
   const [phone, setPhone] = useState("");
   const [classTeacherClassId, setClassTeacherClassId] = useState("");
   const [classTeacherBatchId, setClassTeacherBatchId] = useState("");
-  const [subjects, setSubjects] = useState<Subject[]>([]);
+
   const [classes, setClasses] = useState<ClassType[]>([]);
   const [salaryType, setSalaryType] = useState<
     "fixed" | "per_student" | "per_subject"
@@ -150,7 +148,6 @@ export default function TeachersPage() {
     setPhone("");
     setClassTeacherClassId("");
     setClassTeacherBatchId("");
-    setSubjects([]);
     setClasses([]);
     setSalaryType("fixed");
     setSalaryAmount(0);
@@ -165,7 +162,8 @@ export default function TeachersPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-
+    let updatedClassesId = classes;
+    updatedClassesId = updatedClassesId.map((c, index) => ({...c, id: index + 1}))
     const form: Teacher = {
       name,
       email,
@@ -174,14 +172,13 @@ export default function TeachersPage() {
         class_id: classTeacherClassId,
         batch_id: classTeacherBatchId,
       },
-      subject: subjects,
-      classes,
+      classes:updatedClassesId,
       salary_type: salaryType,
       salary_amount: salaryAmount,
       date_joined: dateJoined,
       is_active: isActive,
     };
-
+    console.log(form)
     setProcessing(true);
 
     try {
@@ -229,11 +226,13 @@ export default function TeachersPage() {
     setPhone(teacher.phone);
     setClassTeacherClassId(teacher.class_teacher.class_id);
     setClassTeacherBatchId(teacher.class_teacher.batch_id);
-    setSubjects(teacher.subject);
+
     setClasses(
       teacher.classes.map((c: any) => ({
-        id: c.class_id,
-        name: c.class_name,
+        id:c.id,
+        class_id: c.class_id,
+        class_name: c.class_name,
+        subject: c.subject,
       }))
     );
     setSalaryType(teacher.salary_type);
@@ -274,29 +273,8 @@ export default function TeachersPage() {
     }
   };
 
-  const confirmSubjectDelete = () => {
-  if (!subjectToDelete) return;
 
-  setSubjects(subjects.filter((s) => s.name !== subjectToDelete));
-  setSubjectToDelete(null);
-  setSubjectDeleteConfirm(false);
-   toast.success("Teacher deleted successfully");
-};
 
-  const deleteSubject = (name: string) => {
-    // Create mode → direct delete
-    if (!editMode) {
-      setSubjects(subjects.filter((s) => s.name !== name));
-      return;
-    }
-
-    // Edit mode → show confirmation first
-    setSubjectToDelete(name);
-    setSubjectDeleteConfirm(true);
-  };
-
-  const deleteClass = (id: string) =>
-    setClasses(classes.filter((c) => c.id !== id));
 
   // Filtered Teachers
   const filteredTeachers = useMemo(() => {
@@ -423,41 +401,29 @@ export default function TeachersPage() {
                     Joined: {t.date_joined?.split("T")[0]}
                   </p>
 
-                  {/* Subjects */}
-                  <div>
-                    <p className="font-semibold text-slate-700 dark:text-gray-200">Subjects:</p>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {t.subject?.length > 0 ? (
-                        t.subject.map((s: any) => (
-                          <span
-                            key={s.name}
-                            className="px-2 py-1 bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-300 text-xs rounded-full"
-                          >
-                            {s.name}
-                          </span>
-                        ))
-                      ) : (
-                        <span className="text-gray-400 dark:text-gray-400 text-xs">No Subjects</span>
-                      )}
-                    </div>
-                  </div>
+
                 </div>
 
-                {/* Assigned Classes */}
+                {/* Assigned Classes with Subject */}
                 <div className="mt-3">
-                  <p className="font-semibold text-slate-700 dark:text-gray-200">Assigned Classes:</p>
+                  <p className="font-semibold text-slate-700 dark:text-gray-200">
+                    Assigned Classes
+                  </p>
+
                   <div className="flex flex-wrap gap-2 mt-2">
                     {t.classes?.length > 0 ? (
                       t.classes.map((cls: any, index: number) => (
                         <span
                           key={index}
-                          className="px-2 py-1 bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-300 text-xs rounded-full"
+                          className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs rounded-full"
                         >
-                          {cls.class_name || cls.name}
+                          {cls.class_name} - {cls.subject}
                         </span>
                       ))
                     ) : (
-                      <span className="text-gray-400 dark:text-gray-400 text-xs">No Classes Assigned</span>
+                      <span className="text-gray-400 dark:text-gray-400 text-xs">
+                        No Classes Assigned
+                      </span>
                     )}
                   </div>
                 </div>
@@ -587,21 +553,27 @@ export default function TeachersPage() {
                   </select>
                 </div>
 
-                {/* Subjects */}
+                {/* Assigned Classes with Subject */}
                 <div className="md:col-span-2">
-                  <label className="font-medium">Subjects</label>
+                  <label className="font-medium">Assign Class & Subject</label>
 
+                  {/* Selected */}
                   <div className="flex gap-2 mt-2 flex-wrap">
-                    {subjects.map((s) => (
+                    {classes.map((cls:any,index) => (
                       <span
-                        key={s.name}
+                        key={index}
                         className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full flex items-center gap-2"
                       >
-                        {s.name}
+                        {cls.class_name} - {cls.subject}
                         <button
                           type="button"
-                          onClick={() => deleteSubject(s.name)}
-                          className="text-red-600 dark:text-red-400 font-bold cursor-pointer hover:text-red-800"
+                          onClick={() =>{
+                            console.log(classes)
+                            setClasses(classes.filter((c:any) => c.id !== cls.id))
+                           
+                          }
+                          }
+                          className="text-red-600 font-bold"
                         >
                           ×
                         </button>
@@ -609,87 +581,52 @@ export default function TeachersPage() {
                     ))}
                   </div>
 
-                  <div className="flex mt-3 gap-3">
-                    <input
-                      type="text"
-                      value={newSubject}
-                      onChange={(e) => setNewSubject(e.target.value)}
-                      className="w-full p-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Enter subject"
-                    />
-                    <button
-                      type="button"
-                      className="bg-blue-600 hover:bg-blue-500 dark:bg-blue-700 dark:hover:bg-blue-600 text-white px-6 rounded transition"
-                      onClick={() => {
-                        if (!newSubject.trim()) return;
-                        if (subjects.some((s) => s.name === newSubject))
-                          return alert("Subject already added");
-
-                        setSubjects([...subjects, { name: newSubject }]);
-                        setNewSubject("");
-                      }}
-                    >
-                      Add
-                    </button>
-                  </div>
-                </div>
-
-
-
-                {/* Assigned Classes */}
-                <div className="md:col-span-2">
-                  <label className="font-medium">Assigned Classes</label>
-
-                  {/* Selected Classes */}
-                  <div className="flex gap-2 mt-2 flex-wrap">
-                    {classes.map((cls) => (
-                      <span
-                        key={cls.id}
-                        className="px-3 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded-full flex items-center gap-2"
-                      >
-                        {cls.name}
-                        <button
-                          type="button"
-                          onClick={() => deleteClass(cls.id)}
-                          className="text-red-600 dark:text-red-400 font-bold cursor-pointer hover:text-red-800"
-                        >
-                          ×
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Add Class */}
+                  {/* Add Section */}
                   <div className="flex mt-3 gap-3">
                     <select
                       value={newClass}
                       onChange={(e) => setNewClass(e.target.value)}
-                      className="w-full p-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full p-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded"
                     >
                       <option value="">Select Class</option>
-                      {classList.map((c) => (
+                      {classList.map((c:any) => (
                         <option key={c.id} value={c.id}>
                           {c.name}
                         </option>
                       ))}
                     </select>
 
+                    <input
+                      type="text"
+                      value={newSubject}
+                      onChange={(e) => setNewSubject(e.target.value)}
+                      placeholder="Enter Subject"
+                      className="w-full p-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded"
+                    />
+
                     <button
                       type="button"
-                      className="bg-green-600 hover:bg-green-500 dark:bg-green-700 dark:hover:bg-green-600 text-white px-6 rounded transition"
+                      className="bg-blue-600 text-white px-6 rounded"
                       onClick={() => {
-                        if (!newClass) return;
+                        if (!newClass || !newSubject.trim()) return;
 
                         const selected = classList.find((c) => c.id === newClass);
                         if (!selected) return;
 
-                        if (classes.some((c) => c.id === selected.id)) {
-                          alert("Class already added");
-                          return;
-                        }
+                       
 
-                        setClasses([...classes, selected]);
+                        setClasses([
+                          ...classes,
+                          {
+                            id: classes.length + 1, 
+                            class_id: selected.id,
+                            class_name: selected.name,
+                            subject: newSubject,
+                          },
+                        ]);
+
                         setNewClass("");
+                        setNewSubject("");
                       }}
                     >
                       Add
@@ -775,18 +712,7 @@ export default function TeachersPage() {
           processing={processing}
         />
       )}
-      {subjectDeleteConfirm && (
-        <Confirmation
-          onClose={() => {
-            setSubjectDeleteConfirm(false);
-            setSubjectToDelete(null);
-          }}
-          onConfirm={confirmSubjectDelete}
-          name={subjectToDelete || ""}
-          info="This action cannot be undone and will permanently remove all related test/exam records associated with this subject."
-          processing={false}
-        />
-      )}
+     
       <br /><br />
     </div>
   );

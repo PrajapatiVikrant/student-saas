@@ -380,7 +380,7 @@ const EventPage: React.FC = () => {
                     <span className="font-semibold text-slate-600 dark:text-slate-400">
                       Added by:
                     </span>{" "}
-                    {event.added_by._id === myId ? "You" : event.added_by.name}
+                    {event?.added_by?._id ? (event.added_by._id === myId ? "You" : event.added_by.name) :"Removed Teacher"}
                   </p>
                 </div>
 
@@ -390,7 +390,7 @@ const EventPage: React.FC = () => {
                   </div>
                 )}
 
-                {event.added_by._id === myId && (
+              
                   <div className="flex gap-3 mt-5 justify-end">
 
                     <button
@@ -411,7 +411,7 @@ const EventPage: React.FC = () => {
                     </button>
 
                   </div>
-                )}
+               
               </div>
             ))}
           </div>

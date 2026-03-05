@@ -466,14 +466,14 @@ export default function ClassBatch() {
 
                   <CardContent className="py-2 flex-grow">
                     <div className="grid grid-cols-2 gap-3 mt-2">
-                      {/* <div className="bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border border-slate-100 dark:border-slate-700 flex flex-col items-center justify-center text-center">
+                      <div className="bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border border-slate-100 dark:border-slate-700 flex flex-col items-center justify-center text-center">
                         <span className="text-2xl font-bold text-slate-700 dark:text-white">
-                          {item.class.subjects.length}
+                          {item.class.batches.reduce((acc, batch:any) => acc + batch.total_students, 0)}
                         </span>
                         <span className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">
-                          Subjects
+                          Students
                         </span>
-                      </div> */}
+                      </div>
                       <div className="bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border border-slate-100 dark:border-slate-700 flex flex-col items-center justify-center text-center">
                         <span className="text-2xl font-bold text-slate-700 dark:text-white">
                           {item.class.batches.length}
@@ -520,10 +520,10 @@ export default function ClassBatch() {
                     <div className="flex items-center gap-6">
                       <div className="flex flex-col items-center sm:text-right">
                         <p className="text-xs text-slate-400 font-medium uppercase">
-                          Subjects
+                          Students
                         </p>
                         <p className="font-bold text-slate-700 dark:text-white">
-                          {item.class.subjects.length}
+                          {item.class.batches.reduce((acc, batch:any) => acc + batch.total_students, 0)}
                         </p>
                       </div>
 
