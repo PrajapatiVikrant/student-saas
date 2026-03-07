@@ -72,7 +72,7 @@ export default function Kaksha() {
           localStorage.removeItem("codeflam01_token");
           router.push("/login");
         } else {
-          toast.error("Failed to load subjects ❌");
+          console.log("Error fetching subjects:", error);
         }
       });
   }
