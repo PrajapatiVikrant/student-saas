@@ -178,14 +178,14 @@ export default function ReportForm() {
 
       if (editId) {
         await axios.put(
-          `http://localhost:4000/api/v1/test/${editId}`,
+          `/api/v1/test/${editId}`,
           payload,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         toast.success("Report updated");
       } else {
         await axios.post(
-          "http://localhost:4000/api/v1/test",
+          "/api/v1/test",
           payload,
           { headers: { Authorization: `Bearer ${token}` } }
         );
