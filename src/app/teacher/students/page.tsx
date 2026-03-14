@@ -135,9 +135,8 @@ export default function Students() {
                 `/api/v1/student/student/${selectedStudent?._id}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-            router.push(
-                `/admin/class_batch/class/batch/students/${selectedStudent?.class?.class_id}/${selectedStudent?.batch?.batch_id}`
-            );
+            setConfirmationForm(false);
+            getBatchStudents();
             toast.success(response.data.message);
         } catch (error: any) {
             if (error.response?.status === 401 || error.response?.status === 403) {
@@ -185,24 +184,7 @@ export default function Students() {
                     </button>
                 </div>
 
-                {/* Tabs */}
-                <div className="border-b border-slate-200 dark:border-slate-800">
-                    <div className="flex gap-8 px-4">
-                        <Link
-                            href={`/admin/class_batch/class/batch/students/${class_id}/${batch_id}`}
-                            className="border-b-2 border-blue-600 py-3 text-sm font-semibold text-blue-600 dark:text-blue-400"
-                        >
-                            Students
-                        </Link>
-
-                        <Link
-                            href={`/admin/class_batch/class/batch/attendance/${class_id}/${batch_id}`}
-                            className="border-b-2 border-transparent py-3 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400"
-                        >
-                            Attendance
-                        </Link>
-                    </div>
-                </div>
+               
 
                 {/* Student Table */}
                 <div className="mt-6 overflow-hidden rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 shadow">
@@ -240,7 +222,7 @@ export default function Students() {
                                             <td className="whitespace-nowrap px-6 py-4 text-sm">
                                                 <div className="flex items-center gap-4">
 
-                                                  
+
 
                                                     {/* Edit */}
                                                     <button

@@ -3,14 +3,14 @@
 import Image from "next/image";
 import logo from "./assets/logo.webp";
 import {
-  Facebook,
+
   Linkedin,
   Instagram,
-  Twitter,
+
   MapPin,
   Phone,
   Globe,
-  AtSign,
+
   Mail,
 } from "lucide-react";
 
@@ -86,10 +86,10 @@ export function Footer() {
 
             <ul className="space-y-3 text-sm text-gray-400">
               <li className="flex items-start gap-2">
-                <MapPin className="w-4 h-4 text-gray-300 mt-1" />
+                <MapPin className="w-5 h-5 text-gray-400 mt-1 flex-shrink-0" />
                 <span>
-                  CodeFlame Technology <br />
-                  Ghaziabad, Uttar Pradesh - 201102, India
+                  Codeflame Technology Pvt. Ltd., Ground Floor, Office No. G6, A-82,
+                  Sector 4, Noida, Uttar Pradesh - 201102, India
                 </span>
               </li>
 
@@ -122,7 +122,7 @@ export function Footer() {
                   rel="noopener noreferrer"
                   className="hover:text-white transition-colors"
                 >
-                  codeflametechnology.com
+                  www.codeflametechnology.com
                 </a>
               </li>
             </ul>

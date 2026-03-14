@@ -2,7 +2,7 @@ export default function PrivacyPolicyPage() {
   return (
     <div className="min-h-screen bg-white text-gray-900">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        
+
         <h1 className="text-4xl font-bold mb-4 text-gray-900">
           Privacy Policy
         </h1>
@@ -12,7 +12,7 @@ export default function PrivacyPolicyPage() {
         </p>
 
         <div className="space-y-10 text-gray-700 leading-relaxed">
-          
+
           {/* Intro */}
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-3">
@@ -26,9 +26,9 @@ export default function PrivacyPolicyPage() {
             </p>
 
             <p className="mt-3">
-              This Privacy Policy applies to all portals of InstituteERP, including:
-              <strong> Admin Portal</strong>, <strong>Teacher Portal</strong>, and{" "}
-              <strong>Parent Portal</strong>.
+              This Privacy Policy applies to the InstituteERP platform including the
+              <strong> Admin Portal</strong>, <strong>Teacher Portal</strong>, and the{" "}
+              <strong>Parent Portal mobile application available on Android devices</strong>.
             </p>
           </section>
 
@@ -37,6 +37,7 @@ export default function PrivacyPolicyPage() {
             <h2 className="text-2xl font-semibold text-gray-900 mb-3">
               2. Information We Collect
             </h2>
+
             <p>
               We may collect the following types of information depending on the portal
               and features used:
@@ -44,188 +45,241 @@ export default function PrivacyPolicyPage() {
 
             <ul className="list-disc pl-6 mt-3 space-y-2">
               <li>
-                <strong>Personal Details:</strong> Name, phone number, email, student details,
-                guardian details.
+                <strong>Personal Details:</strong> Name, phone number, email,
+                student details, guardian details.
               </li>
+
               <li>
-                <strong>Academic Information:</strong> class/section, attendance, marks,
-                results, timetable, homework.
+                <strong>Academic Information:</strong> Class/section, attendance,
+                marks, results, timetable, homework.
               </li>
+
               <li>
-                <strong>Fee & Payment Information:</strong> fee status, transaction details,
-                payment receipts (payment is processed securely through payment gateways).
+                <strong>Fee & Payment Information:</strong> Fee status,
+                transaction details, payment receipts.
               </li>
+
               <li>
-                <strong>Device & Technical Data:</strong> IP address, browser type, device type,
-                app logs, and usage analytics.
+                <strong>Device & Technical Data:</strong> IP address, browser type,
+                device type, app logs, usage analytics, and push notification tokens
+                used for sending important alerts.
               </li>
             </ul>
+          </section>
+
+          {/* Notifications */}
+          <section>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-3">
+              3. Notifications
+            </h2>
+
+            <p>
+              InstituteERP may send push notifications through services such as
+              Firebase Cloud Messaging (FCM) to deliver important updates
+              including:
+            </p>
+
+            <ul className="list-disc pl-6 mt-3 space-y-2">
+              <li>Attendance updates</li>
+              <li>Homework notifications</li>
+              <li>School announcements</li>
+              <li>Fee reminders</li>
+              <li>Important academic alerts</li>
+            </ul>
+
+            <p className="mt-3">
+              These notifications help parents stay informed about student
+              activities and school communications.
+            </p>
           </section>
 
           {/* How we use */}
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-3">
-              3. How We Use Your Information
+              4. How We Use Your Information
             </h2>
-            <p>
-              We use the collected information to:
-            </p>
+
+            <p>We use the collected information to:</p>
 
             <ul className="list-disc pl-6 mt-3 space-y-2">
-              <li>Provide and improve our services across all portals.</li>
-              <li>Manage attendance, student records, and academic progress.</li>
-              <li>Generate reports, fee receipts, and performance insights.</li>
+              <li>Provide and improve our services.</li>
+              <li>Manage attendance and student records.</li>
+              <li>Track academic progress and performance.</li>
+              <li>Generate reports and fee receipts.</li>
               <li>Enable communication between school, teachers, and parents.</li>
-              <li>Provide customer support and resolve issues.</li>
-              <li>Maintain security and prevent fraud or misuse.</li>
+              <li>Provide customer support.</li>
+              <li>Maintain platform security.</li>
             </ul>
           </section>
 
           {/* Payments */}
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-3">
-              4. Payments & Subscriptions
+              5. Payments & Subscriptions
             </h2>
+
             <p>
               InstituteERP supports payment functionality for:
             </p>
 
             <ul className="list-disc pl-6 mt-3 space-y-2">
               <li>
-                <strong>School Fee Payments:</strong> Parents may pay school fees through the Parent Portal.
+                <strong>School Fee Payments:</strong> Parents may pay school fees
+                through the Parent Portal.
               </li>
+
               <li>
-                <strong>Subscription Payments:</strong> Schools may pay for subscription plans or services.
+                <strong>Subscription Payments:</strong> Schools may subscribe to
+                premium services provided by InstituteERP.
               </li>
             </ul>
 
             <p className="mt-3">
-              Payments are processed through trusted third-party payment gateways such as{" "}
-              <strong>Razorpay</strong>. We do not store sensitive card or UPI credentials.
-              Payment-related data like transaction ID and payment status may be stored for
-              record and receipt purposes.
+              Payments are processed through trusted third-party payment gateways
+              such as <strong>Razorpay</strong>. We do not store sensitive card,
+              banking, or UPI credentials.
             </p>
 
             <p className="mt-3">
-              Note: Currently, Admin and Teacher portal access may be provided free of cost,
-              but subscription charges may be applied in the future.
+              Only transaction related information such as transaction ID,
+              payment status, and receipts may be stored for record purposes.
             </p>
           </section>
 
           {/* Data sharing */}
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-3">
-              5. Sharing of Information
+              6. Sharing of Information
             </h2>
+
             <p>
-              We do not sell or rent your personal information. However, we may share information:
+              We do not sell or rent personal information. Information may be
+              shared in the following cases:
             </p>
 
             <ul className="list-disc pl-6 mt-3 space-y-2">
-              <li>
-                With the respective school/organization using InstituteERP.
-              </li>
-              <li>
-                With third-party services like payment gateways (Razorpay) for payment processing.
-              </li>
-              <li>
-                If required by law, legal process, or government request.
-              </li>
-              <li>
-                To protect our rights, users, and platform security.
-              </li>
+              <li>With the respective school using InstituteERP.</li>
+              <li>With payment gateway providers for payment processing.</li>
+              <li>If required by law or legal authorities.</li>
+              <li>To protect the security of the platform and its users.</li>
             </ul>
           </section>
 
           {/* Security */}
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-3">
-              6. Data Security
+              7. Data Security
             </h2>
+
             <p>
-              We implement reasonable technical and organizational security measures
-              to protect your personal information against unauthorized access, loss,
-              misuse, or alteration.
+              We implement reasonable technical and organizational measures
+              to protect user data against unauthorized access, loss,
+              or misuse.
             </p>
 
             <p className="mt-3">
-              However, no system is 100% secure, and we cannot guarantee absolute security.
+              However, no internet-based system can guarantee absolute security.
             </p>
           </section>
 
-          {/* Data retention */}
+          {/* Retention */}
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-3">
-              7. Data Retention
+              8. Data Retention
             </h2>
+
             <p>
-              We retain user data as long as it is required for service operations,
-              school records, legal compliance, or subscription management.
+              We retain user data only as long as necessary for service
+              operations, school record management, legal compliance,
+              and subscription management.
             </p>
           </section>
 
           {/* Cookies */}
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-3">
-              8. Cookies & Tracking
+              9. Cookies & Tracking
             </h2>
+
             <p>
-              InstituteERP may use cookies or similar technologies to improve user experience,
-              maintain sessions, and analyze usage trends.
+              InstituteERP may use cookies and similar technologies to
+              improve user experience, maintain login sessions,
+              and analyze usage trends.
             </p>
           </section>
 
           {/* Children */}
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-3">
-              9. Children’s Privacy
+              10. Children’s Privacy
             </h2>
+
             <p>
-              Our platform may store student data provided by schools/parents. We collect
-              student information only for educational and administrative purposes.
-              Parents and schools are responsible for ensuring accuracy of student information.
+              The platform may store student data provided by schools or
+              parents. Student information is used strictly for educational
+              and administrative purposes.
             </p>
           </section>
 
-          {/* User rights */}
+          {/* Rights */}
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-3">
-              10. Your Rights
+              11. Your Rights
             </h2>
+
             <p>
-              You may request access, correction, or deletion of your personal information
-              by contacting us. Some data may be retained for legal or school record purposes.
+              Users may request access, correction, or deletion of their
+              personal data by contacting us.
             </p>
           </section>
 
           {/* Changes */}
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-3">
-              11. Changes to This Privacy Policy
+              12. Changes to This Privacy Policy
             </h2>
+
             <p>
-              We may update this Privacy Policy from time to time. Updates will be posted
-              on this page with the updated date.
+              We may update this policy occasionally. Updated versions will
+              always be posted on this page.
+            </p>
+          </section>
+
+          {/* Parent portal clarification */}
+          <section>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-3">
+              13. Parent Portal Mobile Application
+            </h2>
+
+            <p>
+              The Parent Portal mobile application allows parents to access
+              student information shared by their school through the
+              Institute ERP platform.
+            </p>
+
+            <p className="mt-3">
+              Parent accounts are not created directly by users. Accounts are
+              created by the school administration and login credentials are
+              provided to parents by the respective school.
             </p>
           </section>
 
           {/* Contact */}
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-3">
-              12. Contact Us
+              14. Contact Us
             </h2>
-
-            <p>
-              If you have any questions about this Privacy Policy, you can contact us:
-            </p>
 
             <div className="mt-4 bg-gray-50 border border-gray-200 rounded-xl p-5">
               <p>
                 <strong>Company:</strong> CodeFlame Technology
               </p>
+
               <p>
-                <strong>Address:</strong> Ghaziabad, Uttar Pradesh - 201102, India
+                <strong>Address:</strong> Ground Floor, Office No. G6, A-82, Sector 4, Noida,
+                Uttar Pradesh - 201102, India
               </p>
+
               <p>
                 <strong>Email:</strong>{" "}
                 <a
@@ -235,18 +289,20 @@ export default function PrivacyPolicyPage() {
                   contact@codeflametechnology.com
                 </a>
               </p>
+
               <p>
                 <strong>Phone:</strong> +91 9149209580, +91 7678110578
               </p>
+
               <p>
                 <strong>Website:</strong>{" "}
                 <a
-                  href="https://codeflametechnology.com"
+                  href="https://www.codeflametechnology.com"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-600 hover:underline"
                 >
-                  https://codeflametechnology.com
+                  https://www.codeflametechnology.com
                 </a>
               </p>
             </div>

@@ -224,6 +224,7 @@ export default function Dashboard() {
       });
 
       setMyId(res.data.userId);
+      console.log("Events Data:", res.data.events);
       setEvents(res.data.events || []);
     } catch (err) {
       console.log(err);
@@ -233,7 +234,7 @@ export default function Dashboard() {
   // ================= TODAY & UPCOMING =================
   const todayEvents = useMemo(() => {
     return events
-      .filter((e) => e.added_by === myId)
+      .filter((e) => e.added_by._id === myId)
       .filter((e) => isSameDay(e.date));
   }, [events, myId]);
 

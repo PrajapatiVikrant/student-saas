@@ -33,8 +33,8 @@ export default function AdminDashboard() {
   }
 
   // Main 4 for mobile navbar
-  const mainNavItems = navItems.slice(0, 4);
-  const moreNavItems = navItems.slice(4);
+  const mainNavItems = navItems.slice(0, 3);
+  const moreNavItems = navItems.slice(3);
 
   return (
     <div className="relative flex min-h-screen w-full bg-slate-50 dark:bg-slate-900 text-gray-700 dark:text-gray-200">
