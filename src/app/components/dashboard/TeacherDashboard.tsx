@@ -7,6 +7,7 @@ import {
   MdOutlineDashboard,
   MdPeopleOutline,
   MdMoreHoriz,
+
 } from "react-icons/md";
 import { IoSettingsOutline } from "react-icons/io5";
 import { SiGoogleclassroom } from "react-icons/si";
@@ -25,7 +26,9 @@ export default function AdminDashboard() {
     { name: "Dashboard", icon: <MdOutlineDashboard />, path: "/teacher/dashboard" },
     { name: "Attendance", icon: <SiGoogleclassroom />, path: "/teacher/attendance" },
     { name: "Events", icon: <SlCalender />, path: "/teacher/event" },
-    { name: "Students", icon: <MdPeopleOutline />, path: "/teacher/students" },];
+    { name: "Students", icon: <MdPeopleOutline />, path: "/teacher/students" },
+    { name: "Homework", icon: <MdFamilyRestroom />, path: "/teacher/homework" }
+  ];
 
   function handleSignout() {
     localStorage.removeItem("codeflam01_token");
