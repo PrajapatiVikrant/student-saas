@@ -12,7 +12,6 @@ import { toast } from 'react-toastify';
 
 
 
-const token = localStorage.getItem("codeflam01_token");
 interface Homework {
     id: number;
     class_id: string;
@@ -50,14 +49,15 @@ export default function App() {
     const [filterBatch, setFilterBatch] = useState('all');
     const [filterSubject, setFilterSubject] = useState('all');
     const [filterStatus, setFilterStatus] = useState('all');
-
+    
     // Homework list
     const [homeworkList, setHomeworkList] = useState<Homework[]>([]);
-
+    
     //loading
     const [loading, setLoading] = useState(false)
     const [processing, setProcessing] = useState(false)
 
+    const token = localStorage.getItem("codeflam01_token");
 
     useEffect(() => {
         fetchTeacherProfile();
