@@ -76,7 +76,7 @@ export default function Attendance() {
     setLoading(true);
     try {
       const response = await axios.get<GetAllStudentResponse>(
-        `/api/v1/student/${class_id}/${batch_id}`,
+        `https://codeflame-edu-backend.xyz/api/v1/student/${class_id}/${batch_id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -101,7 +101,7 @@ export default function Attendance() {
     setLoading(true);
     try {
       const res = await axios.get(
-        `/api/v1/attendance/${date}/${class_id}/${batch_id}`,
+        `https://codeflame-edu-backend.xyz/api/v1/attendance/${date}/${class_id}/${batch_id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -190,7 +190,7 @@ export default function Attendance() {
       }));
 
       await axios.post(
-        `/api/v1/attendance/mark`,
+        `https://codeflame-edu-backend.xyz/api/v1/attendance/mark`,
         { classId: class_id,class_name:classData.class_name, batchId: batch_id, batch_name:classData.batch_name ,date, attendance: attendanceArray },
         { headers: { Authorization: `Bearer ${token}` } }
       );

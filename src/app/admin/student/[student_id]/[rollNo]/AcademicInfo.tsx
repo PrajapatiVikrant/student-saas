@@ -62,7 +62,7 @@ export default function AcademicInfo({ student }: AcademicProps) {
     try {
       setLoadingAttendance(true);
       const res = await axios.get(
-        `/api/v1/attendance/student/${student.id}`,
+        `https://codeflame-edu-backend.xyz/api/v1/attendance/student/${student.id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setAttendanceData(res.data || []);

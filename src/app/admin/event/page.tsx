@@ -79,7 +79,7 @@ const EventPage: React.FC = () => {
     description: "",
   });
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const API_URL = "/api/v1/event";
+  const API_URL = "https://codeflame-edu-backend.xyz/api/v1/event";
 
   // ================= FETCH EVENTS =================
   const fetchEvents = async () => {

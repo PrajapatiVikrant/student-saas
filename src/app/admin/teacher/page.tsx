@@ -89,7 +89,7 @@ export default function TeachersPage() {
       const token = localStorage.getItem("codeflam01_token");
       if (!token) throw new Error("No token found. Please login again.");
 
-      const response = await axios.get("/api/v1/kaksha", {
+      const response = await axios.get("https://codeflame-edu-backend.xyz/api/v1/kaksha", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -114,7 +114,7 @@ export default function TeachersPage() {
       const token = localStorage.getItem("codeflam01_token");
       if (!token) throw new Error("No token found. Please login again.");
 
-      const teachers = await axios.get("/api/v1/teacher", {
+      const teachers = await axios.get("https://codeflame-edu-backend.xyz/api/v1/teacher", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -187,7 +187,7 @@ export default function TeachersPage() {
 
       if (editMode) {
         response = await axios.put(
-          `/api/v1/teacher/${teacherId}`,
+          `https://codeflame-edu-backend.xyz/api/v1/teacher/${teacherId}`,
           form,
           {
             headers: { Authorization: `Bearer ${token}` },
@@ -195,7 +195,7 @@ export default function TeachersPage() {
         );
       } else {
         response = await axios.post(
-          "/api/v1/teacher",
+          "https://codeflame-edu-backend.xyz/api/v1/teacher",
           form,
           {
             headers: { Authorization: `Bearer ${token}` },
@@ -257,7 +257,7 @@ export default function TeachersPage() {
     setProcessing(true);
     try {
       const token = localStorage.getItem("codeflam01_token");
-      await axios.delete(`/api/v1/teacher/${teacherId}`, {
+      await axios.delete(`https://codeflame-edu-backend.xyz/api/v1/teacher/${teacherId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

@@ -143,7 +143,7 @@ export default function Dashboard() {
       const token = localStorage.getItem("codeflam01_token");
 
       const response = await axios.get(
-        "/api/v1/admin/dashboard/stats",
+        "https://codeflame-edu-backend.xyz/api/v1/admin/dashboard/stats",
         {
           headers: { Authorization: `Bearer ${token}` },
         }

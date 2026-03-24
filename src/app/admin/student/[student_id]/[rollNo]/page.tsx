@@ -32,7 +32,7 @@ export default function StudentDetailsPage() {
     const token = localStorage.getItem("codeflam01_token");
     try {
       const response = await axios.get(
-        `/api/v1/student/student/${student_id}`,
+        `https://codeflame-edu-backend.xyz/api/v1/student/student/${student_id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -77,7 +77,7 @@ export default function StudentDetailsPage() {
     const token = localStorage.getItem("codeflam01_token");
     try {
       const response = await axios.delete(
-        `/api/v1/student/student/${student_id}`,
+        `https://codeflame-edu-backend.xyz/api/v1/student/student/${student_id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       router.push(

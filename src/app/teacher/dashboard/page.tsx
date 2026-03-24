@@ -102,12 +102,12 @@ export default function Dashboard() {
         // 2) Fetch Attendance (Today)
         try {
           const homeclassResponse = await axios.get(
-            `/api/v1/attendance/${today}/${classId}/${batchId}`,
+            `https://codeflame-edu-backend.xyz/api/v1/attendance/${today}/${classId}/${batchId}`,
             {
               headers: { Authorization: `Bearer ${token}` },
             }
           );
-
+          
           if (
             homeclassResponse?.data?.message ===
             "No attendance found for this class, batch, and date"
@@ -116,7 +116,7 @@ export default function Dashboard() {
             setTotalStudents(homeclassResponse?.data?.numberOfStudent || 0);
           } else {
             setTodayAttendanceStatus(true);
-            setTotalStudents(homeclassResponse?.data?.attendance?.length || 0);
+            setTotalStudents(homeclassResponse?.data[0]?.attendance?.length || 0);
           }
         } catch (err) {
           console.log("Attendance fetch error:", err);
@@ -126,7 +126,7 @@ export default function Dashboard() {
         setEventLoading(true);
 
         const eventRes = await axios.get(
-          "/api/v1/event",
+          "https://codeflame-edu-backend.xyz/api/v1/event",
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -167,8 +167,20 @@ export default function Dashboard() {
     fetchDashboardData();
   }, []);
 
+
+
+  // 🔥 Unique class_id + only required fields
+  const uniqueClasses = [
+    ...new Map(
+      profile?.classes.map((c) => [
+        c.class_id._id,
+        c,
+      ])
+    ).values(),
+  ];
+
   const filteredClasses =
-    profile?.classes.filter((cls: any) =>
+    uniqueClasses?.filter((cls: any) =>
       cls.class_name.toLowerCase().includes(searchQuery.toLowerCase())
     ) || [];
 

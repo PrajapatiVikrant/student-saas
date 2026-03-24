@@ -127,7 +127,7 @@ const EventPage: React.FC = () => {
         return;
       }
 
-      const res = await axios.get<ClassItem[]>("/api/v1/kaksha", {
+      const res = await axios.get<ClassItem[]>("https://codeflame-edu-backend.xyz/api/v1/kaksha", {
         headers: { Authorization: `Bearer ${token}` },
       });
 

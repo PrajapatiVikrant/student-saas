@@ -60,7 +60,7 @@ export default function FinanceManagement() {
     setLoading(true);
     try {
       const token = getToken();
-      const response = await axios.get("/api/v1/kaksha", {
+      const response = await axios.get("https://codeflame-edu-backend.xyz/api/v1/kaksha", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setClassList(response.data);
@@ -81,7 +81,7 @@ export default function FinanceManagement() {
     setLoading(true);
     try {
       const token = getToken();
-      const response = await axios.get("/api/v1/fee/status", {
+      const response = await axios.get("https://codeflame-edu-backend.xyz/api/v1/fee/status", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setStudents(response.data);
@@ -164,7 +164,7 @@ export default function FinanceManagement() {
       setProcessing(true);
       const token = getToken();
       const response = await axios.post(
-        `/api/v1/fee/record`,
+        `https://codeflame-edu-backend.xyz/api/v1/fee/record`,
         {
           studentId: selectedStudent._id,
           recordAmount: Number(amount),

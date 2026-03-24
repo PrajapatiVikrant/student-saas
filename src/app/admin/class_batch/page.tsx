@@ -171,7 +171,7 @@ export default function ClassBatch() {
       }
 
       const response = await axios.get(
-        "/api/v1/kaksha",
+        "https://codeflame-edu-backend.xyz/api/v1/kaksha",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -210,7 +210,7 @@ export default function ClassBatch() {
       }
 
       const response = await axios.post(
-        "/api/v1/kaksha",
+        "https://codeflame-edu-backend.xyz/api/v1/kaksha",
         { name: newClassName.trim() },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -260,7 +260,7 @@ export default function ClassBatch() {
       }
 
       const response = await axios.put(
-        `/api/v1/kaksha/${editClassId}`,
+        `https://codeflame-edu-backend.xyz/api/v1/kaksha/${editClassId}`,
         { class_name: editClassName.trim() },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -305,7 +305,7 @@ export default function ClassBatch() {
       }
 
       await axios.delete(
-        `/api/v1/kaksha/${deleteClassId}`,
+        `https://codeflame-edu-backend.xyz/api/v1/kaksha/${deleteClassId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

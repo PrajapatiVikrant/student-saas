@@ -1,27 +1,29 @@
+"use client";
+
 import TeacherDashboard from "../components/dashboard/TeacherDashboard";
-import Navbar from "../components/layout/Navbar";
+import { usePathname } from "next/navigation";
 
-export default function TeacherLayout({ children }: Readonly<{
-    children: React.ReactNode;
-}>) {
+export default function TeacherLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
 
-    return (
-        <>
-          
-            <section className="flex">
-            <aside >
-               <TeacherDashboard/>
-            </aside>
-            <section className="bg-white h-[90vh] dark:bg-slate-900 overflow-auto w-full">
+  // 👇 jis route pe dashboard hide karna hai
+  const hideDashboard =
+    pathname === "/teacher/email" ||
+    pathname.startsWith("/teacher/otp/verify");
 
-            {children}
-          
+  return (
+    <section className="flex">
+      
+      {!hideDashboard && (
+        <aside>
+          <TeacherDashboard />
+        </aside>
+      )}
 
-            </section>
-            </section>
-        </>
+      <section className="bg-white h-[90vh] dark:bg-slate-900 overflow-auto w-full">
+        {children}
+      </section>
 
-
-    )
-
+    </section>
+  );
 }

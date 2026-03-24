@@ -110,7 +110,7 @@ export default function App() {
             const selectedClass = type === 'form' ? formClass : filterClass;
 
             const res = await axios.get(
-                `/api/v1/teacher/classes/${selectedClass}`,
+                `https://codeflame-edu-backend.xyz/api/v1/teacher/classes/${selectedClass}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -140,7 +140,7 @@ export default function App() {
         try {
             // 1) Fetch Profile
             const res = await axios.get(
-                "http://localhost:4000/api/v1/homework/profile",
+                "https://codeflame-edu-backend.xyz/api/v1/homework/profile",
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 }
@@ -180,7 +180,7 @@ export default function App() {
 
             // 1) Fetch Profile
             const reshomwork = await axios.get(
-                "http://localhost:4000/api/v1/homework",
+                "https://codeflame-edu-backend.xyz/api/v1/homework",
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 }
@@ -244,7 +244,7 @@ export default function App() {
 
             // 1) Fetch Profile
             const reshomwork = await axios.post(
-                "http://localhost:4000/api/v1/homework",
+                "https://codeflame-edu-backend.xyz/api/v1/homework",
                 newHomework,
                 {
                     headers: { Authorization: `Bearer ${token}` },

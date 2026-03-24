@@ -58,7 +58,7 @@ export default function Kaksha() {
 
   function getSubjects() {
     const token = localStorage.getItem("codeflam01_token");
-    axios.get(`/api/v1/kaksha/subjectlist/${class_id}`, {
+    axios.get(`https://codeflame-edu-backend.xyz/api/v1/kaksha/subjectlist/${class_id}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((response) => {
@@ -82,7 +82,7 @@ export default function Kaksha() {
 
     try {
       const response = await axios.get(
-        `/api/v1/kaksha/${class_id}`,
+        `https://codeflame-edu-backend.xyz/api/v1/kaksha/${class_id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

@@ -49,7 +49,7 @@ export default function Students() {
     setLoading(true);
     try {
       const response = await axios.get<GetAllStudentResponse>(
-        `/api/v1/student/${class_id}/${batch_id}`,
+        `https://codeflame-edu-backend.xyz/api/v1/student/${class_id}/${batch_id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

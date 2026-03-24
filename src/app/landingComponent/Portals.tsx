@@ -36,7 +36,7 @@ const portals = [
       'Class schedule management',
       'Performance reports generation'
     ],
-    link: '/teacher/login'
+    link: '/teacher/dashboard'
   },
   {
     icon: Heart,

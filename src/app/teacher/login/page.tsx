@@ -30,7 +30,7 @@ export default function Login() {
     setProcessing(true);
     try {
       const response = await axios.post(
-        "/api/v1/teacher/login",
+        "https://codeflame-edu-backend.xyz/api/v1/teacher/login",
         { email }
       );
       console.log(response);

@@ -35,7 +35,7 @@ export default function ParentPage() {
   const getAllPortalParent = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`/api/v1/parent`, {
+      const res = await axios.get(`https://codeflame-edu-backend.xyzs/api/v1/parent`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setParents(res.data || []);

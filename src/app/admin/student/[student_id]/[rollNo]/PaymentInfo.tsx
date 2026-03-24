@@ -58,7 +58,7 @@ export default function PaymentInfo({ student }: PaymentInfoProps) {
     try {
       const token = localStorage.getItem("codeflam01_token");
       const { data } = await axios.get<FeeStatusResponse>(
-        `/api/v1/fee/status/${student.id}`,
+        `https://codeflame-edu-backend.xyz/api/v1/fee/status/${student.id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
