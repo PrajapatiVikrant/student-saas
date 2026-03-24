@@ -49,15 +49,15 @@ export default function App() {
     const [filterBatch, setFilterBatch] = useState('all');
     const [filterSubject, setFilterSubject] = useState('all');
     const [filterStatus, setFilterStatus] = useState('all');
-    
+
     // Homework list
     const [homeworkList, setHomeworkList] = useState<Homework[]>([]);
-    
+
     //loading
     const [loading, setLoading] = useState(false)
     const [processing, setProcessing] = useState(false)
 
-    const token = localStorage.getItem("codeflam01_token");
+
 
     useEffect(() => {
         fetchTeacherProfile();
@@ -105,7 +105,7 @@ export default function App() {
 
 
     const fetchBatchesForClass = async (type: string) => {
-
+        const token = localStorage.getItem("codeflam01_token");
         try {
             const selectedClass = type === 'form' ? formClass : filterClass;
 
@@ -137,6 +137,7 @@ export default function App() {
 
     const fetchTeacherProfile = async () => {
         setLoading(true)
+        const token = localStorage.getItem("codeflam01_token");
         try {
             // 1) Fetch Profile
             const res = await axios.get(
@@ -187,7 +188,7 @@ export default function App() {
             );
 
 
-            console.log(reshomwork)
+
             const homeworkData = teacherClassesData.map((homework: any) => {
                 const matchedClass = reshomwork.data.homework.find((h: any) => h.class._id === homework.class_id && h.batch === homework.batch_id && h.subject === homework.subject_id);
                 console.log("matchedClass", matchedClass);
@@ -232,6 +233,7 @@ export default function App() {
         if (!formClass || !formBatch || !formSubject || !formHomework) {
             return;
         }
+        const token = localStorage.getItem("codeflam01_token");
         setProcessing(true);
         try {
             const newHomework: Homework = {
