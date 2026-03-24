@@ -5,10 +5,10 @@ import { usePathname } from "next/navigation";
 
 export default function TeacherLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-
+  console.log("path name:",pathname)
   // 👇 jis route pe dashboard hide karna hai
   const hideDashboard =
-    pathname === "/teacher/email" ||
+    pathname === "/teacher/login" ||
     pathname.startsWith("/teacher/otp/verify");
 
   return (

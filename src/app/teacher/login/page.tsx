@@ -66,7 +66,7 @@ export default function Login() {
             <FaUserShield className="w-7 h-7" />
           </div>
           <h1 className="mt-4 text-2xl font-bold text-gray-900 dark:text-white">
-            EduConnect Teacher
+            Codeflame Technology
           </h1>
           <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
             Sign in to manage your class
