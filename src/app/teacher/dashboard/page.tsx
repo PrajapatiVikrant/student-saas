@@ -173,7 +173,7 @@ export default function Dashboard() {
   const uniqueClasses = [
     ...new Map(
       profile?.classes.map((c) => [
-        c.class_id._id,
+        c.class_id,
         c,
       ])
     ).values(),
