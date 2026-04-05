@@ -53,7 +53,7 @@ const portals = [
       'Event reminders and updates',
       'Dedicated mobile-friendly interface'
     ],
-    link: '/parent'
+    link: 'https://play.google.com/store/apps/details?id=com.codeflame.parentportal'
   }
 ];
 
@@ -115,12 +115,20 @@ export function Portals() {
                     </div>
                   ))}
                 </div>
-
+                
+                {(portal.title === 'Parent Portal') ? (
+                  <a href={portal.link} target="_blank" rel="noopener noreferrer" className={`w-full py-4 bg-gradient-to-r ${portal.color} text-white rounded-xl hover:shadow-lg transition-all flex items-center justify-center gap-2 group font-semibold`}>
+                    <LogIn className="w-5 h-5" />
+                    Download {portal.title.split(' ')[0]} App
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </a>
+                ):(
                 <Link href={portal.link} className={`w-full py-4 bg-gradient-to-r ${portal.color} text-white rounded-xl hover:shadow-lg transition-all flex items-center justify-center gap-2 group font-semibold`}>
                   <LogIn className="w-5 h-5" />
                   Enter {portal.title.split(' ')[0]} Portal
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
+                )}
               </div>
             </motion.div>
           ))}

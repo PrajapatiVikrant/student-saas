@@ -153,7 +153,16 @@ export default function StudentAdmission({
           },
         }
       );
-
+       await axios.post(
+                "/api/v1/parent",
+                {
+                    name: fatherName ? fatherName : motherName,
+                    email: parentEmail,
+                    phone: parentPhone,
+                    childrens: [response.data.student._id],
+                },
+                { headers: { Authorization: `Bearer ${token}` } }
+          );
       toast.success(response.data.message);
       setRegisterForm(false);
       getStudent();
