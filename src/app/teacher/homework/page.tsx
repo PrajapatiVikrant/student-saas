@@ -246,7 +246,7 @@ export default function App() {
 
             // 1) Fetch Profile
             const reshomwork = await axios.post(
-                "http://localhost:4000/api/v1/homework",
+                "https://codeflame-edu-backend.xyz/api/v1/homework",
                 newHomework,
                 {
                     headers: { Authorization: `Bearer ${token}` },
