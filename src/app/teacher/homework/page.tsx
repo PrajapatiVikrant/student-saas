@@ -48,7 +48,7 @@ export default function App() {
     const [filterClass, setFilterClass] = useState('all');
     const [filterBatch, setFilterBatch] = useState('all');
     const [filterSubject, setFilterSubject] = useState('all');
-    const [filterStatus, setFilterStatus] = useState('all');
+    const [filterStatus, setFilterStatus] = useState('all');                                                                                          
 
     // Homework list
     const [homeworkList, setHomeworkList] = useState<Homework[]>([]);

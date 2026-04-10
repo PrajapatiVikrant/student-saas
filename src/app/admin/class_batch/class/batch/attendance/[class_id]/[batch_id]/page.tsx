@@ -128,7 +128,7 @@ export default function Attendance() {
           initial[s._id] = {
             studentId: s._id,
             studentName: s.name,
-            status: "",
+            status: "Present",
             comment: "",
           };
         });
@@ -142,7 +142,7 @@ export default function Attendance() {
           initial[s._id] = {
             studentId: s._id,
             studentName: s.name,
-            status: "",
+            status: "Present",
             comment: "",
           };
         });
@@ -363,7 +363,7 @@ export default function Attendance() {
                         <input
                           type="radio"
                           name={`status-${s._id}`}
-                          checked={attendance[s._id]?.status === "Present"}
+                          checked={(attendance[s._id]?.status ) === "Present"}
                           onChange={() => handleStatusChange(s._id, "Present")}
                           disabled={!isEditable || processing}
                           className="mr-1"

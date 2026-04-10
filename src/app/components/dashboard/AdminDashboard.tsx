@@ -23,6 +23,7 @@ export default function AdminDashboard() {
   const navItems = [
     { name: "Dashboard", icon: <MdOutlineDashboard />, path: "/admin/dashboard" },
     { name: "Fee & Finance", icon: <MdOutlinePayments />, path: "/admin/finance" },
+     { name: "Attendance", icon: <SiGoogleclassroom />, path: "/admin/attendance" },
     { name: "Class & Batches", icon: <SiGoogleclassroom />, path: "/admin/class_batch" },
     { name: "Events", icon: <SlCalender />, path: "/admin/event" },
     { name: "Teacher", icon: <GiTeacher />, path: "/admin/teacher" },

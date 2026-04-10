@@ -6,6 +6,8 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import CircularIndeterminate from "@/app/components/ui/CircularIndeterminate";
 import { School } from "lucide-react";
+import Link from "next/link";
+import { FiEye } from "react-icons/fi";
 
 interface Student {
   _id: string;
@@ -122,8 +124,8 @@ export default function FinanceManagement() {
       filterStatus === "all"
         ? true
         : filterStatus === "paid"
-        ? isPaid
-        : !isPaid;
+          ? isPaid
+          : !isPaid;
 
     const matchesSearch = student.name
       .toLowerCase()
@@ -158,7 +160,7 @@ export default function FinanceManagement() {
       return toast.error("Please fill all fields (amount and payment method)");
 
     if (Number(amount) <= 0) return toast.error("Amount must be greater than 0");
-    if (Number(amount) + selectedStudent.payment_status.pay_amount > selectedStudent.payment_status.total_amount  )
+    if (Number(amount) + selectedStudent.payment_status.pay_amount > selectedStudent.payment_status.total_amount)
       return toast.error("Payment amount exceeds total fee amount");
     try {
       setProcessing(true);
@@ -256,11 +258,10 @@ export default function FinanceManagement() {
             onClick={() =>
               setFilterStatus(status as "all" | "paid" | "pending")
             }
-            className={`px-4 py-2 rounded-full border font-medium transition-all ${
-              filterStatus === status
+            className={`px-4 py-2 rounded-full border font-medium transition-all ${filterStatus === status
                 ? "bg-blue-600 text-white"
                 : "bg-white dark:bg-slate-800 dark:text-white text-gray-700 border-gray-300 dark:border-slate-700 hover:bg-gray-100 dark:hover:bg-slate-700"
-            }`}
+              }`}
           >
             {status.charAt(0).toUpperCase() + status.slice(1)}
           </button>
@@ -365,14 +366,13 @@ export default function FinanceManagement() {
                     </td>
 
                     <td
-                      className={`border px-3 py-2 text-center font-semibold ${
-                        isPaid ? "text-green-600" : "text-red-600"
-                      }`}
+                      className={`border px-3 py-2 text-center font-semibold ${isPaid ? "text-green-600" : "text-red-600"
+                        }`}
                     >
                       {isPaid ? "Paid" : "Pending"}
                     </td>
 
-                    <td className="border px-3 py-2 text-center">
+                    <td className="border flex gap-3.5 px-3 py-2 text-center">
                       {isPaid ? (
                         <span className="text-green-700 font-medium">
                           ✅ Paid
@@ -385,6 +385,19 @@ export default function FinanceManagement() {
                           Record Payment
                         </button>
                       )}
+
+                     
+                     
+                    </td>
+                    <td>
+                        <Link
+                          href={`/admin/student/${student._id}/details`}
+                          className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition"
+                          title="View Student"
+                        >
+                          <FiEye className="w-5 h-5" />
+                        </Link>
+
                     </td>
                   </tr>
                 );
