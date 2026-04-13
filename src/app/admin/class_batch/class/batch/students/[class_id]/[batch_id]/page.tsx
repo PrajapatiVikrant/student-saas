@@ -1,6 +1,7 @@
 "use client";
 
 import StudentAdmission from "@/app/components/forms/StudentAdmission";
+import BackButton from "@/app/components/ui/BackButton";
 import CircularIndeterminate from "@/app/components/ui/CircularIndeterminate";
 import axios, { AxiosError } from "axios";
 import Link from "next/link";
@@ -89,6 +90,7 @@ export default function Students() {
 
   return (
     <main className="flex-1 px-4 py-8 sm:px-6 lg:px-10 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 text-black dark:text-white">
+      <BackButton/>
       <div className="mx-auto max-w-5xl">
         {/* Header */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">

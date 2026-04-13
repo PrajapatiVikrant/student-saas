@@ -14,6 +14,7 @@ import { SiGoogleclassroom } from "react-icons/si";
 import { SlCalender } from "react-icons/sl";
 import { GiTeacher } from "react-icons/gi";
 import { FiLogOut } from "react-icons/fi";
+import { CgProfile } from "react-icons/cg";
 import Image from "next/image";
 
 export default function AdminDashboard() {
@@ -28,6 +29,7 @@ export default function AdminDashboard() {
     { name: "Events", icon: <SlCalender />, path: "/admin/event" },
     { name: "Teacher", icon: <GiTeacher />, path: "/admin/teacher" },
     { name: "Parent Portal", icon: <MdFamilyRestroom />, path: "/admin/parent" },
+    { name: "Profile", icon: <CgProfile />, path: "/admin/profile" },
   ];
 
   function handleSignout() {

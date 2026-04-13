@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { FiSave, FiDownload } from "react-icons/fi";
 import { toast } from "react-toastify";
 import Link from "next/link";
+import BackButton from "@/app/components/ui/BackButton";
 
 interface Student {
   _id: string;
@@ -249,6 +250,7 @@ export default function Attendance() {
 
   return (
     <main className="flex-1 px-4 py-8 sm:px-6 lg:px-10 bg-slate-50 dark:bg-slate-950 text-black dark:text-white">
+      <BackButton/>
       <div className="mx-auto max-w-5xl">
         <h1 className="text-3xl font-bold mb-6 text-slate-900 dark:text-white">
           {classData.class_name} - {classData.batch_name}

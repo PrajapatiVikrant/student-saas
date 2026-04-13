@@ -284,9 +284,9 @@ export default function FinanceManagement() {
             onChange={(e) => handleChangeClass(e.target.value)}
             className="border px-3 py-2 rounded-md"
           >
-            <option value="">All Classes</option>
+            <option className="dark:bg-slate-700" value="">All Classes</option>
             {classList.map((cls) => (
-              <option key={cls._id} value={cls._id}>
+              <option className="dark:bg-slate-700" key={cls._id} value={cls._id}>
                 {cls.class.name}
               </option>
             ))}
@@ -295,11 +295,11 @@ export default function FinanceManagement() {
           <select
             value={selectedBatch}
             onChange={(e) => setSelectedBatch(e.target.value)}
-            className="border px-3 py-2 rounded-md"
+            className="dark:bg-slate-700 border px-3 py-2 rounded-md"
           >
-            <option value="">All Batches</option>
+            <option className="dark:bg-slate-700" value="">All Batches</option>
             {batchList.map((batch) => (
-              <option key={batch._id} value={batch._id}>
+              <option className="dark:bg-slate-700" key={batch._id} value={batch._id}>
                 {batch.batch_name}
               </option>
             ))}

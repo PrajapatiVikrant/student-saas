@@ -118,9 +118,81 @@ export default function AttendanceManagement() {
         }
     };
 
+
+    // ================= fetch attendance =================
+    async function getAttendanceByDate() {
+        const token = localStorage.getItem("codeflam01_token");
+        if (!token) return router.push("/login");
+
+        setLoading(true);
+        try {
+            const res = await axios.get(
+                `https://codeflame-edu-backend.xyz/api/v1/attendance/${date}/${selectedClass}/${selectedBatch}`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            const initial: Record<string, AttendanceRecord> = {};
+
+            if (res.data && res.data[0]?.attendance) {
+                // ✅ Already saved attendance
+                res.data[0].attendance.forEach((a: any) => {
+                    initial[a.studentId] = {
+                        studentId: a.studentId,
+                        studentName: a.studentName,
+                        status: a.status,
+                        comment: a.comment,
+                    };
+                });
+            } else {
+                // ✅ DEFAULT → sabko Present mark karo
+                students.forEach((s) => {
+                    initial[s._id] = {
+                        studentId: s._id,
+                        studentName: s.name,
+                        status: "Present",
+                        comment: "",
+                    };
+                });
+            }
+
+            setAttendance(initial);
+        } catch (err: any) {
+            if (err.response?.status === 404) {
+                // ✅ 404 bhi same case → no attendance
+                const initial: Record<string, AttendanceRecord> = {};
+                students.forEach((s) => {
+                    initial[s._id] = {
+                        studentId: s._id,
+                        studentName: s.name,
+                        status: "Present",
+                        comment: "",
+                    };
+                });
+                setAttendance(initial);
+            } else {
+                console.error(err);
+                toast.error("Failed to fetch attendance data.");
+            }
+        } finally {
+            setLoading(false);
+        }
+    }
+
+
+
+
+
+
+
+
     useEffect(() => {
         fetchStudents();
     }, [selectedClass, selectedBatch]);
+
+    // ✅ Initialize attendance after students or date changes
+    useEffect(() => {
+        if (students.length && date) getAttendanceByDate();
+    }, [students, date]);
 
     // ================= MARK ABSENT BY ROLL =================
     const handleMarkAbsentByRoll = () => {
@@ -159,6 +231,17 @@ export default function AttendanceManagement() {
             roll: i + 1,
         }))
         .filter((s) => attendance[s._id]?.status === "Absent");
+
+
+    const handleRemoveAbsent = (id: string) => {
+        setAttendance((prev) => ({
+            ...prev,
+            [id]: {
+                ...prev[id],
+                status: "Present",
+            },
+        }));
+    };
 
     // ================= HANDLE =================
     const handleStatus = (id: string, status: "Present" | "Absent") => {
@@ -304,9 +387,21 @@ export default function AttendanceManagement() {
 
                     <div className="flex flex-wrap gap-2">
                         {absentStudents.map((s) => (
-                            <span key={s._id} className="text-xs bg-red-200 text-red-800 px-2 py-1 rounded">
-                                {s.roll}. {s.name}
-                            </span>
+                            <div
+                                key={s._id}
+                                className="flex items-center gap-2 text-xs bg-red-200 text-red-800 px-2 py-1 rounded"
+                            >
+                                <span>
+                                    {s.roll}. {s.name}
+                                </span>
+
+                                <button
+                                    onClick={() => handleRemoveAbsent(s._id)}
+                                    className="bg-red-600 hover:bg-red-700 text-white px-2 py-0.5 rounded text-[10px]"
+                                >
+                                   X
+                                </button>
+                            </div>
                         ))}
                     </div>
                 </div>

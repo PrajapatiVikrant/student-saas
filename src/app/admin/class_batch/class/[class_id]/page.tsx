@@ -13,6 +13,7 @@ import { toast } from "react-toastify";
 import axios, { AxiosError } from "axios";
 import CircularIndeterminate from "@/app/components/ui/CircularIndeterminate";
 import BatchForm from "@/app/components/forms/BatchForm";
+import BackButton from "@/app/components/ui/BackButton";
 
 
 
@@ -127,6 +128,7 @@ export default function Kaksha() {
       <header className="p-4 sm:p-6 border-b border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-950/60 backdrop-blur sticky top-0 z-20">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
+            <BackButton />
             <h1 className="text-2xl sm:text-3xl font-bold">{class_name}</h1>
             <p className="text-sm text-slate-500 dark:text-slate-300 mt-1">
               Manage subjects and batches of this class.
@@ -183,7 +185,7 @@ export default function Kaksha() {
         <section className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <h2 className="flex items-center text-xl sm:text-2xl font-bold gap-2">
-              <FiLayers /> <span>Batches</span>
+              <FiLayers /> <span>Section</span>
             </h2>
 
 

@@ -12,6 +12,7 @@ import axios from "axios";
 import CircularIndeterminate from "@/app/components/ui/CircularIndeterminate";
 import EditStudent from "@/app/components/forms/StudentEdit";
 import Confirmation from "@/app/components/forms/Confirmation";
+import BackButton from "@/app/components/ui/BackButton";
 
 export default function StudentDetailsPage() {
   const { student_id } = useParams();
@@ -106,6 +107,7 @@ export default function StudentDetailsPage() {
   return (
     <>
       <div className="min-h-screen bg-gray-50 dark:bg-slate-900 p-4 sm:p-6">
+        <BackButton/>
         <div className="max-w-5xl mx-auto bg-white dark:bg-slate-800 shadow-md dark:shadow-lg rounded-2xl p-4 sm:p-6 relative">
           
           {/* --- Top Action Buttons --- */}
