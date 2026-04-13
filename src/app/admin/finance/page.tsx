@@ -1,482 +1,263 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import CircularIndeterminate from "@/app/components/ui/CircularIndeterminate";
-import { School } from "lucide-react";
-import Link from "next/link";
-import { FiEye } from "react-icons/fi";
+
+interface Payment {
+  month: number;
+  year: number;
+  amount: number;
+}
 
 interface Student {
   _id: string;
   name: string;
-  gender: string;
-  class: { class_id: string; name: string };
-  batch: { batch_id: string; name: string };
-  payment_status: { total_amount: number; pay_amount: number };
-  payment_date: string;
+  class: { name: string };
+  batch: { name: string; fee?: number };
 
-  parentInfo?: {
-    fatherName?: string;
-    motherName?: string;
+  payment_status: {
+    last_payment?: Payment[];
   };
 }
 
-export default function FinanceManagement() {
+export default function MonthlyFinance() {
   const [students, setStudents] = useState<Student[]>([]);
-  const [filterStatus, setFilterStatus] = useState<"all" | "paid" | "pending">(
-    "all"
-  );
-  const [search, setSearch] = useState("");
-  const [selectedClass, setSelectedClass] = useState("");
-  const [selectedBatch, setSelectedBatch] = useState("");
-  const [batchList, setBatchList] = useState<any[]>([]);
-  const [classList, setClassList] = useState<any[]>([]);
-  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
-
-  const [selectPaymentMethod, setSelectPaymentMethod] = useState<
-    "select payment method" | "Cash" | "UPI" | "Card" | "Bank Transfer"
-  >("select payment method");
-
-  const [amount, setAmount] = useState("");
-  const [processing, setProcessing] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+
+  const [submitRecord, setSubmitRecord] = useState<any[]>([]);
+
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
+  const [amount, setAmount] = useState("");
 
   const router = useRouter();
 
-  // ================= Helper for token =================
   const getToken = () => {
     const token = localStorage.getItem("codeflam01_token");
     if (!token) {
-      toast.error("Session expired. Please login again.");
       router.push("/login");
-      throw new Error("No token found");
+      throw new Error("No token");
     }
     return token;
   };
 
-  // ================= Fetch Classes =================
-  const fetchClasses = async () => {
-    setLoading(true);
+  const fetchStudents = async () => {
     try {
       const token = getToken();
-      const response = await axios.get("https://codeflame-edu-backend.xyz/api/v1/kaksha", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setClassList(response.data);
-    } catch (error: unknown) {
-      const err = error as AxiosError;
-      if (err.response?.status === 401 || err.response?.status === 403) {
-        localStorage.removeItem("codeflam01_token");
-      }
-      toast.error("Failed to load class list ❌");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // ================= Fetch Students =================
-  const getAllstudent = async () => {
-    setLoading(true);
-    try {
-      const token = getToken();
-      const response = await axios.get("https://codeflame-edu-backend.xyz/api/v1/fee/status", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setStudents(response.data);
-    } catch (error: unknown) {
-      const err = error as AxiosError;
-      if (err.response?.status === 401 || err.response?.status === 403) {
-        localStorage.removeItem("codeflam01_token");
-      }
-      toast.error("Failed to fetch student data ❌");
-      console.error(err);
+      const res = await axios.get(
+        "https://codeflame-edu-backend.xyz/api/v1/fee/status",
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setStudents(res.data);
+    } catch {
+      toast.error("Failed to load");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchClasses();
-    getAllstudent();
+    fetchStudents();
   }, []);
 
-  // ================= Fee Summary =================
-  const totalFee = students.reduce(
-    (acc, s) => acc + (s.payment_status?.total_amount || 0),
-    0
-  );
-  const collectedFee = students.reduce(
-    (acc, s) => acc + (s.payment_status?.pay_amount || 0),
-    0
-  );
-  const pendingFee = totalFee - collectedFee;
+  const months = [
+    "Jan","Feb","Mar","Apr","May","Jun",
+    "Jul","Aug","Sep","Oct","Nov","Dec"
+  ];
 
-  // ================= Filters =================
-  const filteredStudents = students.filter((student) => {
-    const isPaid =
-      student.payment_status.pay_amount >= student.payment_status.total_amount;
-
-    const matchesStatus =
-      filterStatus === "all"
-        ? true
-        : filterStatus === "paid"
-          ? isPaid
-          : !isPaid;
-
-    const matchesSearch = student.name
-      .toLowerCase()
-      .includes(search.toLowerCase());
-
-    const matchesClass = selectedClass
-      ? student.class.class_id === selectedClass
-      : true;
-
-    const matchesBatch = selectedBatch
-      ? student.batch.batch_id === selectedBatch
-      : true;
-
-    return matchesStatus && matchesSearch && matchesClass && matchesBatch;
-  });
-
-  const handleChangeClass = (classId: string) => {
-    setSelectedClass(classId);
-    setSelectedBatch("");
-    setBatchList(
-      classList.find((cls: any) => cls._id === classId)?.class.batches || []
+  // ✅ Paid check
+  const getPayment = (student: Student, monthIndex: number) => {
+    return student.payment_status.last_payment?.find(
+      (m) => m.month === monthIndex + 1 && m.year === selectedYear
     );
   };
 
-  // ================= Record Payment =================
-  const handleRecordFee = async () => {
-    if (
-      !selectedStudent ||
-      !amount ||
-      selectPaymentMethod === "select payment method"
-    )
-      return toast.error("Please fill all fields (amount and payment method)");
-
-    if (Number(amount) <= 0) return toast.error("Amount must be greater than 0");
-    if (Number(amount) + selectedStudent.payment_status.pay_amount > selectedStudent.payment_status.total_amount)
-      return toast.error("Payment amount exceeds total fee amount");
-    try {
-      setProcessing(true);
-      const token = getToken();
-      const response = await axios.post(
-        `https://codeflame-edu-backend.xyz/api/v1/fee/record`,
-        {
-          studentId: selectedStudent._id,
-          recordAmount: Number(amount),
-          paymentMethod: selectPaymentMethod,
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      toast.success(response.data.message);
-      setAmount("");
-      setSelectPaymentMethod("select payment method");
-      setSelectedStudent(null);
-      getAllstudent();
-    } catch (error: unknown) {
-      const err = error as AxiosError;
-      if (err.response?.status === 401 || err.response?.status === 403) {
-        localStorage.removeItem("codeflam01_token");
-      }
-      toast.error("Failed to record payment ❌");
-      console.error(err);
-    } finally {
-      setProcessing(false);
-    }
+  const isSelected = (student: Student, monthIndex: number) => {
+    return submitRecord.some(
+      (r) =>
+        r.studentId === student._id &&
+        r.month === monthIndex + 1 &&
+        r.year === selectedYear
+    );
   };
 
-  // ================= Loading State =================
+  const handleClick = (student: Student, monthIndex: number) => {
+    if (getPayment(student, monthIndex)) return;
+
+    setSelectedStudent(student);
+    setSelectedMonth(monthIndex);
+
+    setAmount(String(student.batch.fee));
+  };
+
+  const handleAddRecord = () => {
+    if (!selectedStudent || selectedMonth === null) return;
+
+    setSubmitRecord((prev) => [
+      ...prev,
+      {
+        studentId: selectedStudent._id,
+        month: selectedMonth + 1,
+        monthFee: selectedStudent.batch.fee,
+        year: selectedYear,
+        amount: Number(amount),
+      },
+    ]);
+
+    toast.success("Added ✅");
+    setSelectedStudent(null);
+  };
+
+  const handleBulkSave = async () => {
+    const token = getToken();
+    if (submitRecord.length === 0) return toast.error("No data");
+
+   await axios.post(
+  "https://codeflame-edu-backend.xyz/api/v1/fee/record",
+  { records: submitRecord },
+  { headers: { Authorization: `Bearer ${token}` } }
+);
+
+    toast.success("Saved (Demo)");
+    setSubmitRecord([]);
+  };
+
   if (loading) {
     return (
-      <main className="flex flex-col dark:bg-slate-900 dark:text-white h-screen justify-center items-center">
+      <div className="flex justify-center items-center h-screen">
         <CircularIndeterminate size={80} />
-        <span>Loading...</span>
-      </main>
+      </div>
     );
   }
 
-  // ================= UI =================
   return (
-    <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-900 dark:text-white min-h-screen">
-      {/* Header */}
-      <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <School className="w-6 h-6 text-indigo-600" />
-                Finance Management
-              </h1>
-              <p className="text-slate-500 dark:text-slate-300 text-sm mt-1">
-                Manage student fees, payments, and financial records efficiently.
-              </p>
+    <div className="p-4 bg-slate-50 dark:bg-slate-900 min-h-screen">
+
+      {/* HEADER */}
+      <div className="flex flex-col sm:flex-row justify-between mb-5 gap-3">
+        <h1 className="text-xl font-bold text-white">
+          📊 Monthly Fee
+        </h1>
+
+        <div className="flex gap-2">
+          <select
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(Number(e.target.value))}
+            className="border px-3 py-1 rounded"
+          >
+            {[2024, 2025, 2026].map((y) => (
+              <option key={y}>{y}</option>
+            ))}
+          </select>
+
+          <button
+            onClick={handleBulkSave}
+            className="bg-green-600 text-white px-3 py-1 rounded"
+          >
+            Save
+          </button>
+        </div>
+      </div>
+
+      {/* STUDENT LIST */}
+      <div className="grid gap-4">
+        {students.map((student) => (
+          <div
+            key={student._id}
+            className="bg-white dark:bg-slate-800 p-4 rounded-xl shadow"
+          >
+            <h2 className="font-semibold">{student.name}</h2>
+            <p className="text-sm text-gray-500">
+              {student.class.name} | {student.batch.name}
+            </p>
+
+            {/* MONTH GRID */}
+            <div className="grid grid-cols-6 sm:grid-cols-12 gap-1 mt-3">
+
+              {months.map((m, i) => {
+                const payment = getPayment(student, i);
+                const selected = isSelected(student, i);
+
+                return (
+                  <div
+                    key={i}
+                    onClick={() => handleClick(student, i)}
+                    className={`text-center text-[10px] p-1 rounded cursor-pointer
+                      ${
+                        payment
+                          ? "bg-green-500 text-white"
+                          : selected
+                          ? "bg-yellow-400"
+                          : "bg-red-400 text-white"
+                      }
+                    `}
+                  >
+                    {m}
+
+                    {/* 👇 SHOW AMOUNT */}
+                    <div className="text-[9px]">
+                      {payment ? `₹${payment.amount}` : ""}
+                    </div>
+                  </div>
+                );
+              })}
+
             </div>
           </div>
-        </div>
-      </div>
-
-      <br />
-
-      {/* Fee Summary */}
-      <div className="grid px-4 dark:bg-slate-900 dark:text-white sm:px-6 grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        <div className="p-4 bg-blue-100 dark:bg-blue-900 rounded-xl text-center">
-          <p className="text-gray-600 dark:text-gray-300 text-sm">Total Fee</p>
-          <p className="text-xl font-bold text-blue-700 dark:text-blue-300">
-            ₹{totalFee}
-          </p>
-        </div>
-        <div className="p-4 bg-green-100 dark:bg-green-900 rounded-xl text-center">
-          <p className="text-gray-600 dark:text-gray-300 text-sm">
-            Collected Fee
-          </p>
-          <p className="text-xl font-bold text-green-700 dark:text-green-300">
-            ₹{collectedFee}
-          </p>
-        </div>
-        <div className="p-4 bg-red-100 dark:bg-red-900 rounded-xl text-center">
-          <p className="text-gray-600 dark:text-gray-300 text-sm">
-            Pending Fee
-          </p>
-          <p className="text-xl font-bold text-red-700 dark:text-red-300">
-            ₹{pendingFee}
-          </p>
-        </div>
-      </div>
-
-      {/* Status Tabs */}
-      <div className="flex px-4 sm:px-6 dark:bg-slate-900 justify-center sm:justify-start gap-3 mb-6 flex-wrap">
-        {["all", "paid", "pending"].map((status) => (
-          <button
-            key={status}
-            onClick={() =>
-              setFilterStatus(status as "all" | "paid" | "pending")
-            }
-            className={`px-4 py-2 rounded-full border font-medium transition-all ${filterStatus === status
-                ? "bg-blue-600 text-white"
-                : "bg-white dark:bg-slate-800 dark:text-white text-gray-700 border-gray-300 dark:border-slate-700 hover:bg-gray-100 dark:hover:bg-slate-700"
-              }`}
-          >
-            {status.charAt(0).toUpperCase() + status.slice(1)}
-          </button>
         ))}
       </div>
 
-      {/* Filters */}
-      <div className="flex dark:bg-slate-900 px-4 sm:px-6 flex-wrap items-center justify-between gap-3 mb-4">
-        <div className="flex flex-wrap gap-2 w-full sm:w-auto">
-          <input
-            type="text"
-            placeholder="🔍 Search by name..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="border px-3 py-2 rounded-md w-full sm:w-60"
-          />
+      {/* MODAL */}
+      {selectedStudent && selectedMonth !== null && (
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center">
 
-          <select
-            value={selectedClass}
-            onChange={(e) => handleChangeClass(e.target.value)}
-            className="border px-3 py-2 rounded-md"
-          >
-            <option className="dark:bg-slate-700" value="">All Classes</option>
-            {classList.map((cls) => (
-              <option className="dark:bg-slate-700" key={cls._id} value={cls._id}>
-                {cls.class.name}
-              </option>
-            ))}
-          </select>
+          <div className="bg-white dark:bg-slate-900 p-5 rounded-xl w-80">
 
-          <select
-            value={selectedBatch}
-            onChange={(e) => setSelectedBatch(e.target.value)}
-            className="dark:bg-slate-700 border px-3 py-2 rounded-md"
-          >
-            <option className="dark:bg-slate-700" value="">All Batches</option>
-            {batchList.map((batch) => (
-              <option className="dark:bg-slate-700" key={batch._id} value={batch._id}>
-                {batch.batch_name}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {/* Student Table */}
-      <div className="overflow-x-auto px-4 sm:px-6 w-full">
-        <table className="min-w-[1000px] w-full border border-gray-300 text-sm table-auto whitespace-nowrap">
-          <thead className="bg-gray-100 dark:bg-slate-700">
-            <tr>
-              <th className="border px-3 py-2">#</th>
-              <th className="border px-3 py-2">Name</th>
-              <th className="border px-3 py-2">Father</th>
-              <th className="border px-3 py-2">Mother</th>
-              <th className="border px-3 py-2">Gender</th>
-              <th className="border px-3 py-2">Class</th>
-              <th className="border px-3 py-2">Batch</th>
-              <th className="border px-3 py-2">Total Fee</th>
-              <th className="border px-3 py-2">Paid</th>
-              <th className="border px-3 py-2">Status</th>
-              <th className="border px-3 py-2">Action</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {filteredStudents.length > 0 ? (
-              filteredStudents.map((student, index) => {
-                const isPaid =
-                  student.payment_status.pay_amount >=
-                  student.payment_status.total_amount;
-
-                return (
-                  <tr className="bg-white dark:bg-slate-800" key={student._id}>
-                    <td className="border px-3 py-2 text-center">
-                      {index + 1}
-                    </td>
-
-                    <td className="border px-3 py-2 truncate max-w-[150px]">
-                      {student.name}
-                    </td>
-
-                    <td className="border px-3 py-2 truncate max-w-[150px]">
-                      {student.parentInfo?.fatherName || "N/A"}
-                    </td>
-
-                    <td className="border px-3 py-2 truncate max-w-[150px]">
-                      {student.parentInfo?.motherName || "N/A"}
-                    </td>
-
-                    <td className="border px-3 py-2">{student.gender}</td>
-
-                    <td className="border px-3 py-2">{student.class.name}</td>
-
-                    <td className="border px-3 py-2">{student.batch.name}</td>
-
-                    <td className="border px-3 py-2 text-center">
-                      ₹{student.payment_status.total_amount}
-                    </td>
-
-                    <td className="border px-3 py-2 text-center">
-                      ₹{student.payment_status.pay_amount}
-                    </td>
-
-                    <td
-                      className={`border px-3 py-2 text-center font-semibold ${isPaid ? "text-green-600" : "text-red-600"
-                        }`}
-                    >
-                      {isPaid ? "Paid" : "Pending"}
-                    </td>
-
-                    <td className="border flex gap-3.5 px-3 py-2 text-center">
-                      {isPaid ? (
-                        <span className="text-green-700 font-medium">
-                          ✅ Paid
-                        </span>
-                      ) : (
-                        <button
-                          onClick={() => setSelectedStudent(student)}
-                          className="bg-blue-600 cursor-pointer text-white px-3 py-1 rounded-md hover:bg-blue-700"
-                        >
-                          Record Payment
-                        </button>
-                      )}
-
-                     
-                     
-                    </td>
-                    <td>
-                        <Link
-                          href={`/admin/student/${student._id}/details`}
-                          className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition"
-                          title="View Student"
-                        >
-                          <FiEye className="w-5 h-5" />
-                        </Link>
-
-                    </td>
-                  </tr>
-                );
-              })
-            ) : (
-              <tr>
-                <td colSpan={11} className="text-center text-gray-500 py-4 border">
-                  No students found
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Record Payment Modal */}
-      {selectedStudent && (
-        <div className="fixed p-4 sm:p-6 inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-slate-800 rounded-xl p-6 w-11/12 sm:w-96 shadow-lg">
-            <h2 className="text-lg font-semibold mb-4 text-center">
-              Record Payment for{" "}
-              <span className="text-blue-600">{selectedStudent.name}</span>
+            <h2 className="text-center font-bold mb-2">
+              Record Fee
             </h2>
 
-            <p className="text-sm mb-2">
-              Total Fee: ₹{selectedStudent.payment_status.total_amount}
+            <p className="text-center">{selectedStudent.name}</p>
+
+            <p className="text-center">
+              {months[selectedMonth]} - {selectedYear}
             </p>
 
-            <p className="text-sm mb-4">
-              Paid So Far: ₹{selectedStudent.payment_status.pay_amount}
+            <p className="text-center text-green-600">
+              Monthly Fee: ₹{selectedStudent.batch.fee || 500}
             </p>
 
             <input
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              placeholder="Enter amount"
-              className="border rounded-md px-3 py-2 w-full mb-3 dark:bg-slate-700 dark:text-white"
+              className="border w-full p-2 mt-3"
             />
 
-            <select
-              value={selectPaymentMethod}
-              onChange={(e) =>
-                setSelectPaymentMethod(e.target.value as any)
-              }
-              className="border rounded-md px-3 py-2 w-full mb-4 dark:bg-slate-700 dark:text-white"
-            >
-              <option value="select payment method" disabled>
-                Select Payment Method
-              </option>
-              <option value="Cash">Cash</option>
-              <option value="UPI">UPI</option>
-              <option value="Card">Card</option>
-              <option value="Bank Transfer">Bank Transfer</option>
-            </select>
-
-            <div className="flex justify-end gap-3">
+            <div className="flex gap-2 mt-3">
               <button
                 onClick={() => setSelectedStudent(null)}
-                className="border px-3 py-2 rounded-md dark:border-gray-400"
+                className="border w-full py-1"
               >
                 Cancel
               </button>
 
               <button
-                onClick={handleRecordFee}
-                disabled={processing}
-                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+                onClick={handleAddRecord}
+                className="bg-blue-600 text-white w-full py-1"
               >
-                {processing ? "Saving..." : "Save"}
+                Add
               </button>
             </div>
+
           </div>
         </div>
       )}
-
-      <br />
-      <br />
-      <br />
     </div>
   );
 }
