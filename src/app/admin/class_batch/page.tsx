@@ -39,6 +39,7 @@ import {
 import { Label } from "@/app/components/ui/attendanceUi/Label";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import StudentAdmission from "@/app/components/forms/StudentAdmission";
 
 // ---------------- TYPES ----------------
 type ClassInfo = {
@@ -124,6 +125,8 @@ export default function ClassBatch() {
   const router = useRouter();
 
   const [classList, setClassList] = useState<ClassInfo[]>([]);
+  const [classData, setClassData] = useState<{classId:string;batchId:string;class_name:string;batch_name:string}>({})
+  const [registerForm, setRegisterForm] = useState(false);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -145,6 +148,13 @@ export default function ClassBatch() {
       setLoading(false);
     }
   };
+
+
+  function handleBatchAddClick(classId: string, batchId: string, className: string, batchName: string) {
+    setRegisterForm(true);
+    setClassData({ classId,class_name: className,batchId, batch_name: batchName });
+    
+  }
 
   // ✅ FILTER + SORT
   const filtered = classList
@@ -209,7 +219,7 @@ export default function ClassBatch() {
                       <CardTitle>{item.class.name}</CardTitle>
                     </div>
 
-                    <ActionDropdown onEdit={() => {}} onDelete={() => {}} />
+                    <ActionDropdown onEdit={() => { }} onDelete={() => { }} />
                   </div>
                 </CardHeader>
 
@@ -231,21 +241,24 @@ export default function ClassBatch() {
                         key={batch._id}
                         className="flex justify-between items-center p-2 border rounded-lg bg-slate-50 dark:bg-slate-800 hover:shadow-sm"
                       >
-                        <div>
+                         <Link
+                          href={`/admin/class_batch/class/batch/students/${item._id}/${batch._id}`}
+                          className="text-xs px-3 py-1 rounded  dark:text-white "
+                        >
                           <p className="text-sm font-semibold">
                             {batch.batch_name}
                           </p>
                           <p className="text-xs text-slate-500">
                             {batch.total_students} students
                           </p>
-                        </div>
+                        </Link>
 
-                        <Link
-                          href={`/admin/class_batch/class/batch/students/${item._id}/${batch._id}`}
-                          className="text-xs px-3 py-1 rounded bg-indigo-600 text-white hover:bg-indigo-700"
+                        <div
+                          onClick={()=>handleBatchAddClick(item._id, batch._id, item.class.name, batch.batch_name)}
+                          className="text-xs px-3 cursor-pointer py-1 rounded bg-indigo-600 text-white hover:bg-indigo-700"
                         >
                           ➕ Add
-                        </Link>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -264,6 +277,20 @@ export default function ClassBatch() {
             );
           })}
         </div>
+      )}
+
+
+      {/* Student Registration Modal */}
+      {registerForm && (
+        <StudentAdmission
+          class_name={classData.class_name}
+          classId={String(classData.classId)}
+          batch_name={classData.batch_name}
+          batchId={String(classData.batchId)}
+          setRegisterForm={setRegisterForm}
+          getStudent={fetchClasses}
+          admisson={false}
+        />
       )}
     </div>
   );

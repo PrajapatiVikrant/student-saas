@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useRef } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { toast } from "react-toastify";
 
@@ -37,6 +37,23 @@ export default function StudentAdmission({
   const [motherName, setMotherName] = useState("");
   const [parentPhone, setParentPhone] = useState("");
   const [parentEmail, setParentEmail] = useState("");
+
+
+
+
+  //refs
+  const nameRef = useRef<HTMLInputElement>(null);
+  const genderRef = useRef<HTMLSelectElement>(null);
+  const addressRef = useRef<HTMLInputElement>(null);
+  const admissionDateRef = useRef<HTMLInputElement>(null);
+  const studentFeeRef = useRef<HTMLInputElement>(null);
+  const paymentDateRef = useRef<HTMLInputElement>(null);
+  const fatherRef = useRef<HTMLInputElement>(null);
+  const motherRef = useRef<HTMLInputElement>(null);
+  const phoneRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+
+  const focusNext = (ref: any) => ref.current?.focus();
 
   const [processing, setProcessing] = useState(false);
 
@@ -153,16 +170,16 @@ export default function StudentAdmission({
           },
         }
       );
-       await axios.post(
-                "/api/v1/parent",
-                {
-                    name: fatherName ? fatherName : motherName,
-                    email: parentEmail,
-                    phone: parentPhone,
-                    childrens: [response.data.student._id],
-                },
-                { headers: { Authorization: `Bearer ${token}` } }
-          );
+      await axios.post(
+        "/api/v1/parent",
+        {
+          name: fatherName ? fatherName : motherName,
+          email: parentEmail,
+          phone: parentPhone,
+          childrens: [response.data.student._id],
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       toast.success(response.data.message);
       setRegisterForm(false);
       getStudent();
@@ -190,7 +207,7 @@ export default function StudentAdmission({
     bg-gradient-to-r from-blue-600 to-indigo-600 
     dark:from-blue-700 dark:to-indigo-800 flex-shrink-0">
 
-          <h2 className="text-lg font-bold text-white">Student Admission</h2>
+          <h2 className="text-lg font-bold text-white">{class_name} - Student Admission</h2>
 
           <button
             className="text-white hover:bg-white/20 p-2 rounded-lg transition"
@@ -201,11 +218,11 @@ export default function StudentAdmission({
         </div>
 
         {/* Scrollable Body */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="flex-1 overflow-y-auto  space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6 flex flex-col justify-between">
 
             {/* Student Info */}
-            <div>
+            <div className="pt-4 px-6">
               <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">
                 Student Information
               </h3>
@@ -220,6 +237,8 @@ export default function StudentAdmission({
                   <input
                     type="text"
                     value={name}
+                    ref={nameRef}
+                    onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), focusNext(genderRef))}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Enter student name"
                     className={`mt-1 w-full border px-3 py-2.5 rounded-xl outline-none 
@@ -241,6 +260,8 @@ export default function StudentAdmission({
                   </label>
                   <select
                     value={gender}
+                    ref={genderRef}
+                    onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), focusNext(addressRef))}
                     onChange={(e) => setGender(e.target.value)}
                     className={`mt-1 w-full border px-3 py-2.5 rounded-xl outline-none
                 bg-white dark:bg-gray-800 
@@ -266,6 +287,8 @@ export default function StudentAdmission({
                   <input
                     type="text"
                     value={address}
+                    ref={addressRef}
+                    onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), focusNext(admissionDateRef))}
                     onChange={(e) => setAddress(e.target.value)}
                     placeholder="Enter student address"
                     className={`mt-1 w-full border px-3 py-2.5 rounded-xl outline-none
@@ -288,6 +311,8 @@ export default function StudentAdmission({
                   <input
                     type="date"
                     value={admissionDate}
+                    ref={admissionDateRef}
+                    onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), focusNext(studentFeeRef))}
                     onChange={(e) => setAdmissionDate(e.target.value)}
                     className={`mt-1 w-full border px-3 py-2.5 rounded-xl outline-none
                 bg-white dark:bg-gray-800 
@@ -310,6 +335,8 @@ export default function StudentAdmission({
                   <input
                     type="number"
                     value={studentFee}
+                    ref={studentFeeRef}
+                    onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), focusNext(paymentDateRef))}
                     onChange={(e) => setStudentFee(Number(e.target.value))}
                     placeholder="Enter fee amount"
                     className={`mt-1 w-full border px-3 py-2.5 rounded-xl outline-none
@@ -331,6 +358,8 @@ export default function StudentAdmission({
                   <input
                     type="number"
                     value={paymentDate}
+                    ref={paymentDateRef}
+                    onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), focusNext(fatherRef))}
                     onChange={(e) => setPaymentDate(Number(e.target.value))}
                     placeholder="Ex: 10"
                     className={`mt-1 w-full border px-3 py-2.5 rounded-xl outline-none
@@ -350,7 +379,7 @@ export default function StudentAdmission({
             </div>
 
             {/* Parent Info */}
-            <div>
+            <div className="pt-4 px-6">
               <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">
                 Parent Information (Optional)
               </h3>
@@ -364,6 +393,8 @@ export default function StudentAdmission({
                   <input
                     type="text"
                     value={fatherName}
+                    ref={fatherRef}
+                    onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), focusNext(motherRef))}
                     onChange={(e) => setFatherName(e.target.value)}
                     placeholder="Enter father name"
                     className="mt-1 w-full border border-gray-300 dark:border-gray-600 px-3 py-2.5 rounded-xl outline-none 
@@ -381,6 +412,8 @@ export default function StudentAdmission({
                     type="text"
                     value={motherName}
                     onChange={(e) => setMotherName(e.target.value)}
+                    ref={motherRef}
+                    onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), focusNext(phoneRef))}
                     placeholder="Enter mother name"
                     className="mt-1 w-full border border-gray-300 dark:border-gray-600 px-3 py-2.5 rounded-xl outline-none 
                 bg-white dark:bg-gray-800 
@@ -397,6 +430,8 @@ export default function StudentAdmission({
                     type="text"
                     value={parentPhone}
                     onChange={(e) => setParentPhone(e.target.value)}
+                    ref={phoneRef}
+                    onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), focusNext(emailRef))}
                     placeholder="Enter phone number"
                     className={`mt-1 w-full border px-3 py-2.5 rounded-xl outline-none
                 bg-white dark:bg-gray-800 

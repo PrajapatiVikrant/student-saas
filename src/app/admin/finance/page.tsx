@@ -8,6 +8,7 @@ import CircularIndeterminate from "@/app/components/ui/CircularIndeterminate";
 import Link from "next/link";
 
 export default function MonthlyFinance() {
+  const currentYear = new Date().getFullYear();
   const [students, setStudents] = useState<any[]>([]);
   const [classList, setClassList] = useState<any[]>([]);
   const [batchList, setBatchList] = useState<any[]>([]);
@@ -17,7 +18,7 @@ export default function MonthlyFinance() {
 
   const [loading, setLoading] = useState(true);
 
-  const [selectedYear, setSelectedYear] = useState("All");
+  const [selectedYear, setSelectedYear] = useState(currentYear.toString());
   const [selectedMonth, setSelectedMonth] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
   const [search, setSearch] = useState("");
@@ -153,6 +154,7 @@ export default function MonthlyFinance() {
       {
         studentId: selectedStudent._id,
         month: clickedMonth + 1,
+        monthFee: selectedStudent.batch?.fee ,
         year:
           selectedYear === "All"
             ? new Date().getFullYear()
@@ -161,7 +163,7 @@ export default function MonthlyFinance() {
       },
     ]);
 
-    
+
     setSelectedStudent(null);
   };
 
@@ -172,7 +174,7 @@ export default function MonthlyFinance() {
         (r) => !(r.studentId === studentId && r.month === month)
       )
     );
-   
+
   };
 
   // ================= SAVE =================
@@ -338,17 +340,43 @@ export default function MonthlyFinance() {
       />
 
       {/* STUDENTS */}
-      <div className="grid overflow-auto  gap-5">
+      <div className="grid gap-4 sm:gap-5">
         {filteredStudents.map((student) => (
-          <div key={student._id} className="bg-white dark:bg-slate-800 p-5 rounded-xl shadow border dark:border-slate-700">
-            <div className="flex items-center gap-3 mb-4">
-            <Link href={`/admin/students/${student._id}`} className="font-semibold hover:text-blue-600 hover:border-b-2 hover:border-blue-500 mb-3 dark:text-white">
-              {student.name}
-            </Link>
-            <span>{student.parentInfo.fatherName?``}</span>
+          <div
+            key={student._id}
+            className="bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-xl shadow border dark:border-slate-700"
+          >
+            {/* HEADER */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+
+              {/* LEFT SIDE */}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 flex-wrap">
+
+                <Link
+                  href={`/admin/student/${student._id}/profile`}
+                  className="font-semibold text-sm sm:text-base hover:text-blue-600 hover:border-b-2 hover:border-blue-500 dark:text-white w-fit"
+                >
+                  {student.name}
+                </Link>
+
+                <span className="text-xs sm:text-sm text-slate-500 dark:text-slate-300">
+                  {student.gender === "Male" ? "S/O " : "D/O "}
+                  {student.parentInfo?.fatherName
+                    ? student.parentInfo.fatherName
+                    : student.parentInfo?.motherName
+                      ? student.parentInfo.motherName
+                      : "N/A"}
+                </span>
+              </div>
+
+              {/* RIGHT SIDE */}
+              <span className="text-xs sm:text-sm text-slate-500 dark:text-slate-300">
+                {student.class?.name || "No Class"} - {student.batch?.name || "No Batch"}
+              </span>
             </div>
 
-            <div className="grid grid-cols-6 sm:grid-cols-12  gap-3">
+            {/* MONTH GRID */}
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-2 sm:gap-3">
               {months.map((m, i) => {
 
                 if (
@@ -364,43 +392,41 @@ export default function MonthlyFinance() {
                       onClick={() => handleClick(student, i)}
                       className={`group relative p-2 sm:p-3 rounded-xl text-center border transition-all duration-200 cursor-pointer
 
-  ${final?.status === "Paid"
+                ${final?.status === "Paid"
                           ? "bg-emerald-100 text-emerald-700 border-emerald-300 dark:bg-emerald-900/30 dark:text-emerald-300"
                           : final?.status === "Partial"
                             ? "bg-yellow-100 text-yellow-700 border-yellow-300 dark:bg-yellow-900/30 dark:text-yellow-300"
                             : "bg-white text-slate-600 border-slate-200 hover:shadow-md hover:scale-[1.03] dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700"
                         }
-`}
+                `}
                     >
 
                       {/* Month */}
-                      <div className="font-semibold text-[11px] sm:text-xs md:text-sm">
+                      <div className="font-semibold text-[10px] sm:text-xs md:text-sm">
                         {m}
                       </div>
 
-                      {/* Amount (🔥 SMART WRAP FIX) */}
+                      {/* Amount */}
                       <div className="mt-1 flex flex-wrap items-center justify-center gap-[2px] leading-tight">
-
-                        <span className="font-bold text-[10px] sm:text-xs md:text-sm break-all">
+                        <span className="font-bold text-[10px] sm:text-xs md:text-sm break-words">
                           ₹{final?.paid || 0}
                         </span>
 
                         <span className="text-[9px] sm:text-[10px] md:text-xs text-slate-400">
                           / ₹{final?.total || student.batch?.fee}
                         </span>
-
                       </div>
 
                       {/* Status */}
                       <div
                         className={`mt-1 text-[9px] sm:text-[10px] px-1 py-[2px] rounded-full inline-block
-      ${final?.status === "Paid"
+                  ${final?.status === "Paid"
                             ? "bg-emerald-200 text-emerald-800 dark:bg-emerald-800/40 dark:text-emerald-300"
                             : final?.status === "Partial"
                               ? "bg-yellow-200 text-yellow-800 dark:bg-yellow-800/40 dark:text-yellow-300"
                               : "bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300"
                           }
-    `}
+                  `}
                       >
                         {final?.status || "Pending"}
                       </div>
@@ -411,6 +437,8 @@ export default function MonthlyFinance() {
                       </div>
 
                     </div>
+
+                    {/* UNDO BUTTON */}
                     {final?.isLocal && (
                       <button
                         onClick={(e) => {
@@ -422,13 +450,13 @@ export default function MonthlyFinance() {
                         ✕
                       </button>
                     )}
-
                   </div>
                 );
               })}
             </div>
           </div>
         ))}
+        <br /><br />
       </div>
 
       {/* MODAL */}
