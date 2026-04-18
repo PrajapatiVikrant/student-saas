@@ -64,6 +64,7 @@ export default function ReportsPage() {
     }, [selectedTestObj])
 
     async function getBatchStudents() {
+        setClassOptions([])
         const token = localStorage.getItem("codeflam01_token");
         if (!token) {
             toast.error("Session expired. Please log in again.");
