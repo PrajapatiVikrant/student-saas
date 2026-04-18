@@ -23,6 +23,7 @@ export default function ReportsPage() {
     const [selectedTestObj, setSelectedTestObj] = useState<any>(null);
     const [testTypes, setTestTypes] = useState([]);
     const [examRecords, setExamRecords] = useState<any[]>([]);
+    const [activeStudent, setActiveStudent] = useState<any>(null);
     const [processing, setProcessing] = useState(false);
 
     const [maxScore, setMaxScore] = useState("");
@@ -156,6 +157,7 @@ export default function ReportsPage() {
 
 
     async function fetchExamRecord() {
+        setExamRecords([])
         setLoading(true)
         try {
             const testRecord = await axios.get(
@@ -165,7 +167,7 @@ export default function ReportsPage() {
                 }
             );
 
-
+            
             if (testRecord.data.data[0]) {
                 setMaxScore(testRecord.data.data[0].score?.max_marks || "");
                 setExamRecords(testRecord.data.data);
@@ -197,6 +199,7 @@ export default function ReportsPage() {
             toast.error("Please fill all filters before saving.");
             return;
         }
+        
 
         const data = students.map((student, index) => ({
             class_id: selectedClass,
@@ -241,7 +244,7 @@ export default function ReportsPage() {
         });
 
         if (hasError) return;
-
+        setProcessing(true)
         try {
             const payload = {
                 exams: data, // ✅ controller expects { exams: [] }
@@ -255,12 +258,14 @@ export default function ReportsPage() {
                 }
             );
             fetchExamRecord()
-            console.log("FINAL DATA:", data);
+           
             toast.success("Marks saved successfully ✅");
 
         } catch (error) {
             console.error(error);
             toast.error("Failed to save marks ❌");
+        }finally{
+            setProcessing(false)
         }
     }
 
@@ -348,9 +353,10 @@ export default function ReportsPage() {
 
             {/* SAVE */}
             <div className="flex justify-end mb-4">
-                <button onClick={handleSave} className="bg-indigo-600 hover:bg-indigo-700 p-1 px-2.5">
+                <button disabled={processing} onClick={handleSave} className="bg-indigo-600 hover:bg-indigo-700 p-1 px-2.5">
                     <Save className="w-4 h-4 inline mr-2" />
-                    Save
+                    {processing?"Saving...":"Save"}
+                    
                 </button>
             </div>
 
@@ -383,7 +389,39 @@ export default function ReportsPage() {
 
                                 <div className="flex sm:block items-center justify-between text-sm md:text-base">
                                     <span className="sm:hidden text-gray-500">Name:</span>
-                                    <span className="font-medium">{student.student_name}</span>
+                                    <span
+                                        onClick={() =>
+                                            setActiveStudent(
+                                                activeStudent === index ? null : index
+                                            )
+                                        }
+                                        className={`font-medium ${(activeStudent === index) ? "hidden" : ""}`}
+                                    >{student.student.student_name}</span>
+                                    {activeStudent === index && (
+                                        <div
+                                            onClick={() =>
+                                                setActiveStudent(
+                                                    activeStudent === index ? null : index
+                                                )
+                                            }
+                                            className="col-span-1 cursor-pointer sm:col-span-4 text-xs text-gray-600 dark:text-gray-300 mt-2 bg-gray-50 dark:bg-gray-700 p-2 rounded-md">
+
+                                            <p>
+                                                <strong>Class:</strong>{" "}
+                                                {classOptions.find(c => c.class_id === selectedClass)?.class_name}
+                                            </p>
+
+                                            <p>
+                                                <strong>Section:</strong>{" "}
+                                                {batchOptions.find(b => b._id === selectedBatch)?.batch_name}
+                                            </p>
+
+                                            <p>
+                                                <strong>Exam:</strong> {selectedTestObj?.name}
+                                            </p>
+
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* MARKS */}
@@ -398,7 +436,9 @@ export default function ReportsPage() {
                                         onKeyDown={(e) => {
                                             if (e.key === "Enter") {
                                                 e.preventDefault();
-                                                feedbackRefs.current[index]?.focus();
+                                                const next = markRefs.current[index + 1];
+                                                if (next) next.focus();
+                                                else toast.success("All data entered ✅");
                                             }
                                         }}
                                     />
@@ -443,7 +483,39 @@ export default function ReportsPage() {
 
                                 <div className="flex sm:block items-center justify-between text-sm md:text-base">
                                     <span className="sm:hidden text-gray-500">Name:</span>
-                                    <span className="font-medium">{student.name}</span>
+                                    <span
+                                        onClick={() =>
+                                            setActiveStudent(
+                                                activeStudent === index ? null : index
+                                            )
+                                        }
+                                        className={`font-medium ${(activeStudent === index) ? "hidden" : ""}`}
+                                    >{student.name}</span>
+                                    {activeStudent === index && (
+                                        <div
+                                            onClick={() =>
+                                                setActiveStudent(
+                                                    activeStudent === index ? null : index
+                                                )
+                                            }
+                                            className="col-span-1 cursor-pointer sm:col-span-4 text-xs text-gray-600 dark:text-gray-300 mt-2 bg-gray-50 dark:bg-gray-700 p-2 rounded-md">
+
+                                            <p>
+                                                <strong>Class:</strong>{" "}
+                                                {classOptions.find(c => c.class_id === selectedClass)?.class_name}
+                                            </p>
+
+                                            <p>
+                                                <strong>Section:</strong>{" "}
+                                                {batchOptions.find(b => b._id === selectedBatch)?.batch_name}
+                                            </p>
+
+                                            <p>
+                                                <strong>Exam:</strong> {selectedTestObj?.name}
+                                            </p>
+
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* MARKS */}
@@ -457,7 +529,9 @@ export default function ReportsPage() {
                                         onKeyDown={(e) => {
                                             if (e.key === "Enter") {
                                                 e.preventDefault();
-                                                feedbackRefs.current[index]?.focus();
+                                                const next = markRefs.current[index + 1];
+                                                if (next) next.focus();
+                                                else toast.success("All data entered ✅");
                                             }
                                         }}
                                     />
