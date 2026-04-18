@@ -61,7 +61,7 @@ export default function ReportsPage() {
         if (selectedSubjectObj && selectedBatch && selectedClass) {
             fetchExamRecord();
         }
-    }, [selectedTestObj])
+    }, [selectedTestObj,selectedBatch,selectedClass])
 
     async function getBatchStudents() {
         setExamRecords([])
@@ -168,7 +168,7 @@ export default function ReportsPage() {
                 }
             );
 
-            
+
             if (testRecord.data.data[0]) {
                 setMaxScore(testRecord.data.data[0].score?.max_marks || "");
                 setExamRecords(testRecord.data.data);
@@ -200,7 +200,7 @@ export default function ReportsPage() {
             toast.error("Please fill all filters before saving.");
             return;
         }
-        
+
 
         const data = students.map((student, index) => ({
             class_id: selectedClass,
@@ -259,13 +259,13 @@ export default function ReportsPage() {
                 }
             );
             fetchExamRecord()
-           
+
             toast.success("Marks saved successfully ✅");
 
         } catch (error) {
             console.error(error);
             toast.error("Failed to save marks ❌");
-        }finally{
+        } finally {
             setProcessing(false)
         }
     }
@@ -354,10 +354,10 @@ export default function ReportsPage() {
 
             {/* SAVE */}
             <div className="flex justify-end mb-4">
-                <button disabled={processing} onClick={handleSave} className="bg-indigo-600 hover:bg-indigo-700 p-1 px-2.5">
+                <button disabled={processing} onClick={handleSave} className="bg-indigo-600 hover:bg-indigo-700 text-white p-1 px-2.5">
                     <Save className="w-4 h-4 inline mr-2" />
-                    {processing?"Saving...":"Save"}
-                    
+                    {processing ? "Saving..." : "Save"}
+
                 </button>
             </div>
 
@@ -434,6 +434,7 @@ export default function ReportsPage() {
                                         type="number"
                                         placeholder="Marks"
                                         className="w-20 px-2 py-1.5 text-sm rounded-md border bg-gray-50 dark:bg-gray-700"
+                                        enterKeyHint="next"
                                         onKeyDown={(e) => {
                                             if (e.key === "Enter") {
                                                 e.preventDefault();
@@ -527,6 +528,7 @@ export default function ReportsPage() {
                                         type="number"
                                         placeholder="Marks"
                                         className="w-20 px-2 py-1.5 text-sm rounded-md border bg-gray-50 dark:bg-gray-700"
+                                        enterKeyHint="next"
                                         onKeyDown={(e) => {
                                             if (e.key === "Enter") {
                                                 e.preventDefault();
