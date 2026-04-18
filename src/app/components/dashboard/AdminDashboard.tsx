@@ -8,6 +8,7 @@ import {
   MdOutlinePayments,
   MdMoreHoriz,
   MdFamilyRestroom,
+  MdBarChart,
 } from "react-icons/md";
 import { IoSettingsOutline } from "react-icons/io5";
 import { SiGoogleclassroom } from "react-icons/si";
@@ -28,6 +29,7 @@ export default function AdminDashboard() {
     { name: "Class & Batches", icon: <SiGoogleclassroom />, path: "/admin/class_batch" },
     { name: "Events", icon: <SlCalender />, path: "/admin/event" },
     { name: "Teacher", icon: <GiTeacher />, path: "/admin/teacher" },
+    { name: "Performance", icon: <MdBarChart />, path: "/admin/performance" },
     { name: "Parent Portal", icon: <MdFamilyRestroom />, path: "/admin/parent" },
     { name: "Profile", icon: <CgProfile />, path: "/admin/profile" },
   ];

@@ -17,18 +17,20 @@ import { GiTeacher } from "react-icons/gi";
 import { FiLogOut } from "react-icons/fi";
 import { FaUserCircle } from "react-icons/fa";
 import Image from "next/image";
+import { HiOutlineDocumentReport } from "react-icons/hi";
 
 export default function AdminDashboard() {
   const pathname = usePathname();
   const [showMore, setShowMore] = useState(false);
 
   const navItems = [
-    { name: "Dashboard", icon: <MdOutlineDashboard />, path: "/teacher/dashboard" },
-    { name: "Attendance", icon: <SiGoogleclassroom />, path: "/teacher/attendance" },
-    { name: "Events", icon: <SlCalender />, path: "/teacher/event" },
-    { name: "Students", icon: <MdPeopleOutline />, path: "/teacher/students" },
-    { name: "Homework", icon: <MdFamilyRestroom />, path: "/teacher/homework" }
-  ];
+  { name: "Dashboard", icon: <MdOutlineDashboard />, path: "/teacher/dashboard" },
+  { name: "Attendance", icon: <SiGoogleclassroom />, path: "/teacher/attendance" },
+  { name: "Events", icon: <SlCalender />, path: "/teacher/event" },
+  { name: "Reports", icon: <HiOutlineDocumentReport />, path: "/teacher/reports" }, // ✅ FIX
+  { name: "Students", icon: <MdPeopleOutline />, path: "/teacher/students" },
+  { name: "Homework", icon: <MdFamilyRestroom />, path: "/teacher/homework" }
+];
 
   function handleSignout() {
     localStorage.removeItem("codeflam01_token");

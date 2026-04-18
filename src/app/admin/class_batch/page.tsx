@@ -1,12 +1,10 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import {
   Plus,
   Search,
-  LayoutGrid,
-  List,
   MoreVertical,
   GraduationCap,
   Pencil,
@@ -30,14 +28,11 @@ import { Skeleton } from "@/app/components/ui/attendanceUi/Skeleton";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/app/components/ui/attendanceUi/Dialog";
 
-import { Label } from "@/app/components/ui/attendanceUi/Label";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import StudentAdmission from "@/app/components/forms/StudentAdmission";
 
@@ -50,22 +45,7 @@ type ClassInfo = {
   };
 };
 
-// ---------------- SORT HELPER ----------------
-const getClassOrder = (name: string) => {
-  const n = name.toLowerCase().trim();
-
-  if (n.includes("play")) return -1;
-  if (n.includes("nursery")) return 0;
-  if (n.includes("lkg")) return 1;
-  if (n.includes("ukg")) return 2;
-
-  const match = n.match(/\d+/);
-  if (match) return parseInt(match[0]);
-
-  return 999;
-};
-
-// Gradient helper
+// ---------------- HELPER ----------------
 const getGradient = (str: string) => {
   const gradients = [
     "from-blue-500 to-cyan-500",
@@ -122,13 +102,26 @@ function ActionDropdown({ onEdit, onDelete }: any) {
 
 // ---------------- MAIN ----------------
 export default function ClassBatch() {
-  const router = useRouter();
-
   const [classList, setClassList] = useState<ClassInfo[]>([]);
-  const [classData, setClassData] = useState<{classId:string;batchId:string;class_name:string;batch_name:string}>({})
-  const [registerForm, setRegisterForm] = useState(false);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+
+  // dialogs
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [newClass, setNewClass] = useState("");
+
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editId, setEditId] = useState("");
+  const [editName, setEditName] = useState("");
+
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState("");
+
+  const [processing, setProcessing] = useState(false);
+
+  // student form
+  const [registerForm, setRegisterForm] = useState(false);
+  const [classData, setClassData] = useState<any>({});
 
   useEffect(() => {
     fetchClasses();
@@ -149,23 +142,82 @@ export default function ClassBatch() {
     }
   };
 
+  // ---------------- CREATE ----------------
+  const handleCreate = async () => {
+    if (!newClass.trim()) return toast.error("Enter class name");
+
+    setProcessing(true);
+    try {
+      const token = localStorage.getItem("codeflam01_token");
+
+      await axios.post(
+        "https://codeflame-edu-backend.xyz/api/v1/kaksha",
+        { name: newClass },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      toast.success("Class created");
+      setIsCreateOpen(false);
+      setNewClass("");
+      fetchClasses();
+    } catch {
+      toast.error("Create failed");
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  // ---------------- EDIT ----------------
+  const handleEdit = async () => {
+    setProcessing(true);
+    try {
+      const token = localStorage.getItem("codeflam01_token");
+
+      await axios.put(
+        `https://codeflame-edu-backend.xyz/api/v1/kaksha/${editId}`,
+        { class_name: editName },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      toast.success("Updated");
+      setIsEditOpen(false);
+      fetchClasses();
+    } catch {
+      toast.error("Update failed");
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  // ---------------- DELETE ----------------
+  const handleDelete = async () => {
+    setProcessing(true);
+    try {
+      const token = localStorage.getItem("codeflam01_token");
+
+      await axios.delete(
+        `https://codeflame-edu-backend.xyz/api/v1/kaksha/${deleteId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      toast.success("Deleted");
+      setIsDeleteOpen(false);
+      fetchClasses();
+    } catch {
+      toast.error("Delete failed");
+    } finally {
+      setProcessing(false);
+    }
+  };
 
   function handleBatchAddClick(classId: string, batchId: string, className: string, batchName: string) {
     setRegisterForm(true);
-    setClassData({ classId,class_name: className,batchId, batch_name: batchName });
-    
+    setClassData({ classId, class_name: className, batchId, batch_name: batchName });
   }
 
-  // ✅ FILTER + SORT
-  const filtered = classList
-    .filter((c) =>
-      c.class.name.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    .sort((a, b) => {
-      const orderA = getClassOrder(a.class.name);
-      const orderB = getClassOrder(b.class.name);
-      return orderB - orderA; // descending
-    });
+  const filtered = classList.filter((c) =>
+    c.class.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-6">
@@ -185,7 +237,10 @@ export default function ClassBatch() {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
 
-          <Button className="bg-indigo-600 text-white">
+          <Button
+            className="bg-indigo-600 text-white"
+            onClick={() => setIsCreateOpen(true)}
+          >
             <Plus className="w-4 h-4 mr-1" /> Add Class
           </Button>
         </div>
@@ -205,7 +260,7 @@ export default function ClassBatch() {
             );
 
             return (
-              <Card key={item._id} className="shadow hover:shadow-lg transition">
+             <Card key={item._id} className="shadow hover:shadow-lg transition">
                 <div className={`h-1 bg-gradient-to-r ${gradient}`} />
 
                 <CardHeader>
@@ -219,7 +274,15 @@ export default function ClassBatch() {
                       <CardTitle>{item.class.name}</CardTitle>
                     </div>
 
-                    <ActionDropdown onEdit={() => { }} onDelete={() => { }} />
+                    <ActionDropdown onEdit={() => {
+                        setEditId(item._id);
+                        setEditName(item.class.name);
+                        setIsEditOpen(true);
+                      }}
+                       onDelete={() => {
+                        setDeleteId(item._id);
+                        setIsDeleteOpen(true);
+                       }} />
                   </div>
                 </CardHeader>
 
@@ -279,14 +342,48 @@ export default function ClassBatch() {
         </div>
       )}
 
+      {/* dialogs same as before */}
+      {/* CREATE */}
+      <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Create Class</DialogTitle></DialogHeader>
+          <Input value={newClass} onChange={(e)=>setNewClass(e.target.value)} />
+          <DialogFooter>
+            <Button onClick={handleCreate}>{processing?"Creating...":"Create"}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-      {/* Student Registration Modal */}
+      {/* EDIT */}
+      <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Edit Class</DialogTitle></DialogHeader>
+          <Input value={editName} onChange={(e)=>setEditName(e.target.value)} />
+          <DialogFooter>
+            <Button onClick={handleEdit}>{processing?"Updating...":"Update"}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* DELETE */}
+      <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
+        <DialogContent>
+          <DialogHeader><DialogTitle className="text-red-600">Delete</DialogTitle></DialogHeader>
+          <DialogFooter>
+            <Button onClick={handleDelete} className="bg-red-600 text-white">
+              {processing?"Deleting...":"Delete"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* STUDENT FORM */}
       {registerForm && (
         <StudentAdmission
           class_name={classData.class_name}
-          classId={String(classData.classId)}
+          classId={classData.classId}
           batch_name={classData.batch_name}
-          batchId={String(classData.batchId)}
+          batchId={classData.batchId}
           setRegisterForm={setRegisterForm}
           getStudent={fetchClasses}
           admisson={false}
