@@ -61,7 +61,7 @@ export default function ReportsPage() {
         if (selectedSubjectObj && selectedBatch && selectedClass) {
             fetchExamRecord();
         }
-    }, [selectedTestObj,selectedBatch,selectedClass])
+    }, [selectedTestObj,selectedBatch,selectedSubjectObj])
 
     async function getBatchStudents() {
         setExamRecords([])
@@ -80,7 +80,6 @@ export default function ReportsPage() {
                     headers: { Authorization: `Bearer ${token}` },
                 }
             );
-            console.log("STUDENTS RESPONSE:", response.data);
             setStudents(response.data.students || []);
 
 
@@ -114,7 +113,9 @@ export default function ReportsPage() {
 
     function fetchBatchOption() {
         if (!selectedClass || !profile) return;
-
+        setStudents([])
+        setExamRecords([])
+        
         const batches =
             profile.classes.find((c: any) => c.class_id === selectedClass)
                 ?.class_detail?.class?.batches || [];
@@ -158,17 +159,21 @@ export default function ReportsPage() {
 
 
     async function fetchExamRecord() {
+        if(!selectedClass || !selectedBatch || !selectedSubjectObj || !selectedTestObj){
+            return;
+        }
         setExamRecords([])
+        setMaxScore("")
         setLoading(true)
         try {
             const testRecord = await axios.get(
-                `https://codeflame-edu-backend.xyz/api/v1/test//class/${selectedClass}/batch/${selectedBatch}/exam/${selectedTestObj.id || selectedTestObj._id}`,
+                `https://codeflame-edu-backend.xyz/api/v1/test//class/${selectedClass}/batch/${selectedBatch}/exam/${selectedTestObj.id || selectedTestObj._id}/subject/${selectedSubjectObj.id || selectedSubjectObj._id}`,
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 }
             );
 
-
+            
             if (testRecord.data.data[0]) {
                 setMaxScore(testRecord.data.data[0].score?.max_marks || "");
                 setExamRecords(testRecord.data.data);
@@ -180,7 +185,7 @@ export default function ReportsPage() {
                 router.push("/login");
             } else {
                 console.log(error)
-                toast.error("Failed to fetch students.");
+                toast.error("Failed to fetch exam result.");
             }
         } finally {
             setLoading(false)
@@ -294,16 +299,16 @@ export default function ReportsPage() {
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
 
                     <select value={selectedClass} onChange={(e) => setSelectedClass(e.target.value)} className="filter-input">
-                        <option value="">Class</option>
+                        <option className="dark:bg-slate-800" value="">Class</option>
                         {classOptions.map((cls: any) => (
-                            <option key={cls.class_id} value={cls.class_id}>{cls.class_name}</option>
+                            <option className="dark:bg-slate-800" key={cls.class_id} value={cls.class_id}>{cls.class_name}</option>
                         ))}
                     </select>
 
                     <select value={selectedBatch} onChange={(e) => setSelectedBatch(e.target.value)} className="filter-input">
-                        <option value="">Section</option>
+                        <option className="dark:bg-slate-800" value="">Section</option>
                         {batchOptions.map((b: any) => (
-                            <option key={b._id} value={b._id}>{b.batch_name}</option>
+                            <option className="dark:bg-slate-800" key={b._id} value={b._id}>{b.batch_name}</option>
                         ))}
                     </select>
 
@@ -318,9 +323,9 @@ export default function ReportsPage() {
                         }}
                         className="filter-input"
                     >
-                        <option value="">Subject</option>
+                        <option className="dark:bg-slate-800" value="">Subject</option>
                         {subjectsOption.map((s: any) => (
-                            <option key={s.id} value={s.id}>
+                            <option className="dark:bg-slate-800" key={s.id} value={s.id}>
                                 {s.name}
                             </option>
                         ))}
@@ -338,9 +343,9 @@ export default function ReportsPage() {
                             }}
                             className="filter-input"
                         >
-                            <option value="">Exam</option>
+                            <option className="dark:bg-slate-800" value="">Exam</option>
                             {testTypes.map((t: any) => (
-                                <option key={t._id} value={t._id}>
+                                <option className="dark:bg-slate-800" key={t._id} value={t._id}>
                                     {t.name}
                                 </option>
                             ))}
