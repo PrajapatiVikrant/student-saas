@@ -131,41 +131,60 @@ export default function MonthlyFinance() {
     );
   };
 
-  // ================= CLICK =================
   const handleClick = (student: any, monthIndex: number) => {
-    const payment = getFinalPayment(student, monthIndex);
-    if (payment) return;
+  const payment = getFinalPayment(student, monthIndex);
 
-    setSelectedStudent(student);
-    setClickedMonth(monthIndex);
+  setSelectedStudent(student);
+  setClickedMonth(monthIndex);
+
+  // 🔥 agar already payment hai to uska amount show karo
+  if (payment) {
+    setAmount(String(payment.paid));
+  } else {
     setAmount(String(student.batch?.fee || 0));
-  };
+  }
+};
 
   // ================= ADD =================
   const handleAddRecord = () => {
-    if (!selectedStudent || clickedMonth === null) return;
+  if (!selectedStudent || clickedMonth === null) return;
 
-    if (isSelected(selectedStudent, clickedMonth)) {
-      return toast.error("Already added");
+  const month = clickedMonth + 1;
+
+  setSubmitRecord((prev) => {
+    const exists = prev.find(
+      (r) =>
+        r.studentId === selectedStudent._id &&
+        r.month === month
+    );
+
+    if (exists) {
+      // 🔥 UPDATE
+      return prev.map((r) =>
+        r.studentId === selectedStudent._id && r.month === month
+          ? { ...r, amount: Number(amount) }
+          : r
+      );
     }
 
-    setSubmitRecord((prev) => [
+    // 🔥 ADD NEW
+    return [
       ...prev,
       {
         studentId: selectedStudent._id,
-        month: clickedMonth + 1,
-        monthFee: selectedStudent.batch?.fee ,
+        month,
+        monthFee: selectedStudent.batch?.fee,
         year:
           selectedYear === "All"
             ? new Date().getFullYear()
             : Number(selectedYear),
         amount: Number(amount),
       },
-    ]);
+    ];
+  });
 
-
-    setSelectedStudent(null);
-  };
+  setSelectedStudent(null);
+};
 
   // ================= UNDO =================
   const handleUndo = (studentId: string, month: number) => {

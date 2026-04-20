@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { Button } from "@/app/components/ui/attendanceUi/Button";
 import Confirmation from "@/app/components/forms/Confirmation";
+import RenderDescription from "@/app/components/ui/RenderDescription";
 
 // ================= TYPES =================
 interface Batch {
@@ -295,6 +296,17 @@ const EventPage: React.FC = () => {
     setShowModal(false);
   };
 
+
+
+
+
+
+
+
+
+
+
+
   // ================= UI =================
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
@@ -386,7 +398,7 @@ const EventPage: React.FC = () => {
 
                 {event.description && (
                   <div className="mt-4 bg-slate-50 dark:bg-slate-800 p-3 rounded-xl text-sm text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
-                    {event.description}
+                    {RenderDescription(event.description)}
                   </div>
                 )}
 
