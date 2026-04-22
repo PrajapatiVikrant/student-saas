@@ -1,14 +1,16 @@
+import Link from "next/link";
 
 type QuickStsProps = {
     icon:String;
     title:String;
     desc:String;
+    path:String;
     value:String;
 }
-export default function Quickstatus({icon,title,desc,value }:QuickStsProps) {
+export default function Quickstatus({icon,title,desc,path,value }:QuickStsProps) {
 
     return (
-        <div className="flex items-center gap-4 rounded-lg bg-white dark:bg-gray-800 p-3 shadow-sm border border-gray-200 dark:border-gray-700">
+        <Link href={path} className="flex items-center gap-4 rounded-lg bg-white dark:bg-gray-800 p-3 shadow-sm border border-gray-200 dark:border-gray-700">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
                 <span className="text-blue-600">{icon}</span>
             </div>
@@ -21,6 +23,6 @@ export default function Quickstatus({icon,title,desc,value }:QuickStsProps) {
                 </p>
             </div>
             <div className="text-lg font-bold text-blue-600">{value}</div>
-        </div>
+        </Link>
     )
 }

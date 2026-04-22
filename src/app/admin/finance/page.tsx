@@ -28,6 +28,8 @@ export default function MonthlyFinance() {
   const [clickedMonth, setClickedMonth] = useState<number | null>(null);
   const [amount, setAmount] = useState("");
 
+
+ 
   const router = useRouter();
 
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -84,7 +86,7 @@ export default function MonthlyFinance() {
 
   // ================= FINAL PAYMENT =================
   const getFinalPayment = (student: any, monthIndex: number) => {
-    const totalFee = student.batch?.fee || 0;
+    let totalFee = student.batch?.fee || 0;
 
     const backend = student.monthly_fees?.find(
       (m: any) =>
@@ -101,7 +103,10 @@ export default function MonthlyFinance() {
     let paid = 0;
     let isLocal = false;
 
-    if (backend) paid = backend.paidAmount || 0;
+    if (backend) {
+      totalFee = backend.totalFee;
+      paid = backend.paidAmount || 0;
+    }
     if (local) {
       paid = local.amount;
       isLocal = true;
@@ -132,59 +137,59 @@ export default function MonthlyFinance() {
   };
 
   const handleClick = (student: any, monthIndex: number) => {
-  const payment = getFinalPayment(student, monthIndex);
+    const payment = getFinalPayment(student, monthIndex);
 
-  setSelectedStudent(student);
-  setClickedMonth(monthIndex);
+    setSelectedStudent(student);
+    setClickedMonth(monthIndex);
 
-  // 🔥 agar already payment hai to uska amount show karo
-  if (payment) {
-    setAmount(String(payment.paid));
-  } else {
-    setAmount(String(student.batch?.fee || 0));
-  }
-};
+    // 🔥 agar already payment hai to uska amount show karo
+    if (payment) {
+      setAmount(String(payment.paid));
+    } else {
+      setAmount(String(student.batch?.fee || 0));
+    }
+  };
 
   // ================= ADD =================
   const handleAddRecord = () => {
-  if (!selectedStudent || clickedMonth === null) return;
+    if (!selectedStudent || clickedMonth === null) return;
 
-  const month = clickedMonth + 1;
+    const month = clickedMonth + 1;
 
-  setSubmitRecord((prev) => {
-    const exists = prev.find(
-      (r) =>
-        r.studentId === selectedStudent._id &&
-        r.month === month
-    );
-
-    if (exists) {
-      // 🔥 UPDATE
-      return prev.map((r) =>
-        r.studentId === selectedStudent._id && r.month === month
-          ? { ...r, amount: Number(amount) }
-          : r
+    setSubmitRecord((prev) => {
+      const exists = prev.find(
+        (r) =>
+          r.studentId === selectedStudent._id &&
+          r.month === month
       );
-    }
 
-    // 🔥 ADD NEW
-    return [
-      ...prev,
-      {
-        studentId: selectedStudent._id,
-        month,
-        monthFee: selectedStudent.batch?.fee,
-        year:
-          selectedYear === "All"
-            ? new Date().getFullYear()
-            : Number(selectedYear),
-        amount: Number(amount),
-      },
-    ];
-  });
+      if (exists) {
+        // 🔥 UPDATE
+        return prev.map((r) =>
+          r.studentId === selectedStudent._id && r.month === month
+            ? { ...r, amount: Number(amount) }
+            : r
+        );
+      }
 
-  setSelectedStudent(null);
-};
+      // 🔥 ADD NEW
+      return [
+        ...prev,
+        {
+          studentId: selectedStudent._id,
+          month,
+          monthFee: selectedStudent.batch?.fee,
+          year:
+            selectedYear === "All"
+              ? new Date().getFullYear()
+              : Number(selectedYear),
+          amount: Number(amount),
+        },
+      ];
+    });
+
+    setSelectedStudent(null);
+  };
 
   // ================= UNDO =================
   const handleUndo = (studentId: string, month: number) => {
@@ -212,6 +217,25 @@ export default function MonthlyFinance() {
     setSubmitRecord([]);
     fetchStudents();
   };
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   // ================= FILTER =================
   const filteredStudents = students.filter((student) => {
@@ -345,7 +369,7 @@ export default function MonthlyFinance() {
               : "bg-white dark:bg-slate-800 border dark:border-slate-600"
               }`}
           >
-            {t}
+            {t} {statusFilter === t && filteredStudents.length}
           </button>
         ))}
       </div>
@@ -409,7 +433,7 @@ export default function MonthlyFinance() {
                   <div key={i} className="relative">
                     <div
                       onClick={() => handleClick(student, i)}
-                      className={`group relative p-2 sm:p-3 rounded-xl text-center border transition-all duration-200 cursor-pointer
+                      className={`group relative  p-2 sm:p-3 rounded-xl text-center border transition-all duration-200 cursor-pointer
 
                 ${final?.status === "Paid"
                           ? "bg-emerald-100 text-emerald-700 border-emerald-300 dark:bg-emerald-900/30 dark:text-emerald-300"
@@ -437,18 +461,31 @@ export default function MonthlyFinance() {
                       </div>
 
                       {/* Status */}
-                      <div
-                        className={`mt-1 text-[9px] sm:text-[10px] px-1 py-[2px] rounded-full inline-block
-                  ${final?.status === "Paid"
-                            ? "bg-emerald-200 text-emerald-800 dark:bg-emerald-800/40 dark:text-emerald-300"
-                            : final?.status === "Partial"
-                              ? "bg-yellow-200 text-yellow-800 dark:bg-yellow-800/40 dark:text-yellow-300"
-                              : "bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300"
-                          }
-                  `}
-                      >
-                        {final?.status || "Pending"}
-                      </div>
+                      {(() => {
+                        const label =
+                          new Date().getMonth() < months.indexOf(m)
+                            ? final?.status === "Paid"
+                              ? "Paid"
+                              : "Record"
+                            : final?.status || "Pending";
+
+                        return (
+                          <div
+                            className={`mt-1 text-[9px] sm:text-[10px] px-1 py-[2px] rounded-full inline-block
+        ${label === "Paid"
+                                ? "bg-emerald-200 text-emerald-800 dark:bg-emerald-800/40 dark:text-emerald-300"
+                                : label === "Partial"
+                                  ? "bg-yellow-200 text-yellow-800 dark:bg-yellow-800/40 dark:text-yellow-300"
+                                  : label === "Record"
+                                    ? "bg-blue-200 text-blue-800 dark:bg-blue-800/40 dark:text-blue-300"
+                                    : "bg-red-500 text-white"
+                              }
+      `}
+                          >
+                            {label}
+                          </div>
+                        );
+                      })()}
 
                       {/* Hover icon */}
                       <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition text-[10px]">
@@ -489,6 +526,7 @@ export default function MonthlyFinance() {
             <input
               type="number"
               value={amount}
+             
               onChange={(e) => setAmount(e.target.value)}
               className="border w-full p-2 mb-3 rounded bg-white dark:bg-slate-700 dark:text-white"
             />
