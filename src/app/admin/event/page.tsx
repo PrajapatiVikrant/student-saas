@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import axios, { AxiosError } from "axios";
 import { Pencil, Trash2, PlusCircle, Loader2, School } from "lucide-react";
 import { toast } from "react-toastify";
@@ -70,6 +70,8 @@ const EventPage: React.FC = () => {
   const [processing, setProcessing] = useState(false);
   const [confirmation, setConfirmation] = useState(false);
 
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+
   const [formData, setFormData] = useState({
     class_id: "",
     class_name: "",
@@ -79,8 +81,54 @@ const EventPage: React.FC = () => {
     date: "",
     description: "",
   });
-  const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  // ================= FILTER STATES =================
+  const [filterClassId, setFilterClassId] = useState("");
+  const [filterBatchId, setFilterBatchId] = useState("");
+  const [filterBatches, setFilterBatches] = useState<Batch[]>([]);
+
   const API_URL = "https://codeflame-edu-backend.xyz/api/v1/event";
+
+  // ================= FORMAT DATE =================
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "";
+
+    const date = new Date(dateString);
+
+    if (isNaN(date.getTime())) return dateString;
+
+    return date.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
+  // ================= SORT + FILTER EVENTS =================
+  const filteredAndSortedEvents = useMemo(() => {
+    const filtered = events.filter((event) => {
+      const matchClass = filterClassId
+        ? event.class.id === filterClassId
+        : true;
+
+      const matchBatch = filterBatchId
+        ? event.batch.id === filterBatchId
+        : true;
+
+      return matchClass && matchBatch;
+    });
+
+    return filtered.sort((a, b) => {
+      const aTime = new Date(a.date).getTime();
+      const bTime = new Date(b.date).getTime();
+
+      if (isNaN(aTime) && isNaN(bTime)) return 0;
+      if (isNaN(aTime)) return 1;
+      if (isNaN(bTime)) return -1;
+
+      return bTime - aTime;
+    });
+  }, [events, filterClassId, filterBatchId]);
 
   // ================= FETCH EVENTS =================
   const fetchEvents = async () => {
@@ -99,7 +147,7 @@ const EventPage: React.FC = () => {
       });
 
       setMyId(res.data.userId);
-      setEvents(res.data.events);
+      setEvents(res.data.events || []);
     } catch (err: unknown) {
       const error = err as AxiosError;
       console.error("Fetch events error:", error);
@@ -125,7 +173,7 @@ const EventPage: React.FC = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      setClassList(res.data);
+      setClassList(res.data || []);
     } catch (err: unknown) {
       const error = err as AxiosError;
       console.error("Fetch classes error:", error);
@@ -140,6 +188,22 @@ const EventPage: React.FC = () => {
     getAllClasses();
   }, []);
 
+  // ================= FILTER CLASS CHANGE =================
+  const handleFilterClassChange = (value: string) => {
+    setFilterClassId(value);
+    setFilterBatchId("");
+
+    const selectedClass = classList.find((cls) => cls._id === value);
+
+    const mappedBatches: Batch[] =
+      selectedClass?.class?.batches?.map((b) => ({
+        batch_id: b._id,
+        batch_name: b.batch_name,
+      })) || [];
+
+    setFilterBatches(mappedBatches);
+  };
+
   // ================= HANDLE CHANGE =================
   const handleChange = (
     e: React.ChangeEvent<
@@ -148,7 +212,6 @@ const EventPage: React.FC = () => {
   ) => {
     const { name, value } = e.target;
 
-    // CLASS CHANGE
     if (name === "class_id") {
       const selectedClass = classList.find((cls) => cls._id === value);
 
@@ -170,7 +233,6 @@ const EventPage: React.FC = () => {
       return;
     }
 
-    // BATCH CHANGE
     if (name === "batch_id") {
       const selectedBatch = batches.find((b) => b.batch_id === value);
 
@@ -245,8 +307,8 @@ const EventPage: React.FC = () => {
       batch_id: event.batch.id,
       batch_name: event.batch.batch_name,
       title: event.title,
-      date: event.date.split("T")[0],
-      description: event.description,
+      date: event.date ? event.date.split("T")[0] : "",
+      description: event.description || "",
     });
 
     setEditingEvent(event);
@@ -255,7 +317,6 @@ const EventPage: React.FC = () => {
 
   // ================= DELETE =================
   const handleDelete = async (id: string) => {
-
     try {
       setProcessing(true);
       const token = localStorage.getItem("codeflam01_token");
@@ -281,6 +342,7 @@ const EventPage: React.FC = () => {
     }
   };
 
+  // ================= RESET FORM =================
   const resetForm = () => {
     setFormData({
       class_id: "",
@@ -296,21 +358,16 @@ const EventPage: React.FC = () => {
     setShowModal(false);
   };
 
-
-
-
-
-
-
-
-
-
-
+  // ================= CLEAR FILTERS =================
+  const clearFilters = () => {
+    setFilterClassId("");
+    setFilterBatchId("");
+    setFilterBatches([]);
+  };
 
   // ================= UI =================
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
-
       {/* HEADER */}
       <div className="bg-white dark:bg-slate-900 border-b mb-2.5 border-slate-200 dark:border-slate-700 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -322,12 +379,15 @@ const EventPage: React.FC = () => {
               </h1>
 
               <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
-                Manage your classes, subjects, and student batches efficiently.
+                Filter events by class and batch.
               </p>
             </div>
 
             <Button
-              onClick={() => setShowModal(true)}
+              onClick={() => {
+                resetForm();
+                setShowModal(true);
+              }}
               className="bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm"
             >
               <PlusCircle size={18} className="mr-2" /> Add Event
@@ -337,23 +397,63 @@ const EventPage: React.FC = () => {
       </div>
 
       <div className="max-w-5xl mx-auto px-4">
+        {/* FILTERS */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 mb-5 shadow-sm">
+          <div className="grid sm:grid-cols-3 gap-3">
+            <select
+              value={filterClassId}
+              onChange={(e) => handleFilterClassChange(e.target.value)}
+              className="w-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white p-2 rounded"
+            >
+              <option value="">All Classes</option>
+              {classList.map((cls) => (
+                <option key={cls._id} value={cls._id}>
+                  {cls.class.name}
+                </option>
+              ))}
+            </select>
 
-        {/* LOADING */}
+            <select
+              value={filterBatchId}
+              onChange={(e) => setFilterBatchId(e.target.value)}
+              className="w-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white p-2 rounded"
+              disabled={!filterClassId}
+            >
+              <option value="">All Batches</option>
+              {filterBatches.map((batch) => (
+                <option key={batch.batch_id} value={batch.batch_id}>
+                  {batch.batch_name}
+                </option>
+              ))}
+            </select>
+
+            <button
+              onClick={clearFilters}
+              className="px-4 py-2 rounded bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-white"
+            >
+              Clear Filters
+            </button>
+          </div>
+        </div>
+
         {loading ? (
           <div className="flex justify-center items-center py-20">
-            <Loader2 className="animate-spin text-blue-600 dark:text-blue-400" size={40} />
+            <Loader2
+              className="animate-spin text-blue-600 dark:text-blue-400"
+              size={40}
+            />
           </div>
-        ) : events.length === 0 ? (
+        ) : filteredAndSortedEvents.length === 0 ? (
           <div className="bg-white dark:bg-slate-900 rounded-2xl shadow p-10 text-center text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
             <p className="text-lg font-semibold">No events found 📌</p>
             <p className="text-sm mt-1">
-              Add your first event using the button above.
+              Try another class or batch filter.
             </p>
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {events.map((event) => (
-              <div
+            {filteredAndSortedEvents.map((event) => (
+               <div
                 key={event._id}
                 className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm hover:shadow-lg transition"
               >
@@ -364,7 +464,7 @@ const EventPage: React.FC = () => {
                     </h2>
 
                     <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                      📅 {event.date.split("T")[0]}
+                      📅 {formatDate(event.date.split("T")[0])}
                     </p>
                   </div>
 
@@ -427,6 +527,7 @@ const EventPage: React.FC = () => {
               </div>
             ))}
           </div>
+        
         )}
       </div>
 
@@ -438,7 +539,6 @@ const EventPage: React.FC = () => {
               {editingEvent ? "Edit Event" : "Add Event"}
             </h2>
 
-            {/* CLASS */}
             <select
               name="class_id"
               value={formData.class_id}
@@ -447,6 +547,7 @@ const EventPage: React.FC = () => {
               disabled={formLoading}
             >
               <option value="">Select Class</option>
+              <option value="all">All Classes</option>
               {classList.map((cls) => (
                 <option key={cls._id} value={cls._id}>
                   {cls.class.name}
@@ -454,7 +555,6 @@ const EventPage: React.FC = () => {
               ))}
             </select>
 
-            {/* BATCH */}
             <select
               name="batch_id"
               value={formData.batch_id}
@@ -470,7 +570,6 @@ const EventPage: React.FC = () => {
               ))}
             </select>
 
-            {/* TITLE */}
             <input
               name="title"
               placeholder="Title"
@@ -479,7 +578,6 @@ const EventPage: React.FC = () => {
               className="w-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white p-2 mb-3 rounded"
             />
 
-            {/* DATE */}
             <input
               type="date"
               name="date"
@@ -488,7 +586,6 @@ const EventPage: React.FC = () => {
               className="w-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white p-2 mb-3 rounded"
             />
 
-            {/* DESCRIPTION */}
             <textarea
               name="description"
               placeholder="Description"
@@ -509,7 +606,7 @@ const EventPage: React.FC = () => {
               <button
                 onClick={handleSubmit}
                 disabled={processing}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded disabled:opacity-70"
               >
                 {processing ? "Saving..." : "Save"}
               </button>
@@ -517,28 +614,31 @@ const EventPage: React.FC = () => {
           </div>
         </div>
       )}
-     {confirmation && deleteId && (
-  <Confirmation
-    onClose={() => {
-      setConfirmation(false);
-      setDeleteId(null);
-    }}
-    onConfirm={() => {
-      if (deleteId) {
-        handleDelete(deleteId);
-        setDeleteId(null);
-        setConfirmation(false);
-      }
-    }}
-    name="Event"
-    info="This action cannot be undone and will permanently delete this event."
-    processing={processing}
-  />
-)}
-      <br /><br /><br />
+
+      {confirmation && deleteId && (
+        <Confirmation
+          onClose={() => {
+            setConfirmation(false);
+            setDeleteId(null);
+          }}
+          onConfirm={() => {
+            if (deleteId) {
+              handleDelete(deleteId);
+              setDeleteId(null);
+              setConfirmation(false);
+            }
+          }}
+          name="Event"
+          info="This action cannot be undone and will permanently delete this event."
+          processing={processing}
+        />
+      )}
+
+      <br />
+      <br />
+      <br />
     </div>
   );
-
 };
 
 export default EventPage;

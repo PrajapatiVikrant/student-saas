@@ -86,13 +86,14 @@ export default function ParentPage() {
 
       {/* Loading */}
       {loading && <p className="text-center mt-4">Loading parents...</p>}
-
+      <p className="p-6">There are {parents.length} parent records</p>
       {/* Table */}
       {!loading && parents.length > 0 && (
         <div className="overflow-x-auto rounded-lg p-6">
           <table className="min-w-[800px] w-full border border-gray-300 dark:border-gray-600 text-sm table-auto whitespace-nowrap bg-white dark:bg-slate-900 text-gray-900 dark:text-gray-100">
             <thead>
               <tr className="bg-gray-100 dark:bg-slate-700 text-left text-sm md:text-base">
+                <th className="p-3 border border-gray-300 dark:border-gray-600">S.No</th>
                 <th className="p-3 border border-gray-300 dark:border-gray-600">Name</th>
                 <th className="p-3 border border-gray-300 dark:border-gray-600">Email</th>
                 <th className="p-3 border border-gray-300 dark:border-gray-600">Phone</th>
@@ -101,8 +102,9 @@ export default function ParentPage() {
               </tr>
             </thead>
             <tbody>
-              {parents.map((p: any) => (
+              {parents.map((p: any,index: number) => (
                 <tr key={p._id} className="bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 text-sm md:text-base">
+                  <td className="p-3 border border-gray-300 dark:border-gray-600">{index + 1}</td>
                   <td className="p-3 border border-gray-300 dark:border-gray-600">{p.name}</td>
                   <td className="p-3 border border-gray-300 dark:border-gray-600">{p.email}</td>
                   <td className="p-3 border border-gray-300 dark:border-gray-600">{p.phone}</td>

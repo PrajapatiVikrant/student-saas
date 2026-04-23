@@ -34,10 +34,10 @@ export function StatCard({ icon: Icon, count, label, theme }: StatCardProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -4, transition: { duration: 0.2 } }}
-      className={`${styles.bg} rounded-2xl p-6 shadow-sm border border-white/50 transition-shadow hover:shadow-md`}
+      className={`${styles.bg} dark:bg-slate-800 dark:text-white rounded-2xl p-6 shadow-sm border border-white/50 transition-shadow hover:shadow-md`}
     >
       <div className="flex items-center gap-4">
-        <div className={`${styles.iconBg} p-3 rounded-xl`}>
+        <div className={`${styles.iconBg} dark:bg-slate-700 p-3 rounded-xl`}>
           <Icon className={`w-6 h-6 ${styles.text}`} />
         </div>
         <div>

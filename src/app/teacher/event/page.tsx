@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { Button } from "@/app/components/ui/attendanceUi/Button";
 import Confirmation from "@/app/components/forms/Confirmation";
+import RenderDescription from "@/app/components/ui/RenderDescription";
 
 // ================= TYPES =================
 interface Batch {
@@ -310,6 +311,22 @@ const EventPage: React.FC = () => {
     setShowModal(false);
   };
 
+
+  const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+
+  return date.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+};
+
+
+const sortedEvents = [...events].sort((a, b) => {
+  return new Date(b.date).getTime() - new Date(a.date).getTime();
+});
+
   // ================= UI =================
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
@@ -355,7 +372,7 @@ const EventPage: React.FC = () => {
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {events.map((event) => (
+            {sortedEvents.map((event) => (
               <div
                 key={event._id}
                 className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm hover:shadow-lg transition"
@@ -367,7 +384,7 @@ const EventPage: React.FC = () => {
                     </h2>
 
                     <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                      📅 {event.date.split("T")[0]}
+                      📅 {formatDate(event.date.split("T")[0])}
                     </p>
                   </div>
 
@@ -401,7 +418,7 @@ const EventPage: React.FC = () => {
 
                 {event.description && (
                   <div className="mt-4 bg-slate-50 dark:bg-slate-800 p-3 rounded-xl text-sm text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
-                    {event.description}
+                    {RenderDescription(event.description)}
                   </div>
                 )}
 

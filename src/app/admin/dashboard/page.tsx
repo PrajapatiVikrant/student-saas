@@ -114,14 +114,14 @@ export default function Dashboard() {
       title: "Fee Collected",
       data: `₹0`,
       icon: <MdOutlinePayments className="text-2xl text-emerald-600" />,
-      path: "admin/finance",
+      path: "/admin/finance",
       bg: "from-emerald-50 to-emerald-100",
     },
     {
       title: "Pending Dues",
       data: `₹0`,
       icon: <GiTimeTrap className="text-2xl text-red-600" />,
-      path: "admin/finance",
+      path: "/admin/finance",
       bg: "from-red-50 to-red-100",
     },
   ]);
@@ -185,14 +185,14 @@ export default function Dashboard() {
           title: "Fee Collected",
           data: `₹${data.totalFeeCollected || 0}`,
           icon: <MdOutlinePayments className="text-2xl text-emerald-600" />,
-          path: "admin/finance",
+          path: "/admin/finance",
           bg: "from-emerald-50 to-emerald-100",
         },
         {
           title: "Pending Dues",
           data: `₹${data.totalPendingDues || 0}`,
           icon: <GiTimeTrap className="text-2xl text-red-600" />,
-          path: "admin/finance",
+          path: "/admin/finance",
           bg: "from-red-50 to-red-100",
         },
       ]);
