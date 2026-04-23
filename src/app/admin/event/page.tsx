@@ -89,6 +89,7 @@ const EventPage: React.FC = () => {
 
   const API_URL = "https://codeflame-edu-backend.xyz/api/v1/event";
 
+
   // ================= FORMAT DATE =================
   const formatDate = (dateString: string) => {
     if (!dateString) return "";
@@ -211,6 +212,7 @@ const EventPage: React.FC = () => {
     >
   ) => {
     const { name, value } = e.target;
+    
 
     if (name === "class_id") {
       const selectedClass = classList.find((cls) => cls._id === value);
@@ -250,7 +252,7 @@ const EventPage: React.FC = () => {
   // ================= SUBMIT =================
   const handleSubmit = async () => {
     const { class_id, batch_id, title, date } = formData;
-
+   
     if (!class_id || !batch_id || !title || !date) {
       toast.warn("All required fields must be filled");
       return;
@@ -281,9 +283,11 @@ const EventPage: React.FC = () => {
       resetForm();
       fetchEvents();
     } catch (err: unknown) {
+      
       const error = err as AxiosError;
+      console.log(err)
       console.error("Submit error:", error);
-      toast.error("Something went wrong ❌");
+      toast.error(error?.response?.data.message || "Something went wrong ❌");
     } finally {
       setProcessing(false);
     }
@@ -547,10 +551,10 @@ const EventPage: React.FC = () => {
               disabled={formLoading}
             >
               <option value="">Select Class</option>
-              <option value="all">All Classes</option>
+              <option value="ALL_CLASSES">All Classes</option>
               {classList.map((cls) => (
                 <option key={cls._id} value={cls._id}>
-                  {cls.class.name}
+                  {cls.class.name}                           
                 </option>
               ))}
             </select>
@@ -563,6 +567,7 @@ const EventPage: React.FC = () => {
               disabled={!formData.class_id}
             >
               <option value="">Select Batch</option>
+              <option value="ALL_BATCHES">All Batches</option>
               {batches.map((b) => (
                 <option key={b.batch_id} value={b.batch_id}>
                   {b.batch_name}
