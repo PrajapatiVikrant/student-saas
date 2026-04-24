@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+
 import CircularIndeterminate from "@/app/components/ui/CircularIndeterminate";
 
 interface Student {
@@ -111,7 +112,13 @@ export default function AttendanceManagement() {
             });
 
             setAttendance(initial);
-        } catch {
+        } catch (error: unknown) {
+            const err = error as AxiosError;
+            if (err.response?.status === 401 || err.response?.status === 403) {
+                toast.error("Session expired. Please log in again.");
+                localStorage.removeItem("codeflam01_token");
+                router.push("/login");
+            }
             toast.error("Failed to fetch students");
         } finally {
             setLoading(false);
@@ -157,6 +164,12 @@ export default function AttendanceManagement() {
 
             setAttendance(initial);
         } catch (err: any) {
+
+            if (err.response?.status === 401 || err.response?.status === 403) {
+                toast.error("Session expired. Please log in again.");
+                localStorage.removeItem("codeflam01_token");
+                router.push("/login");
+            }
             if (err.response?.status === 404) {
                 // ✅ 404 bhi same case → no attendance
                 const initial: Record<string, AttendanceRecord> = {};
@@ -280,7 +293,12 @@ export default function AttendanceManagement() {
             );
 
             toast.success("Attendance Saved ✅");
-        } catch {
+        } catch (err: any) {
+            if (err.response?.status === 401 || err.response?.status === 403) {
+                toast.error("Session expired. Please log in again.");
+                localStorage.removeItem("codeflam01_token");
+                router.push("/login");
+            }
             toast.error("Save failed");
         } finally {
             setProcessing(false);
@@ -399,7 +417,7 @@ export default function AttendanceManagement() {
                                     onClick={() => handleRemoveAbsent(s._id)}
                                     className="bg-red-600 hover:bg-red-700 text-white px-2 py-0.5 rounded text-[10px]"
                                 >
-                                   X
+                                    X
                                 </button>
                             </div>
                         ))}
