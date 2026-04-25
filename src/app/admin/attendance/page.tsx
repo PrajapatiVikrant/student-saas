@@ -280,7 +280,7 @@ export default function AttendanceManagement() {
             const attendanceArray = Object.values(attendance);
 
             await axios.post(
-                "http://localhost:4000/api/v1/attendance/mark",
+                "https://codeflame-edu-backend.xyz/api/v1/attendance/mark",
                 {
                     classId: selectedClass,
                     class_name: classData.class_name,
